@@ -7,6 +7,8 @@ module.exports = function(app) {
     app.route('/account-info')
     .get(getController.getAllUsers);
 
+    app.route("/account-info-login/:id1/:id2")
+    .get(getController.authenticateUser);
 
     app.route('/account-info/:id1/:id2')
     .post(getController.createNewUser)
