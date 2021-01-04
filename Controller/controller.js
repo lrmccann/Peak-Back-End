@@ -32,6 +32,28 @@ const saltHash = (pass) => {
     return { salt, password }
 };
 
+let holdCommentsForGetCommentsFunc = null
+
+const getCommentsFunc = async (resultsFromQuery) => {
+    var postIdFromOtherCall = ""
+    await resultsFromQuery.map((index) => {
+        postIdFromOtherCall = index.id
+    })
+    var getCommentsForPost = `SELECT * FROM user_comments WHERE post_id=${postIdFromOtherCall}`
+    connection.query(getCommentsForPost , async (error , results, fields) => {
+        if(error){
+            return console.log(error , "i am error")
+        }else if(results.length === 0){
+            console.log('an error has occured')
+            return 
+        }else{
+            holdCommentsForGetCommentsFunc = await results
+            console.log(results , "final results")
+            return results
+        }
+    })
+}
+
 
 // controller methods for account-info
 exports.createNewUser = async function (req, res) {
@@ -47,8 +69,8 @@ exports.authenticateUser = async function (req , res) {
     connection.query(sqlAccountInfo , (error , results , fields) => {
         if(error){
             res.send("An error has occured")
-        } else if(results.length == 0){
-            res.status(404).send("Invalid Username or Password")
+        } else if(results.length === 0){
+            res.send('Invalid Username or Password')
         }else if (results.length !== 0){
             res.status(200).send({
                 results : results,
@@ -87,10 +109,6 @@ exports.authenticateUser = async function (req , res) {
         console.log("respoooonnnssseee", res)
     },
 
-
-
-
-
     exports.getAllPosts = async function (req, res) {
         var getAllPosts =  `SELECT * FROM user_posts`;
         connection.query(getAllPosts , (error , results, fields) => {
@@ -104,13 +122,36 @@ exports.authenticateUser = async function (req , res) {
         })
     },
 
-
-
-    
-
     exports.getAllInfoOnPost = async function (req, res) {
-        console.log("requuuuueeeest", req)
-        console.log("respoooonnnssseee", res)
+        var requestId = req.params.id1
+        console.log(requestId)
+        var getPostDetails = `SELECT * FROM user_posts WHERE id=${requestId}`
+          connection.query( getPostDetails , async (error , results, fields) => {
+            if(error){
+                    console.log(error)
+                    res.status(404).send(error)
+            }else if(results.length === 0){
+                console.log('results are empty')
+                res.status(404).send("An error has occured")
+            }else{
+                await getCommentsFunc(results)
+                if(holdCommentsForGetCommentsFunc === null || holdCommentsForGetCommentsFunc === holdCommentsForGetCommentsFunc) {
+                    setTimeout( async () => {
+                        var newVarForStuff = await holdCommentsForGetCommentsFunc
+                        console.log(newVarForStuff , "new var for comments stuff")
+                        var sendMe = {
+                            results : await results,
+                            comments : await newVarForStuff
+                        }
+                        console.log(sendMe , "i wanna be whole and i wanna be sent!")
+                        return res.status(202).send(sendMe)
+                    } , 5 * 70)
+                }
+                // else{
+                //     return res.status(508).send('An error has occured please refresh and try again')
+                // }
+            }
+        })
     },
 
     exports.deleteUserPost = async function (req, res) {
