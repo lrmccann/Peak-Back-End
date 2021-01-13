@@ -12,13 +12,24 @@ var connection = mysql.createConnection({
     
 });
 
-connection.connect(function(err){
-if (err) {
-    console.log(err.stack , "please connect again")
-    return;
+function startMysqlServer () {
+    connection.connect(function(err){
+        if (err) {
+            console.log(err.stack , "please connect again")
+            startMysqlServer();
+        }else{
+            console.log("CONNECTED")
+        }
+        connection.on('error' ,function(err) {
+            if(err.fatal){
+                startMysqlServer();
+            }
+        })
+        console.log(`connnected as ${mysqlConfig.host} ${connection.threadId}`)
+        });
 }
-console.log(`connnected as ${mysqlConfig.host} ${connection.threadId}`)
-});
+
+startMysqlServer();
 
 
 const createSessiontoken = () => {
