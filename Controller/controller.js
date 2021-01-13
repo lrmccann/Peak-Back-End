@@ -1,5 +1,5 @@
 const mysqlx = require("@mysql/xdevapi");
-// const mysqlConfig = require('../mysqlConfig');
+const mysqlConfig = require('./mysqlConfig');
 const bcrypt = require("bcrypt");
 const mysql = require("mysql");
 
