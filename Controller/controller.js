@@ -48,7 +48,7 @@ const getCommentsFunc = async (resultsFromQuery) => {
             return 
         }else{
             holdCommentsForGetCommentsFunc = await results
-            console.log(results , "final results")
+            // console.log(results , "final results")
             return results
         }
     })
@@ -72,7 +72,7 @@ exports.authenticateUser = async function (req , res) {
         } else if(results.length === 0){
             res.send('Invalid Username or Password')
         }else if (results.length !== 0){
-            res.status(200).send({
+            res.status(200).json({
                 results : results,
                 sessionToken : createSessiontoken()
             })
@@ -86,7 +86,7 @@ exports.authenticateUser = async function (req , res) {
             if (error){
                 return console.log(error)
             }else{
-                console.log(results)
+                // console.log(results)
             }
         });
     },
@@ -122,9 +122,31 @@ exports.authenticateUser = async function (req , res) {
         })
     },
 
+
+
+
+
+
+    exports.getUserNameForComments = async function (req, res) {
+        console.log(req.params.id1)
+        let userId = [req.params.id1]
+        // userId.map((index) => (
+        //     console.log(index , "i am theeee index")
+        // ))
+        var getUsernames = `SELECT username FROM account_info WHERE  `
+        // let random = [req.params]
+        // console.log(req)
+        // console.log(random , "random shiiitt")
+        // console.log(res , "respooooonnnssee")
+    }
+
+
+
+
+
     exports.getAllInfoOnPost = async function (req, res) {
         var requestId = req.params.id1
-        console.log(requestId)
+        // console.log(requestId)
         var getPostDetails = `SELECT * FROM user_posts WHERE id=${requestId}`
           connection.query( getPostDetails , async (error , results, fields) => {
             if(error){
@@ -138,12 +160,12 @@ exports.authenticateUser = async function (req , res) {
                 if(holdCommentsForGetCommentsFunc === null || holdCommentsForGetCommentsFunc === holdCommentsForGetCommentsFunc) {
                     setTimeout( async () => {
                         var newVarForStuff = await holdCommentsForGetCommentsFunc
-                        console.log(newVarForStuff , "new var for comments stuff")
+                        // console.log(newVarForStuff , "new var for comments stuff")
                         var sendMe = {
                             results : await results,
                             comments : await newVarForStuff
                         }
-                        console.log(sendMe , "i wanna be whole and i wanna be sent!")
+                        // console.log(sendMe , "i wanna be whole and i wanna be sent!")
                         return res.status(202).send(sendMe)
                     } , 5 * 70)
                 }
@@ -172,7 +194,7 @@ exports.authenticateUser = async function (req , res) {
             if(error){
                 return console.log(error)
             }else{
-                console.log(results)
+                // console.log(results)
             }
         })
     },

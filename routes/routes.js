@@ -26,8 +26,9 @@ module.exports = function(app) {
     .delete(getController.deleteUserPost);
 
 
-    app.route('/user-comments')
-    .get(getController.loadPreviewComments)
+    app.route('/user-comments/:id1')
+    // .get(getController.loadPreviewComments)
+    .get(getController.loadAllCommentsForPost)
 
 
     app.route('/user-comments/:id1')
