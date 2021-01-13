@@ -128,12 +128,24 @@ exports.authenticateUser = async function (req , res) {
 
 
     exports.getUserNameForComments = async function (req, res) {
-        console.log(req.params.id1)
+        // console.log(req.params.id1)
         let userId = [req.params.id1]
-        // userId.map((index) => (
-        //     console.log(index , "i am theeee index")
-        // ))
-        var getUsernames = `SELECT username FROM account_info WHERE  `
+        // console.log(userId , "please be able to find me")
+        userId.map((index) => {
+            var getUsernames = `SELECT username FROM account_info WHERE ${index}`
+            connection.query( getUsernames , async (error ,results, fields) => {
+            // })
+                if(error){
+                    console.log(error)
+                    res.status(404).send(error)
+            }else if(results.length === 0){
+                console.log('results are empty')
+                res.status(404).send("An error has occured")
+            }else{
+                console.log(results , "loooook at meeee abcd")
+            }
+            })
+        })
         // let random = [req.params]
         // console.log(req)
         // console.log(random , "random shiiitt")
