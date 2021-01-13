@@ -8,7 +8,7 @@ var connection = mysql.createConnection({
     database : mysqlConfig.database,
     user : mysqlConfig.userName,
     password : mysqlConfig.passowrd,
-    insecureAuth : true,
+    // insecureAuth : true,
     
 });
 
