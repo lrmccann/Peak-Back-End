@@ -3,34 +3,54 @@ const mysqlConfig = require('./mysqlConfig');
 const bcrypt = require("bcrypt");
 const mysql = require("mysql");
 
-var connection = mysql.createConnection({
-    host : mysqlConfig.host,
-    database : mysqlConfig.database,
-    user : mysqlConfig.userName,
-    password : mysqlConfig.passowrd,
-    // insecureAuth : true,
+// var connection = mysql.createConnection({
+//     host :  mysqlConfig.host,
+//     database : mysqlConfig.database,
+//     user : mysqlConfig.userName,
+//     password : mysqlConfig.passowrd,
+//     insecureAuth : true,
     
-});
+// });
 
-function startMysqlServer () {
-    connection.connect(function(err){
-        if (err) {
-            console.log(err.stack , "please connect again")
+// function startMysqlServer () {
+//     connection.connect(function(err){
+//         if (err) {
+//             console.log(err.stack , "please connect again")
+//             startMysqlServer();
+//         }else{
+//             console.log("CONNECTED")
+//         }
+//         connection.on('error' ,function(err) {
+//             if(err.fatal){
+//                 startMysqlServer();
+//             }
+//         })
+//         console.log(`connnected as ${mysqlConfig.host} ${connection.threadId}`)
+//         });
+// }
+
+// startMysqlServer();
+
+
+const startMysqlServer = async () => {
+    console.error('CONNECTING');
+    connection = mysql.createConnection(mysqlConfig);
+    await connection.connect(function(err){
+        if(err){
+            console.error('CONNECTION FAILED' , err.code);
             startMysqlServer();
         }else{
-            console.log("CONNECTED")
+            console.error("CONNECTED");
         }
-        connection.on('error' ,function(err) {
-            if(err.fatal){
-                startMysqlServer();
-            }
-        })
-        console.log(`connnected as ${mysqlConfig.host} ${connection.threadId}`)
-        });
+    });
+    connection.on("error" , function(err) {
+        if(err.fatal){
+            startMysqlServer();
+        }
+    })
 }
 
 startMysqlServer();
-
 
 const createSessiontoken = () => {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
