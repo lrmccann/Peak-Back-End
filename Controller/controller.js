@@ -153,11 +153,6 @@ exports.authenticateUser = async function (req , res) {
         })
     },
 
-
-
-
-
-
     exports.getUserNameForComments = async function (req, res) {
         // console.log(req.params.id1)
         let userId = [req.params.id1]
@@ -177,15 +172,7 @@ exports.authenticateUser = async function (req , res) {
             }
             })
         })
-        // let random = [req.params]
-        // console.log(req)
-        // console.log(random , "random shiiitt")
-        // console.log(res , "respooooonnnssee")
     }
-
-
-
-
 
     exports.getAllInfoOnPost = async function (req, res) {
         var requestId = req.params.id1
@@ -212,9 +199,6 @@ exports.authenticateUser = async function (req , res) {
                         return res.status(202).send(sendMe)
                     } , 5 * 70)
                 }
-                // else{
-                //     return res.status(508).send('An error has occured please refresh and try again')
-                // }
             }
         })
     },
