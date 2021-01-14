@@ -8,7 +8,7 @@ const mysql = require("mysql");
 const app = express();
 const PORT = process.env.PORT || 3005;
 
-console.log(process.env)
+// console.log(process.env)
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
