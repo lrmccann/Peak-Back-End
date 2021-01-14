@@ -120,7 +120,7 @@ exports.authenticateUser = async function (req , res) {
     var sqlAccountInfo = `SELECT * FROM account_info WHERE username = '${username}' AND password = '${password}'`
     connection.query(sqlAccountInfo , (error , results , fields) => {
         if(error){
-            res.status(404).send("An error has occured" , error)
+            res.status(404).send( error)
         } else if(results.length === 0){
             res.send('Invalid Username or Password')
         }else if (results.length !== 0){
@@ -167,7 +167,7 @@ exports.authenticateUser = async function (req , res) {
             if(error){
                 return console.log(error)
             }else if(results.length === 0){
-                res.status(404).send("An error has occured" , error)
+                res.status(404).send( error)
             }else{
                 res.status(200).send(results)
             }
@@ -187,7 +187,7 @@ exports.authenticateUser = async function (req , res) {
                     res.status(404).send(error)
             }else if(results.length === 0){
                 console.log('results are empty')
-                res.status(404).send("An error has occured" , error)
+                res.status(404).send(error)
             }else{
                 console.log(results , "loooook at meeee abcd")
             }
