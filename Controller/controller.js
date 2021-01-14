@@ -175,6 +175,7 @@ exports.authenticateUser = async function (req , res) {
     },
 
     exports.getUserNameForComments = async function (req, res) {
+        console.log(req.params)
         // console.log(req.params.id1)
         let userId = [req.params.id1]
         // console.log(userId , "please be able to find me")
