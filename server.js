@@ -8,6 +8,8 @@ const mysql = require("mysql");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+console.log(process.env)
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -30,7 +32,7 @@ app.use((req, res, next) => {
     connection = mysql.createConnection(jawsdbConfig);
     await connection.connect(function(err){
         if(err){
-            console.error('CONNECTION FAILED' , err.code);
+            // console.error('CONNECTION FAILED' , err.code);
             startMysqlServer();
         }else{
             console.error("CONNECTED");
@@ -48,7 +50,7 @@ startMysqlServer();
       connection = mysql.createConnection(mysqlConfig)
     connection.connect(function(err){
         if (err) {
-            console.log(err.stack , "please connect again")
+            // console.log(err.stack , "please connect again")
             startMysqlServerLocalHost();
         }else{
             console.log("CONNECTED")
@@ -61,7 +63,7 @@ startMysqlServer();
         console.log(`connnected as ${mysqlConfig.host} ${connection.threadId}`)
         });
 }
-startMysqlServerLocalHost();
+// startMysqlServerLocalHost();
   }
 
 
