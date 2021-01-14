@@ -183,10 +183,10 @@ exports.authenticateUser = async function (req , res) {
             connection.query( getUsernames , async (error ,results, fields) => {
             // })
                 if(error){
-                    console.log(error)
+                    // console.log(error)
                     res.status(404).send(error)
             }else if(results.length === 0){
-                console.log('results are empty')
+                // console.log('results are empty')
                 res.status(404).send(error)
             }else{
                 console.log(results , "loooook at meeee abcd")
