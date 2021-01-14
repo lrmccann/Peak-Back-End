@@ -6,7 +6,7 @@ const mysqlConfig = require("./Controller/mysqlConfig");
 const jawsdbConfig = require("./Controller/jawsdbConfig");
 const mysql = require("mysql");
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3005;
 
 console.log(process.env)
 
@@ -63,7 +63,7 @@ startMysqlServer();
         console.log(`connnected as ${mysqlConfig.host} ${connection.threadId}`)
         });
 }
-// startMysqlServerLocalHost();
+startMysqlServerLocalHost();
   }
 
 
