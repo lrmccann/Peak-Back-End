@@ -190,6 +190,7 @@ exports.authenticateUser = async function (req , res) {
                 res.status(404).send(error)
             }else{
                 console.log(results , "loooook at meeee abcd")
+                res.status(200).send(results)
             }
             })
         })
