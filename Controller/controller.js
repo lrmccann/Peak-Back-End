@@ -2,6 +2,7 @@ const mysqlx = require("@mysql/xdevapi");
 const mysqlConfig = require('./mysqlConfig');
 const bcrypt = require("bcrypt");
 const mysql = require("mysql");
+const jawsdbConfig = require("./jawsdbConfig");
 
 // var connection = mysql.createConnection({
 //     host :  mysqlConfig.host,
@@ -11,6 +12,14 @@ const mysql = require("mysql");
 //     insecureAuth : true,
     
 // });
+
+var connection = mysql.createConnection({
+    host :  jawsdbConfig.host,
+    database : jawsdbConfig.database,
+    user : jawsdbConfig.userName,
+    password : jawsdbConfig.passowrd,
+    insecureAuth : true
+})
 
 // function startMysqlServer () {
 //     connection.connect(function(err){
