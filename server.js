@@ -47,7 +47,14 @@ app.use((req, res, next) => {
 startMysqlServer();
   }else{
     function startMysqlServerLocalHost () {
-      connection = mysql.createConnection(mysqlConfig)
+var connection = mysql.createConnection({
+    host :  mysqlConfig.host,
+    database : mysqlConfig.database,
+    user : mysqlConfig.userName,
+    password : mysqlConfig.passowrd,
+    insecureAuth : true,
+    
+});
     connection.connect(function(err){
         if (err) {
             // console.log(err.stack , "please connect again")
