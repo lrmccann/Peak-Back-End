@@ -26,7 +26,7 @@ app.use((req, res, next) => {
     next();
   });
 
-  if(process.env.JAWS_URL){
+  if(process.env.JAWSDB_URL){
   const startMysqlServer = async () => {
     console.error('CONNECTING');
     connection = mysql.createConnection(jawsdbConfig);
