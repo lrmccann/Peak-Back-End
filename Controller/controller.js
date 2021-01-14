@@ -120,7 +120,7 @@ exports.authenticateUser = async function (req , res) {
     var sqlAccountInfo = `SELECT * FROM account_info WHERE username = '${username}' AND password = '${password}'`
     connection.query(sqlAccountInfo , (error , results , fields) => {
         if(error){
-            res.send("An error has occured" , error)
+            res.status(404).send("An error has occured" , error)
         } else if(results.length === 0){
             res.send('Invalid Username or Password')
         }else if (results.length !== 0){
