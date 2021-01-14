@@ -13,13 +13,17 @@ const jawsdbConfig = require("./jawsdbConfig");
     
 // });
 
-var connection = mysql.createConnection({
-    host :  jawsdbConfig.host,
-    database : jawsdbConfig.database,
-    user : jawsdbConfig.userName,
-    password : jawsdbConfig.passowrd,
-    insecureAuth : true
-})
+// var connection = mysql.createConnection({
+//     host :  jawsdbConfig.host,
+//     database : jawsdbConfig.database,
+//     user : jawsdbConfig.userName,
+//     password : jawsdbConfig.passowrd,
+//     insecureAuth : true
+// })
+
+const JAWSDB_URL = "mysql://abcmgygb3vzp12j8:liluc5l0j218a8nj@hwr4wkxs079mtb19.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/xj2vbbkogwll9zgl"
+
+var connection = mysql.createConnection(JAWSDB_URL)
 
 // function startMysqlServer () {
 //     connection.connect(function(err){
