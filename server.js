@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 var routes = require("./routes/routes");
-const mysqlConfig = require("./Controller/mysqlConfig");
+const mysqlConfig = require("./Controller/jawsdbConfig");
 const mysql = require("mysql");
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,6 +23,7 @@ app.use((req, res, next) => {
     next();
   });
 
+  if(process.env.JAWS_URL){
   const startMysqlServer = async () => {
     console.error('CONNECTING');
     connection = mysql.createConnection(mysqlConfig);
@@ -40,8 +41,27 @@ app.use((req, res, next) => {
         }
     })
 }
-
 startMysqlServer();
+  }else{
+    function startMysqlServerLocalHost () {
+    connection.connect(function(err){
+        if (err) {
+            console.log(err.stack , "please connect again")
+            startMysqlServerLocalHost();
+        }else{
+            console.log("CONNECTED")
+        }
+        connection.on('error' ,function(err) {
+            if(err.fatal){
+                startMysqlServerLocalHost();
+            }
+        })
+        console.log(`connnected as ${mysqlConfig.host} ${connection.threadId}`)
+        });
+        startMysqlServerLocalHost();
+}
+  }
+
 
 app.get('/' , (req , res) => {
     res.send("Welcome to Peak")
