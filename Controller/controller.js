@@ -32,25 +32,33 @@ const mysql = require("mysql");
 // startMysqlServer();
 
 
-const startMysqlServer = async () => {
-    console.error('CONNECTING');
-    connection = mysql.createConnection(mysqlConfig);
-    await connection.connect(function(err){
-        if(err){
-            console.error('CONNECTION FAILED' , err.code);
-            startMysqlServer();
-        }else{
-            console.error("CONNECTED");
-        }
-    });
-    connection.on("error" , function(err) {
-        if(err.fatal){
-            startMysqlServer();
-        }
-    })
-}
 
-startMysqlServer();
+
+
+
+
+
+
+
+// const startMysqlServer = async () => {
+//     console.error('CONNECTING');
+//     connection = mysql.createConnection(mysqlConfig);
+//     await connection.connect(function(err){
+//         if(err){
+//             console.error('CONNECTION FAILED' , err.code);
+//             startMysqlServer();
+//         }else{
+//             console.error("CONNECTED");
+//         }
+//     });
+//     connection.on("error" , function(err) {
+//         if(err.fatal){
+//             startMysqlServer();
+//         }
+//     })
+// }
+
+// startMysqlServer();
 
 const createSessiontoken = () => {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);

@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 var routes = require("./routes/routes");
+import mysqlConfig from "./Controller/mysqlConfig";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -21,6 +22,25 @@ app.use((req, res, next) => {
     next();
   });
 
+  const startMysqlServer = async () => {
+    console.error('CONNECTING');
+    connection = mysql.createConnection(mysqlConfig);
+    await connection.connect(function(err){
+        if(err){
+            console.error('CONNECTION FAILED' , err.code);
+            startMysqlServer();
+        }else{
+            console.error("CONNECTED");
+        }
+    });
+    connection.on("error" , function(err) {
+        if(err.fatal){
+            startMysqlServer();
+        }
+    })
+}
+
+startMysqlServer();
 
 app.get('/' , (req , res) => {
     res.send("Welcome to Peak")
