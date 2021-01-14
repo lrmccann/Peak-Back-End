@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 var routes = require("./routes/routes");
-import mysqlConfig from "./Controller/mysqlConfig";
+const mysqlConfig = require("./Controller/mysqlConfig");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
