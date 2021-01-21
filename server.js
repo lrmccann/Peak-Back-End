@@ -29,7 +29,7 @@ app.use((req, res, next) => {
     connection = mysql.createConnection(process.env.JAWSDB_URL);
     await connection.connect(function(err){
         if(err){
-            // console.error('CONNECTION FAILED' , err.code);
+            console.error('CONNECTION FAILED' , err.code);
             startMysqlServer();
         }else{
             console.error("CONNECTED");
@@ -54,7 +54,7 @@ var connection = mysql.createConnection({
 });
     connection.connect(function(err){
         if (err) {
-            // console.log(err.stack , "please connect again")
+            console.log(err.stack , "please connect again")
             startMysqlServerLocalHost();
         }else{
             console.log("CONNECTED")

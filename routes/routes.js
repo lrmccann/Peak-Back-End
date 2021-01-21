@@ -15,6 +15,12 @@ module.exports = function(app) {
     app.route('/user-posts')
     .get(getController.getAllPosts);
 
+    // id1 is the num of likes to add
+    // id2 is the id of the post
+    // id3 is the post title 
+    app.route("/numOfLikesForPost/:id1/:id2/:id3")
+    .put(getController.addLike);
+
     app.route('/user-posts/:id1')
     .get(getController.getAllInfoOnPost)
     .delete(getController.deleteUserPost);
