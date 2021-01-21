@@ -4,74 +4,24 @@ const bcrypt = require("bcrypt");
 const mysql = require("mysql");
 const jawsdbConfig = require("./jawsdbConfig");
 
-// var connection = mysql.createConnection({
-//     host :  mysqlConfig.host,
-//     database : mysqlConfig.database,
-//     user : mysqlConfig.userName,
-//     password : mysqlConfig.passowrd,
-//     insecureAuth : true,
+var connection = "";
+
+var connectionInfo = mysql.createConnection({
+    host :  mysqlConfig.host,
+    database : mysqlConfig.database,
+    user : mysqlConfig.userName,
+    password : mysqlConfig.passowrd,
+    insecureAuth : true,
     
-// });
+});
 
-// var connection = mysql.createConnection({
-//     host :  jawsdbConfig.host,
-//     database : jawsdbConfig.database,
-//     user : jawsdbConfig.userName,
-//     password : jawsdbConfig.passowrd,
-//     insecureAuth : true
-// })
+if(process.env.JAWSDB_URL){
+    const JAWSDB_URL = "mysql://abcmgygb3vzp12j8:liluc5l0j218a8nj@hwr4wkxs079mtb19.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/xj2vbbkogwll9zgl"
+    connection = mysql.createConnection(JAWSDB_URL)
+}else{
+    connection = connectionInfo
+}
 
-const JAWSDB_URL = "mysql://abcmgygb3vzp12j8:liluc5l0j218a8nj@hwr4wkxs079mtb19.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/xj2vbbkogwll9zgl"
-
-var connection = mysql.createConnection(JAWSDB_URL)
-
-// function startMysqlServer () {
-//     connection.connect(function(err){
-//         if (err) {
-//             console.log(err.stack , "please connect again")
-//             startMysqlServer();
-//         }else{
-//             console.log("CONNECTED")
-//         }
-//         connection.on('error' ,function(err) {
-//             if(err.fatal){
-//                 startMysqlServer();
-//             }
-//         })
-//         console.log(`connnected as ${mysqlConfig.host} ${connection.threadId}`)
-//         });
-// }
-
-// startMysqlServer();
-
-
-
-
-
-
-
-
-
-
-// const startMysqlServer = async () => {
-//     console.error('CONNECTING');
-//     connection = mysql.createConnection(mysqlConfig);
-//     await connection.connect(function(err){
-//         if(err){
-//             console.error('CONNECTION FAILED' , err.code);
-//             startMysqlServer();
-//         }else{
-//             console.error("CONNECTED");
-//         }
-//     });
-//     connection.on("error" , function(err) {
-//         if(err.fatal){
-//             startMysqlServer();
-//         }
-//     })
-// }
-
-// startMysqlServer();
 
 const createSessiontoken = () => {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -100,7 +50,6 @@ const getCommentsFunc = async (resultsFromQuery) => {
             return 
         }else{
             holdCommentsForGetCommentsFunc = await results
-            // console.log(results , "final results")
             return results
         }
     })
@@ -143,12 +92,6 @@ exports.authenticateUser = async function (req , res) {
         });
     },
 
-    exports.listUserInfo = async function (req, res) {
-        var first_name = req.params.id1
-        var password = req.params.id2
-        var getSpecificUser = `SELECT * FROM account_info WHERE name=${first_name} || password=${password}`
-    },
-
     exports.deleteAccount = async function (req, res) {
         console.log("requuuuueeeest", req)
         console.log("respoooonnnssseee", res)
@@ -156,9 +99,52 @@ exports.authenticateUser = async function (req , res) {
 
     // routes for user-posts
 
+    exports.displayTopPosts = async function(req ,res) {
+        var userId = await req.params.id1;
+        console.log(userId , "fuuuuuck me")
+        var query = `SELECT * FROM user_posts WHERE user_id=${userId}`
+        connection.query(query , (error ,results , fields) => {
+            if(error){
+                res.status(404).send("We're having some trouble loading this right now, please try again later")
+            }else{
+                console.error("idkwhatthefuckbegoinon")
+                // setTimeout(() => {
+                    console.log(results , "results for display top posts")
+                    res.status(202).send(results)
+                // }, 3 * 200)
+            }
+        })
+    },
+
+    exports.displayTopComments = async function(req , res){
+        var userId = await req.params.id1;
+        var query = `SELECT * FROM user_comments WHERE user_id=${userId}`
+        connection.query(query , (error ,results , fields) => {
+            if(error){
+                res.status(404).send("We're having some trouble loading this right now, please try again later")
+            }else{
+                console.log(results , "results for display top comments")
+                res.status(202).send(results)
+            }
+        })
+    }
+
     exports.postNewBlog = async function (req, res) {
-        console.log("requuuuueeeest", req)
-        console.log("respoooonnnssseee", res)
+        var imgHeader = await req.body.blogInfoToSend.imgHeaderToSend;
+        var blogTitle = await req.body.blogInfoToSend.blogTitleToSend;
+        var blogBody = await req.body.blogInfoToSend.blogBodyToSend;
+        var userIdToSend = await req.body.blogInfoToSend.userIdToSend;
+
+        var postTheBlog = `INSERT INTO user_posts(user_id , post_title, post_body, blog_img, blog_likes) VALUES("${userIdToSend}", "${blogTitle}", "${blogBody}", "${imgHeader}", 0);`
+        connection.query(postTheBlog , (error, results, fields) => {
+            if(error){
+                res.status(404).send("There was an error posting your blog, please try again later.")
+                console.error(error)
+            }else{
+                console.log(results , "results from query, should just be a 202 or something?")
+                res.status(202).send(results)
+            }
+        });
     },
 
     exports.getAllPosts = async function (req, res) {
@@ -175,23 +161,24 @@ exports.authenticateUser = async function (req , res) {
     },
 
     exports.getUserNameForComments = async function (req, res) {
-        console.log(req.params)
-        // console.log(req.params.id1)
-        let userId = [req.params.id1]
-        // console.log(userId , "please be able to find me")
-        userId.map((index) => {
-            var getUsernames = `SELECT username FROM account_info WHERE ${index}`
+        var randomShit = [];
+        let userId = req.query.stuff
+        userId.map(async (index) => {
+            var getUsernames = `SELECT username FROM account_info WHERE id=${index}`
             connection.query( getUsernames , async (error ,results, fields) => {
-            // })
                 if(error){
-                    // console.log(error)
                     res.status(404).send(error)
             }else if(results.length === 0){
-                // console.log('results are empty')
                 res.status(404).send(error)
             }else{
-                console.log(results , "loooook at meeee abcd")
-                res.status(200).send(results)
+                var idk = await results[0].username
+                    randomShit.push(idk)
+                setTimeout( async () => (
+                    console.log(randomShit , "array for sttuuuufff"),
+                    await res.status(200).send(randomShit)
+                ), 2 * 500)  
+                    console.log(randomShit, "random shiiiiiiit")
+                    return
             }
             })
         })
@@ -199,7 +186,6 @@ exports.authenticateUser = async function (req , res) {
 
     exports.getAllInfoOnPost = async function (req, res) {
         var requestId = req.params.id1
-        // console.log(requestId)
         var getPostDetails = `SELECT * FROM user_posts WHERE id=${requestId}`
           connection.query( getPostDetails , async (error , results, fields) => {
             if(error){
@@ -213,17 +199,20 @@ exports.authenticateUser = async function (req , res) {
                 if(holdCommentsForGetCommentsFunc === null || holdCommentsForGetCommentsFunc === holdCommentsForGetCommentsFunc) {
                     setTimeout( async () => {
                         var newVarForStuff = await holdCommentsForGetCommentsFunc
-                        // console.log(newVarForStuff , "new var for comments stuff")
                         var sendMe = {
                             results : await results,
                             comments : await newVarForStuff
                         }
-                        // console.log(sendMe , "i wanna be whole and i wanna be sent!")
                         return res.status(202).send(sendMe)
                     } , 5 * 70)
                 }
             }
         })
+    },
+
+    exports.addLike = async function (req ,res ) {
+        console.log(req , "i am the requeeessstttt for add like")
+
     },
 
     exports.deleteUserPost = async function (req, res) {

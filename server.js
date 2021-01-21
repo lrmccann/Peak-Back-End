@@ -8,9 +8,6 @@ const mysql = require("mysql");
 const app = express();
 const PORT = process.env.PORT || 3005;
 
-// console.log(process.env)
-
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -45,7 +42,7 @@ app.use((req, res, next) => {
     })
 }
 startMysqlServer();
-  }else{
+  }else if(process.env.JAWSDB_URL === null){
     function startMysqlServerLocalHost () {
 var connection = mysql.createConnection({
     host :  mysqlConfig.host,
