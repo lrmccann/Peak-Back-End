@@ -31,8 +31,6 @@ module.exports = function(app) {
     app.route('/create-new-post')
     .post(getController.postNewBlog);
 
-    app.route('/user-comments')
-    .get(getController.getUserNameForComments);
 
     app.route('/user-comments/:id1')
     .get(getController.displayTopComments)

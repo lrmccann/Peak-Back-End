@@ -36,27 +36,28 @@ const saltHash = (pass) => {
   return { salt, password };
 };
 
-function createObjForComments(username, commentBody, commentRank, joinDate){
-    this.username = username;
-    this.commentBody = commentBody;
-    this.commentRank = commentRank;
-    this.joinDate = joinDate;
+
+function createObjForComments(username, commentBody, commentRank, joinDate) {
+  this.username = username;
+  this.commentBody = commentBody;
+  this.commentRank = commentRank;
+  this.joinDate = joinDate;
 }
 
 var holdUserNamesForGetAllUsers = [];
 
-const randomFunc = () => {
-  var getUsernamesForPost = `SELECT username from account_info `;
-  connection.query(getUsernamesForPost, (error, results, fields) => {
-    if (error) {
-      return console.log(error);
-    } else if (results.length === 0) {
-      console.log("results were empty");
-    } else {
-      holdUserNamesForGetAllUsers.push(results);
-    }
-  });
-};
+// const randomFunc = () => {
+//   var getUsernamesForPost = `SELECT username from account_info `;
+//   connection.query(getUsernamesForPost, (error, results, fields) => {
+//     if (error) {
+//       return console.log(error);
+//     } else if (results.length === 0) {
+//       console.log("results were empty");
+//     } else {
+//       holdUserNamesForGetAllUsers.push(results);
+//     }
+//   });
+// };
 
 // controller methods for account-info
 (exports.createNewUser = async function (req, res) {
@@ -71,7 +72,7 @@ const randomFunc = () => {
   var jobTitle = await req.body.jobTitle;
   var registerDate = await req.body.date;
   var mysqlQuery = `INSERT INTO account_info(first_name , last_name , username , email , password , age , city , zipcode , job_title , register_date) VALUES("${firstName}" , "${lastName}" , "${username}" , "${email}" , "${password}" , ${age} , "${city}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`;
-  connection.query(mysqlQuery, (error, results, fields) => {
+  connection.query(mysqlQuery, (error, results) => {
     if (error) {
       res.status(404).send(error, "fuck ass");
     } else if (results.length === 0) {
@@ -85,7 +86,7 @@ const randomFunc = () => {
     var username = await req.params.id1;
     var password = await req.params.id2;
     var sqlAccountInfo = `SELECT * FROM account_info WHERE username = '${username}' AND password = '${password}'`;
-    connection.query(sqlAccountInfo, (error, results, fields) => {
+    connection.query(sqlAccountInfo, (error, results) => {
       if (error) {
         res.status(404).send(error);
       } else if (results.length === 0) {
@@ -117,9 +118,8 @@ const randomFunc = () => {
 
   (exports.displayTopPosts = async function (req, res) {
     var userId = await req.params.id1;
-    console.log(userId, "user ID");
-    var query = `SELECT * FROM user_posts WHERE user_id=${userId}`;
-    connection.query(query, (error, results, fields) => {
+    var query = `SELECT * FROM user_posts WHERE user_id=${userId} ORDER BY blog_likes DESC`;
+    connection.query(query, (error, results) => {
       if (error) {
         res
           .status(404)
@@ -127,7 +127,6 @@ const randomFunc = () => {
             "We're having some trouble loading this right now, please try again later"
           );
       } else {
-        console.error("idkwhatthefuckbegoinon");
         console.log(results, "results for display top posts");
         res.status(202).send(results);
       }
@@ -136,7 +135,7 @@ const randomFunc = () => {
   (exports.displayTopComments = async function (req, res) {
     var userId = await req.params.id1;
     var query = `SELECT * FROM user_comments WHERE user_id=${userId}`;
-    connection.query(query, (error, results, fields) => {
+    connection.query(query, (error, results) => {
       if (error) {
         res
           .status(404)
@@ -156,7 +155,7 @@ const randomFunc = () => {
   var blogBody = await req.body.blogInfoToSend.blogBodyToSend;
   var userIdToSend = await req.body.blogInfoToSend.userIdToSend;
   var postTheBlog = `INSERT INTO user_posts(user_id , post_title, post_body, blog_img, blog_likes) VALUES("${userIdToSend}", "${blogTitle}", "${blogBody}", "${imgHeader}", 0);`;
-  connection.query(postTheBlog, (error, results, fields) => {
+  connection.query(postTheBlog, (error, results) => {
     if (error) {
       res
         .status(404)
@@ -172,85 +171,100 @@ const randomFunc = () => {
   });
 }),
   (exports.getAllPosts = async function (req, res) {
-    var getAllPosts = `SELECT * FROM user_posts`;
-    connection.query(getAllPosts, async (error, results, fields) => {
+    var getPosts = `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.post_body , user_posts.blog_img , user_posts.blog_likes , user_posts.publish_date , account_info.username
+                    FROM user_posts, account_info
+                    WHERE user_posts.user_id = account_info.id`;
+    connection.query(getPosts, async (error, results) => {
       if (error) {
         return console.log(error);
       } else if (results.length === 0) {
         res.status(404).send(error);
       } else {
-        randomFunc();
-        if (holdUserNamesForGetAllUsers.length === 0) {
-          setTimeout(() => {
-            res.status(200).json({
-              allPosts: results,
-              allUsernames: holdUserNamesForGetAllUsers,
-            });
-          }, 2 * 100);
-        } else {
-          res.status(200).json({
-            allPosts: results,
-            allUsernames: holdUserNamesForGetAllUsers,
-          });
-        }
+        console.log(results)
+        res.status(200).send(results)
       }
     });
   }),
+
+
   (exports.getAllInfoOnPost = async function (req, res) {
+// Post ID of requested blog page
     var requestId = req.params.id1;
+// Array to store results from each query
     let allInfoArr = [];
-    connection.query(
-      `SELECT * FROM user_posts WHERE user_posts.id=${requestId}`,
-      (fail, pass) => {
-        if (fail) {
-          return res.status(404).send(fail);
-        } else {
-          allInfoArr.push(pass[0]);
-        }
-      }
-    );
-    connection.query(
-      `SELECT * FROM user_posts posts
-                    INNER JOIN user_comments comments ON posts.id = comments.post_id
-                    INNER JOIN account_info accInfo ON comments.user_id = accInfo.id
-                    WHERE posts.id=${requestId}`,
+// Gets all data for comments related to post, creates object before pushing to array, call back to prev func
+    const getCommentData = async () => {
+        await connection.query(
+            `SELECT * FROM user_posts posts
+            INNER JOIN user_comments comments ON posts.id = comments.post_id
+            INNER JOIN account_info accInfo ON comments.user_id = accInfo.id
+            WHERE posts.id=${requestId}`,
+            (error, results) => {
+              if (error) {
+                return res.status(404).send("Error getting data").t
+              } else {
+                let resultsToStringify = JSON.stringify(results);
+                let resultsToParse = JSON.parse(resultsToStringify);
+                resultsToParse.map((index, key) => {
+                  var commentObj = new createObjForComments(
+                    `${index.username}`,
+                    `${index.comment_body}`,
+                    `${index.comment_rank}`,
+                    `${index.register_date}`
+                  );
+                   allInfoArr.push(commentObj)
+              })
+              // console.log(allInfoArr, "final array of data to send")
+              res.status(200).send(allInfoArr)
+            }
+            })
+    }
+    // Gets Blog body, # of likes, etc. Sends response to web page
+    const getBlogDetails = async () => {
+        await connection.query(
+            `SELECT * FROM user_posts WHERE user_posts.id=${requestId}`,
+            (fail, pass) => {
+              if (fail) {
+                return res.status(404).send(fail);
+              } else {
+                  allInfoArr.push(pass[0]);
+                  getCommentData();
+              }
+            }
+          );
+    }
+// Function to select author's name by inner joining tables where posts id = 1, pushes auth name to array, also begins callback
+    const getAuthData = async () => {
+    await connection.query(
+      `SELECT username from account_info accInfo
+      INNER JOIN user_posts posts ON posts.user_id = accInfo.id
+      WHERE posts.id=${requestId} `,
       (error, results) => {
         if (error) {
-          return res.status(404).send(error)
+          console.log(error, "Error retrieving blog author information")
+          return res
+            .status(404)
+            .send("Error retrieving blog author information");
         } else {
-          let resultsToStringify = JSON.stringify(results);
-          let resultsToParse = JSON.parse(resultsToStringify);
-          resultsToParse.map((index, key) => {
-            var commentObj = new createObjForComments(
-              `${index.username}`,
-              `${index.comment_body}`,
-              `${index.comment_rank}`,
-              `${index.register_date}`
-            );
-            allInfoArr.push(commentObj);
-          });
+        results.map((index) => {
+            // console.log(index , "index of the thing")
+            allInfoArr.push(index)
+        })
+          getBlogDetails();
         }
       }
     );
-    connection.query(`SELECT user_id FROM user_posts INNER JOIN account_info ON user_posts.user_id = account_info.id`, 
-        (error, results) => {
-            if(error){
-                console.log(error, "Error retrieving blog author information")
-                res.status(404).send("Error retrieving blog author information")
-            }else{
-                console.log(results, "Successfully retrieved author info")
-                // res.status(200).send(results, "Successfully retrieved author info")
-            }
-        console.log(allInfoArr , "abcdefghi")
-    });
+    }
+    getAuthData();
   }),
+
+
   (exports.addLike = async function (req, res) {
-    // console.log(req.params, "i am the requeeessstttt for add like");
     var numOflikesToAdd = req.params.id1;
     var postId = req.params.id2;
     var postTitle = req.params.id3;
     var addLikeQuery = `UPDATE user_posts SET blog_likes=${numOflikesToAdd} WHERE user_id=${postId} AND post_title="${postTitle}"`;
-    connection.query(addLikeQuery, (error, results, fields) => {
+    connection.query(addLikeQuery, (error, results) => {
       if (error) {
         return console.log(error);
       } else if (results.length === 0) {
