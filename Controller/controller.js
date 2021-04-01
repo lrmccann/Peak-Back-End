@@ -36,28 +36,12 @@ const saltHash = (pass) => {
   return { salt, password };
 };
 
-
 function createObjForComments(username, commentBody, commentRank, joinDate) {
   this.username = username;
   this.commentBody = commentBody;
   this.commentRank = commentRank;
   this.joinDate = joinDate;
 }
-
-var holdUserNamesForGetAllUsers = [];
-
-// const randomFunc = () => {
-//   var getUsernamesForPost = `SELECT username from account_info `;
-//   connection.query(getUsernamesForPost, (error, results, fields) => {
-//     if (error) {
-//       return console.log(error);
-//     } else if (results.length === 0) {
-//       console.log("results were empty");
-//     } else {
-//       holdUserNamesForGetAllUsers.push(results);
-//     }
-//   });
-// };
 
 // controller methods for account-info
 (exports.createNewUser = async function (req, res) {
@@ -92,13 +76,49 @@ var holdUserNamesForGetAllUsers = [];
       } else if (results.length === 0) {
         res.send("Invalid Username or Password");
       } else if (results.length !== 0) {
-        res.status(200).json({
-          results: results,
-          sessionToken: createSessiontoken(),
-        });
+        let removeArr = null;
+        results.map((index) => {
+          removeArr = index
+        })
+        res.status(200).send(removeArr)
+        // res.status(200).json({
+        //   results: removeArr,
+        //   sessionToken: createSessiontoken(),
+        // });
       }
     });
-  });
+  }),
+
+
+
+
+
+  (exports.fetchUserInfo = async function (req, res) {
+      // console.log(req, "ddeeeRequest")
+      var userId = await req.params.id1;
+      var sqlAccountInfo = `SELECT * FROM account_info WHERE id = ${userId}`;
+      connection.query(sqlAccountInfo, (error, results) => {
+        if(error){
+          res.status(404).send(error);
+        }else{
+          // console.log(results)
+          let toSend = null;
+          
+          results.map((index)=>{
+                toSend = index
+          })
+          res.status(200).send(toSend)
+          // console.log(toSend, "send object to fe")
+        }
+      })
+
+  }),
+
+
+
+
+
+
 
 (exports.getAllUsers = async function (req, res) {
   var sqlAccountInfo = `SELECT * FROM account_info`;
@@ -143,7 +163,7 @@ var holdUserNamesForGetAllUsers = [];
             "We're having some trouble loading this right now, please try again later"
           );
       } else {
-        console.log(results, "results for display top comments");
+        // console.log(results, "results for display top comments");
         res.status(202).send(results);
       }
     });
@@ -180,13 +200,12 @@ var holdUserNamesForGetAllUsers = [];
       } else if (results.length === 0) {
         res.status(404).send(error);
       } else {
-        console.log(results)
+        // console.log(results)
         res.status(200).send(results)
       }
     });
   }),
-
-
+  
   (exports.getAllInfoOnPost = async function (req, res) {
 // Post ID of requested blog page
     var requestId = req.params.id1;

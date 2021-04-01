@@ -9,6 +9,9 @@ module.exports = function(app) {
     .post(getController.createNewUser)
     .delete(getController.deleteAccount);
 
+    app.route('/user-details/:id1')
+    .get(getController.fetchUserInfo)
+
     app.route("/account-info-login/:id1/:id2")
     .get(getController.authenticateUser);
 
