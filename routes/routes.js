@@ -18,6 +18,10 @@ module.exports = function(app) {
     app.route('/user-posts')
     .get(getController.getAllPosts);
 
+    app.route('/user-bookmarks')
+    .post(getController.bookmarkNewPost)
+    .get(getController.getBookmarkedPosts)
+    .delete(getController.removeBookmarkedPost);
     // id1 is the num of likes to add
     // id2 is the id of the post
     // id3 is the post title 

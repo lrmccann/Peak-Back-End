@@ -91,8 +91,6 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
 
 
 
-
-
   (exports.fetchUserInfo = async function (req, res) {
       // console.log(req, "ddeeeRequest")
       var userId = await req.params.id1;
@@ -113,8 +111,6 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
       })
 
   }),
-
-
 
 
 
@@ -276,6 +272,29 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
     }
     getAuthData();
   }),
+
+
+(exports.bookmarkNewPost = async function (req, res) {
+
+  console.log(req, "request for saving blog post");
+
+}),
+
+(exports.getBookmarkedPosts = async function (req, res) {
+
+  console.log(req, "request for fetching blog posts");
+
+}),
+
+
+(exports.removeBookmarkedPost = async function (req, res) {
+
+  console.log(req, "request for fetching blog posts");
+
+})
+
+
+
 
 
   (exports.addLike = async function (req, res) {
