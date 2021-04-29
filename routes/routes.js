@@ -18,7 +18,7 @@ module.exports = function(app) {
     app.route('/user-posts')
     .get(getController.getAllPosts);
 
-    app.route('/user-bookmarks/:id1')
+    app.route('/user-bookmarks/:id1/:id2')
     .post(getController.bookmarkNewPost)
     .get(getController.getBookmarkedPosts)
     .delete(getController.removeBookmarkedPost);
