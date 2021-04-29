@@ -58,7 +58,7 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
   var mysqlQuery = `INSERT INTO account_info(first_name , last_name , username , email , password , age , city , zipcode , job_title , register_date) VALUES("${firstName}" , "${lastName}" , "${username}" , "${email}" , "${password}" , ${age} , "${city}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`;
   connection.query(mysqlQuery, (error, results) => {
     if (error) {
-      res.status(404).send(error, "fuck ass");
+      res.status(404).send(error);
     } else if (results.length === 0) {
       res.send("Please try again");
     } else if (results.length !== 0) {
@@ -275,19 +275,33 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
 
 
 (exports.bookmarkNewPost = async function (req, res) {
-
-  console.log(req, "request for saving blog post");
+  let bookmarkedPostId = req.params.id1;
+  let userId = req.params.id2;
+  console.log(bookmarkedPostId, "id of post to bookmark" + userId, "id of user for bookmark post")
+  const query = `
+                INSERT INTO account_info("bookmarked_posts")
+                WHERE user_id = ${userId}
+                VALUES (${bookmarkedPostId})
+  
+  `
+  // console.log(req, "request for saving blog post");
 
 }),
 
 (exports.getBookmarkedPosts = async function (req, res) {
 
+  // var userId = req.params.id2;
+
+  
   console.log(req, "request for fetching blog posts");
 
 }),
 
 
 (exports.removeBookmarkedPost = async function (req, res) {
+
+  // var userId = req.params.id2;
+
 
   console.log(req, "request for fetching blog posts");
 
