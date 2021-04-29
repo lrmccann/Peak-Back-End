@@ -19,7 +19,7 @@ module.exports = function(app) {
     .get(getController.getAllPosts);
 
     app.route('/user-bookmarks/:id1/:id2')
-    .post(getController.bookmarkNewPost)
+    .put(getController.bookmarkNewPost)
     .get(getController.getBookmarkedPosts)
     .delete(getController.removeBookmarkedPost);
     // id1 is the num of likes to add

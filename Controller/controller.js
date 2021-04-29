@@ -10,6 +10,7 @@ var connectionInfo = mysql.createConnection({
   user: mysqlConfig.userName,
   password: mysqlConfig.passowrd,
   insecureAuth: true,
+  multipleStatements: true
 });
 
 if (process.env.JAWSDB_URL) {
@@ -78,9 +79,9 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
       } else if (results.length !== 0) {
         let removeArr = null;
         results.map((index) => {
-          removeArr = index
-        })
-        res.status(200).send(removeArr)
+          removeArr = index;
+        });
+        res.status(200).send(removeArr);
         // res.status(200).json({
         //   results: removeArr,
         //   sessionToken: createSessiontoken(),
@@ -88,44 +89,35 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
       }
     });
   }),
-
-
-
   (exports.fetchUserInfo = async function (req, res) {
-      // console.log(req, "ddeeeRequest")
-      var userId = await req.params.id1;
-      var sqlAccountInfo = `SELECT * FROM account_info WHERE id = ${userId}`;
-      connection.query(sqlAccountInfo, (error, results) => {
-        if(error){
-          res.status(404).send(error);
-        }else{
-          // console.log(results)
-          let toSend = null;
-          
-          results.map((index)=>{
-                toSend = index
-          })
-          res.status(200).send(toSend)
-          // console.log(toSend, "send object to fe")
-        }
-      })
+    // console.log(req, "ddeeeRequest")
+    var userId = await req.params.id1;
+    var sqlAccountInfo = `SELECT * FROM account_info WHERE id = ${userId}`;
+    connection.query(sqlAccountInfo, (error, results) => {
+      if (error) {
+        res.status(404).send(error);
+      } else {
+        // console.log(results)
+        let toSend = null;
 
+        results.map((index) => {
+          toSend = index;
+        });
+        res.status(200).send(toSend);
+        // console.log(toSend, "send object to fe")
+      }
+    });
   }),
-
-
-
-
-
-(exports.getAllUsers = async function (req, res) {
-  var sqlAccountInfo = `SELECT * FROM account_info`;
-  connection.query(sqlAccountInfo, (error, results, fields) => {
-    if (error) {
-      return console.log(error);
-    } else {
-      // console.log(results)
-    }
-  });
-}),
+  (exports.getAllUsers = async function (req, res) {
+    var sqlAccountInfo = `SELECT * FROM account_info`;
+    connection.query(sqlAccountInfo, (error, results, fields) => {
+      if (error) {
+        return console.log(error);
+      } else {
+        // console.log(results)
+      }
+    });
+  }),
   (exports.deleteAccount = async function (req, res) {
     console.log("requuuuueeeest", req);
     console.log("respoooonnnssseee", res);
@@ -197,136 +189,197 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
         res.status(404).send(error);
       } else {
         // console.log(results)
-        res.status(200).send(results)
-      }
-    });
-  }),
-  
-  (exports.getAllInfoOnPost = async function (req, res) {
-// Post ID of requested blog page
-    var requestId = req.params.id1;
-// Array to store results from each query
-    let allInfoArr = [];
-// Gets all data for comments related to post, creates object before pushing to array, call back to prev func
-    const getCommentData = async () => {
-        await connection.query(
-            `SELECT * FROM user_posts posts
-            INNER JOIN user_comments comments ON posts.id = comments.post_id
-            INNER JOIN account_info accInfo ON comments.user_id = accInfo.id
-            WHERE posts.id=${requestId}`,
-            (error, results) => {
-              if (error) {
-                return res.status(404).send("Error getting data").t
-              } else {
-                let resultsToStringify = JSON.stringify(results);
-                let resultsToParse = JSON.parse(resultsToStringify);
-                resultsToParse.map((index, key) => {
-                  var commentObj = new createObjForComments(
-                    `${index.username}`,
-                    `${index.comment_body}`,
-                    `${index.comment_rank}`,
-                    `${index.register_date}`
-                  );
-                   allInfoArr.push(commentObj)
-              })
-              // console.log(allInfoArr, "final array of data to send")
-              res.status(200).send(allInfoArr)
-            }
-            })
-    }
-    // Gets Blog body, # of likes, etc. Sends response to web page
-    const getBlogDetails = async () => {
-        await connection.query(
-            `SELECT * FROM user_posts WHERE user_posts.id=${requestId}`,
-            (fail, pass) => {
-              if (fail) {
-                return res.status(404).send(fail);
-              } else {
-                  allInfoArr.push(pass[0]);
-                  getCommentData();
-              }
-            }
-          );
-    }
-// Function to select author's name by inner joining tables where posts id = 1, pushes auth name to array, also begins callback
-    const getAuthData = async () => {
-    await connection.query(
-      `SELECT username from account_info accInfo
-      INNER JOIN user_posts posts ON posts.user_id = accInfo.id
-      WHERE posts.id=${requestId} `,
-      (error, results) => {
-        if (error) {
-          console.log(error, "Error retrieving blog author information")
-          return res
-            .status(404)
-            .send("Error retrieving blog author information");
-        } else {
-        results.map((index) => {
-            // console.log(index , "index of the thing")
-            allInfoArr.push(index)
-        })
-          getBlogDetails();
-        }
-      }
-    );
-    }
-    getAuthData();
-  }),
-
-
-(exports.bookmarkNewPost = async function (req, res) {
-  let bookmarkedPostId = req.params.id1;
-  let userId = req.params.id2;
-  console.log(bookmarkedPostId, "id of post to bookmark" + userId, "id of user for bookmark post")
-  const query = `
-                INSERT INTO account_info("bookmarked_posts")
-                WHERE user_id = ${userId}
-                VALUES (${bookmarkedPostId})
-  
-  `
-  // console.log(req, "request for saving blog post");
-
-}),
-
-(exports.getBookmarkedPosts = async function (req, res) {
-
-  // var userId = req.params.id2;
-
-  
-  console.log(req, "request for fetching blog posts");
-
-}),
-
-
-(exports.removeBookmarkedPost = async function (req, res) {
-
-  // var userId = req.params.id2;
-
-
-  console.log(req, "request for fetching blog posts");
-
-})
-
-
-
-
-
-  (exports.addLike = async function (req, res) {
-    var numOflikesToAdd = req.params.id1;
-    var postId = req.params.id2;
-    var postTitle = req.params.id3;
-    var addLikeQuery = `UPDATE user_posts SET blog_likes=${numOflikesToAdd} WHERE user_id=${postId} AND post_title="${postTitle}"`;
-    connection.query(addLikeQuery, (error, results) => {
-      if (error) {
-        return console.log(error);
-      } else if (results.length === 0) {
-        res.status(404).send(error);
-      } else {
-        console.log(results, "results of adding likes to table");
         res.status(200).send(results);
       }
     });
   }),
+  (exports.getAllInfoOnPost = async function (req, res) {
+    // Post ID of requested blog page
+    var requestId = req.params.id1;
+    // Array to store results from each query
+    let allInfoArr = [];
+    // Gets all data for comments related to post, creates object before pushing to array, call back to prev func
+    const getCommentData = async () => {
+      await connection.query(
+        `SELECT * FROM user_posts posts
+            INNER JOIN user_comments comments ON posts.id = comments.post_id
+            INNER JOIN account_info accInfo ON comments.user_id = accInfo.id
+            WHERE posts.id=${requestId}`,
+        (error, results) => {
+          if (error) {
+            return res.status(404).send("Error getting data").t;
+          } else {
+            let resultsToStringify = JSON.stringify(results);
+            let resultsToParse = JSON.parse(resultsToStringify);
+            resultsToParse.map((index, key) => {
+              var commentObj = new createObjForComments(
+                `${index.username}`,
+                `${index.comment_body}`,
+                `${index.comment_rank}`,
+                `${index.register_date}`
+              );
+              allInfoArr.push(commentObj);
+            });
+            // console.log(allInfoArr, "final array of data to send")
+            res.status(200).send(allInfoArr);
+          }
+        }
+      );
+    };
+    // Gets Blog body, # of likes, etc. Sends response to web page
+    const getBlogDetails = async () => {
+      await connection.query(
+        `SELECT * FROM user_posts WHERE user_posts.id=${requestId}`,
+        (fail, pass) => {
+          if (fail) {
+            return res.status(404).send(fail);
+          } else {
+            allInfoArr.push(pass[0]);
+            getCommentData();
+          }
+        }
+      );
+    };
+    // Function to select author's name by inner joining tables where posts id = 1, pushes auth name to array, also begins callback
+    const getAuthData = async () => {
+      await connection.query(
+        `SELECT username from account_info accInfo
+      INNER JOIN user_posts posts ON posts.user_id = accInfo.id
+      WHERE posts.id=${requestId} `,
+        (error, results) => {
+          if (error) {
+            console.log(error, "Error retrieving blog author information");
+            return res
+              .status(404)
+              .send("Error retrieving blog author information");
+          } else {
+            results.map((index) => {
+              // console.log(index , "index of the thing")
+              allInfoArr.push(index);
+            });
+            getBlogDetails();
+          }
+        }
+      );
+    };
+    getAuthData();
+  }),
+
+  (exports.bookmarkNewPost = async function (req, res) {
+    let bookmarkedPostId = req.params.id1;
+    let userId = req.params.id2;
+    let passOrFail = null;
+    let resToSend = null;
+
+    let finalArr = [];
+
+    const insertNewBookmark = async (arr) => {
+      let strToMatch = arr.toString();
+      if(strToMatch.indexOf(bookmarkedPostId) === -1 ){
+         finalArr = `${arr},${bookmarkedPostId}`;
+        console.log(finalArr,"final arr")
+        await connection.query(
+          `UPDATE account_info SET bookmarked_posts = "${finalArr}"
+          WHERE id = ${userId}`,
+          (error, results) => {
+            if (error) {
+              console.log(error, "Error bookmarking post for user : " + userId);
+              return res
+                .status(404)
+                .send("Error bookmarking post for user : " + userId);
+            } else {
+              console.log(
+                results,
+                "Successfully bookmarked post, these are the results"
+              );
+              return res
+                .status(202)
+                .send(
+                  `Successfully bookmarked post number ${bookmarkedPostId} for at user id ${userId}`
+                );
+            }
+          }
+        );
+      }else{
+        console.log("Duplicate Key" + bookmarkedPostId)
+      }
+    }
+
+    const getAllBookmarks = async () => {
+    await connection.query(
+      `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
+      async (error, results) => {
+        if(error){
+          console.log("error error error" + error);
+          return res.status(404).send("Failed to retrieve existing user bookmarks");
+          // passOrFail = 404;
+          // resToSend = error + " Failed to retrieve existing user bookmarks";
+        } else{
+          let postsToSort = results[0].bookmarked_posts;
+            var newVar = await postsToSort.split(',').map(Number);
+            // varForFunc = await postsToSort.split(',').map(Number);
+
+          // passOrFail = 200;
+          // resToSend = await newVar;
+          insertNewBookmark(newVar)
+        }
+        // console.log(varForFunc , "arr for func")
+        // return await res.status(passOrFail).send(resToSend);
+      },
+    );
+    }
+    getAllBookmarks();
+
+    // await connection.query(
+    //   `UPDATE account_info SET bookmarked_posts = ${bookmarkedPostId}
+    //           WHERE id = ${userId}`,
+    //   (error, results) => {
+    //     if (error) {
+    //       console.log(error, "Error bookmarking post for user : " + userId);
+    //       return res
+    //         .status(404)
+    //         .send("Error bookmarking post for user : " + userId);
+    //     } else {
+    //       console.log(
+    //         results,
+    //         "Successfully bookmarked post, these are the results"
+    //       );
+    //       return res
+    //         .status(202)
+    //         .send(
+    //           `Successfully bookmarked post number ${bookmarkedPostId} for at user id ${userId}`
+    //         );
+    //     }
+    //   }
+    // );
+  }),
+  (exports.getBookmarkedPosts = async function (req, res) {
+    // var userId = req.params.id2;
+
+    console.log(req, "request for fetching blog posts");
+  }),
+  (exports.removeBookmarkedPost = async function (req, res) {
+    // var userId = req.params.id2;
+
+    console.log(req, "request for fetching blog posts");
+  })(
+    (exports.addLike = async function (req, res) {
+      var numOflikesToAdd = req.params.id1;
+      var postId = req.params.id2;
+      var postTitle = req.params.id3;
+      var addLikeQuery = `UPDATE user_posts SET blog_likes=${numOflikesToAdd} WHERE user_id=${postId} AND post_title="${postTitle}"`;
+      connection.query(addLikeQuery, (error, results) => {
+        if (error) {
+          return console.log(error);
+        } else if (results.length === 0) {
+          res.status(404).send(error);
+        } else {
+          console.log(results, "results of adding likes to table");
+          res.status(200).send(results);
+        }
+      });
+    })
+  ),
   (exports.deleteUserPost = async function (req, res) {
     console.log("requuuuueeeest for delete", req);
     const query = `DELETE FROM user_posts WHERE id=${req.params.id1}`;
