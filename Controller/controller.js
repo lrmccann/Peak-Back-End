@@ -10,7 +10,7 @@ var connectionInfo = mysql.createConnection({
   user: mysqlConfig.userName,
   password: mysqlConfig.passowrd,
   insecureAuth: true,
-  multipleStatements: true
+  multipleStatements: true,
 });
 
 if (process.env.JAWSDB_URL) {
@@ -42,6 +42,14 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
   this.commentBody = commentBody;
   this.commentRank = commentRank;
   this.joinDate = joinDate;
+}
+
+function createObjForBookmarkedPosts(postId, postTitle, blogImg, publishDate, blogAuth){
+  this.postId = postId;
+  this.postTitle = postTitle;
+  this.blogImg = blogImg;
+  this.publishDate = publishDate;
+  this.blogAuth = blogAuth;
 }
 
 // controller methods for account-info
@@ -90,21 +98,17 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
     });
   }),
   (exports.fetchUserInfo = async function (req, res) {
-    // console.log(req, "ddeeeRequest")
     var userId = await req.params.id1;
     var sqlAccountInfo = `SELECT * FROM account_info WHERE id = ${userId}`;
     connection.query(sqlAccountInfo, (error, results) => {
       if (error) {
         res.status(404).send(error);
       } else {
-        // console.log(results)
         let toSend = null;
-
         results.map((index) => {
           toSend = index;
         });
         res.status(200).send(toSend);
-        // console.log(toSend, "send object to fe")
       }
     });
   }),
@@ -114,7 +118,7 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
       if (error) {
         return console.log(error);
       } else {
-        // console.log(results)
+        return
       }
     });
   }),
@@ -151,7 +155,6 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
             "We're having some trouble loading this right now, please try again later"
           );
       } else {
-        // console.log(results, "results for display top comments");
         res.status(202).send(results);
       }
     });
@@ -254,7 +257,6 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
               .send("Error retrieving blog author information");
           } else {
             results.map((index) => {
-              // console.log(index , "index of the thing")
               allInfoArr.push(index);
             });
             getBlogDetails();
@@ -264,34 +266,24 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
     };
     getAuthData();
   }),
-
   (exports.bookmarkNewPost = async function (req, res) {
     let bookmarkedPostId = req.params.id1;
     let userId = req.params.id2;
-    let passOrFail = null;
-    let resToSend = null;
-
     let finalArr = [];
 
     const insertNewBookmark = async (arr) => {
       let strToMatch = arr.toString();
-      if(strToMatch.indexOf(bookmarkedPostId) === -1 ){
-         finalArr = `${arr},${bookmarkedPostId}`;
-        console.log(finalArr,"final arr")
+      if (strToMatch.indexOf(bookmarkedPostId) === -1) {
+        finalArr = `${arr},${bookmarkedPostId}`;
         await connection.query(
           `UPDATE account_info SET bookmarked_posts = "${finalArr}"
           WHERE id = ${userId}`,
           (error, results) => {
             if (error) {
-              console.log(error, "Error bookmarking post for user : " + userId);
               return res
-                .status(404)
-                .send("Error bookmarking post for user : " + userId);
+                .status(400)
+                .send("Error bookmarking post for user : " + userId + " " + error);
             } else {
-              console.log(
-                results,
-                "Successfully bookmarked post, these are the results"
-              );
               return res
                 .status(202)
                 .send(
@@ -300,69 +292,137 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
             }
           }
         );
-      }else{
-        console.log("Duplicate Key" + bookmarkedPostId)
+      } else {
+        res.status(350).send(`Blog already bookmarked for user ${userId}`);
       }
-    }
-
+    };
     const getAllBookmarks = async () => {
-    await connection.query(
-      `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
-      async (error, results) => {
-        if(error){
-          console.log("error error error" + error);
-          return res.status(404).send("Failed to retrieve existing user bookmarks");
-          // passOrFail = 404;
-          // resToSend = error + " Failed to retrieve existing user bookmarks";
-        } else{
-          let postsToSort = results[0].bookmarked_posts;
-            var newVar = await postsToSort.split(',').map(Number);
-            // varForFunc = await postsToSort.split(',').map(Number);
-
-          // passOrFail = 200;
-          // resToSend = await newVar;
-          insertNewBookmark(newVar)
+      await connection.query(
+        `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
+        async (error, results) => {
+          if (error) {
+            console.log("error error error" + error);
+            return res
+              .status(300)
+              .send("Failed to retrieve existing user bookmarks");
+          } else {
+            let postsToSort = results[0].bookmarked_posts;
+            var newVar = await postsToSort.split(",").map(Number);
+            insertNewBookmark(newVar);
+          }
         }
-        // console.log(varForFunc , "arr for func")
-        // return await res.status(passOrFail).send(resToSend);
-      },
-    );
-    }
+      );
+    };
     getAllBookmarks();
-
-    // await connection.query(
-    //   `UPDATE account_info SET bookmarked_posts = ${bookmarkedPostId}
-    //           WHERE id = ${userId}`,
-    //   (error, results) => {
-    //     if (error) {
-    //       console.log(error, "Error bookmarking post for user : " + userId);
-    //       return res
-    //         .status(404)
-    //         .send("Error bookmarking post for user : " + userId);
-    //     } else {
-    //       console.log(
-    //         results,
-    //         "Successfully bookmarked post, these are the results"
-    //       );
-    //       return res
-    //         .status(202)
-    //         .send(
-    //           `Successfully bookmarked post number ${bookmarkedPostId} for at user id ${userId}`
-    //         );
-    //     }
-    //   }
-    // );
   }),
   (exports.getBookmarkedPosts = async function (req, res) {
-    // var userId = req.params.id2;
+    var userId = req.params.id1;
+    var blogObjArray = [];
+    const getAllPostInfo = async (arr) => {
+      var arrLength = arr.length;
+      await arr.map(async (index) => {
+      await connection.query(
+        `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username , account_info.bookmarked_posts
+          FROM user_posts, account_info
+          WHERE user_posts.id = ${index} AND account_info.id = user_posts.user_id`,
+          async (error, results) => {
+            if (error) {
+              return res.status(400).send("Error getting data").t;
+            } 
+            else {
+              blogObjArray.push(...results);
+              // console.log(blogObjArray)
+            //   results.map((index) => {
+            //   var blogInfoObj = new createObjForBookmarkedPosts(
+            //     `${index.id}`,
+            //     `${index.post_title}`,
+            //     `${index.blog_img}`,
+            //     `${index.publish_date}`,
+            //     `${index.username}`
+            //   );
+            //   blogObjArray.push(blogInfoObj);
+            // })
+            //   console.log(blogObjArray)
+            }
+          }
+      )
+    });
+    if(blogObjArray.length !== arrLength){
+      setTimeout(async () => {
+        return await res.status(200).send(blogObjArray)
 
-    console.log(req, "request for fetching blog posts");
+      }, 2 * 10)
+    }else{
+    return await res.status(200).send(blogObjArray)
+    }
+    }
+    const snagBookmarkArr = async () => {
+    await connection.query(
+      `SELECT account_info.bookmarked_posts
+      FROM account_info
+      WHERE id=${userId}` , 
+      async (error, results) => {
+        if (error) {
+          console.log("error error error" + error);
+        } else {
+          let postsToFetch = results[0].bookmarked_posts;
+          let newArr = await postsToFetch.split(",").map(Number);
+          getAllPostInfo(newArr)
+        }
+      } 
+    )
+    }
+    snagBookmarkArr();
   }),
   (exports.removeBookmarkedPost = async function (req, res) {
-    // var userId = req.params.id2;
+    var postId = await req.params.id1;
+    var userId = await req.params.id2;
+    var uniqueArray = [];
 
-    console.log(req, "request for fetching blog posts");
-  })(
+    const deleteBookmark = async (arr) => {
+        var index = arr.indexOf(postId);
+          if (index === -1) {
+            arr.splice(index, 1);
+            uniqueArray = await (arr.toString());
+                      await connection.query(
+                        `UPDATE account_info SET bookmarked_posts = "${uniqueArray}"
+                          WHERE id = ${userId}`,
+                        async (error, results) => {
+                          if (error) {
+                            console.log("error error error" + error);
+                            return res
+                              .status(300)
+                              .send("Failed to remove bookmarked post");
+                          } else {
+                            return res
+                              .status(200)
+                              .send("Successfully removed bookmarked blog");
+                          }
+                        }
+                      );
+          }else{
+            return console.log("Failed because blog was not bookmarked")
+          }
+    }
+
+    const getBookmarkedPosts = async () => {
+      await connection.query(
+        `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
+        async (error, results) => {
+          if (error) {
+            return res
+              .status(400)
+              .send("Failed to retrieve existing user bookmarks for bookmark removal");
+          } else {
+            let postsToSort = results[0].bookmarked_posts;
+            var bookmarkedPosts = await postsToSort.split(",").map(Number);
+            deleteBookmark(bookmarkedPosts);
+          }
+        }
+      );
+    }
+    getBookmarkedPosts();
+  }),
     (exports.addLike = async function (req, res) {
       var numOflikesToAdd = req.params.id1;
       var postId = req.params.id2;
@@ -378,8 +438,7 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
           res.status(200).send(results);
         }
       });
-    })
-  ),
+    }),
   (exports.deleteUserPost = async function (req, res) {
     console.log("requuuuueeeest for delete", req);
     const query = `DELETE FROM user_posts WHERE id=${req.params.id1}`;
@@ -396,7 +455,6 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
     });
   }),
   // routes for user comments
-
   (exports.postNewComment = async function (req, res) {
     console.log("requuuuueeeest", req);
     console.log("respoooonnnssseee", res);
@@ -407,7 +465,7 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
       if (error) {
         return console.log(error);
       } else {
-        // console.log(results)
+        return
       }
     });
   }),

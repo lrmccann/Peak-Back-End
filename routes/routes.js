@@ -18,13 +18,18 @@ module.exports = function(app) {
     app.route('/user-posts')
     .get(getController.getAllPosts);
 
+
+    // id1 = id of post ; id2 = user id
     app.route('/user-bookmarks/:id1/:id2')
     .put(getController.bookmarkNewPost)
-    .get(getController.getBookmarkedPosts)
     .delete(getController.removeBookmarkedPost);
-    // id1 is the num of likes to add
-    // id2 is the id of the post
-    // id3 is the post title 
+
+    // id1 = user id
+    app.route('/user-all-bookmarks/:id1')
+    .get(getController.getBookmarkedPosts);
+
+
+    // id1 = like + 1; id2 = post id; id3 = post title
     app.route("/numOfLikesForPost/:id1/:id2/:id3")
     .put(getController.addLike);
 
