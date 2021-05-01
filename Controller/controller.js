@@ -44,13 +44,28 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
   this.joinDate = joinDate;
 }
 
-function createObjForBookmarkedPosts(postId, postTitle, blogImg, publishDate, blogAuth){
-  this.postId = postId;
-  this.postTitle = postTitle;
-  this.blogImg = blogImg;
-  this.publishDate = publishDate;
-  this.blogAuth = blogAuth;
-}
+// function createObjForBookmarkedPosts(postId, postTitle, blogImg, publishDate, blogAuth){
+//   this.postId = postId;
+//   this.postTitle = postTitle;
+//   this.blogImg = blogImg;
+//   this.publishDate = publishDate;
+//   this.blogAuth = blogAuth;
+// }
+
+const getUserBookmarks = async (userId, myCallback) => {
+  await connection.query(
+    `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
+    (error, results) => {
+      if (error) {
+        console.log("error error error" + error);
+      } else {
+        var postsToFetch = results[0].bookmarked_posts;
+        var newArr = postsToFetch.split(",").map(Number);
+        return myCallback(newArr);
+      }
+    }
+  );
+};
 
 // controller methods for account-info
 (exports.createNewUser = async function (req, res) {
@@ -118,7 +133,7 @@ function createObjForBookmarkedPosts(postId, postTitle, blogImg, publishDate, bl
       if (error) {
         return console.log(error);
       } else {
-        return
+        return;
       }
     });
   }),
@@ -127,7 +142,6 @@ function createObjForBookmarkedPosts(postId, postTitle, blogImg, publishDate, bl
     console.log("respoooonnnssseee", res);
   }),
   // routes for user-posts
-
   (exports.displayTopPosts = async function (req, res) {
     var userId = await req.params.id1;
     var query = `SELECT * FROM user_posts WHERE user_id=${userId} ORDER BY blog_likes DESC`;
@@ -270,7 +284,6 @@ function createObjForBookmarkedPosts(postId, postTitle, blogImg, publishDate, bl
     let bookmarkedPostId = req.params.id1;
     let userId = req.params.id2;
     let finalArr = [];
-
     const insertNewBookmark = async (arr) => {
       let strToMatch = arr.toString();
       if (strToMatch.indexOf(bookmarkedPostId) === -1) {
@@ -282,7 +295,9 @@ function createObjForBookmarkedPosts(postId, postTitle, blogImg, publishDate, bl
             if (error) {
               return res
                 .status(400)
-                .send("Error bookmarking post for user : " + userId + " " + error);
+                .send(
+                  "Error bookmarking post for user : " + userId + " " + error
+                );
             } else {
               return res
                 .status(202)
@@ -296,149 +311,93 @@ function createObjForBookmarkedPosts(postId, postTitle, blogImg, publishDate, bl
         res.status(350).send(`Blog already bookmarked for user ${userId}`);
       }
     };
-    const getAllBookmarks = async () => {
-      await connection.query(
-        `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
-        async (error, results) => {
-          if (error) {
-            console.log("error error error" + error);
-            return res
-              .status(300)
-              .send("Failed to retrieve existing user bookmarks");
-          } else {
-            let postsToSort = results[0].bookmarked_posts;
-            var newVar = await postsToSort.split(",").map(Number);
-            insertNewBookmark(newVar);
-          }
-        }
-      );
-    };
-    getAllBookmarks();
+    getUserBookmarks(userId, insertNewBookmark);
   }),
   (exports.getBookmarkedPosts = async function (req, res) {
-    var userId = req.params.id1;
+    var userId = await req.params.id1;
     var blogObjArray = [];
-    const getAllPostInfo = async (arr) => {
+    async function whatever(arr) {
       var arrLength = arr.length;
       await arr.map(async (index) => {
-      await connection.query(
-        `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username , account_info.bookmarked_posts
+        await connection.query(
+          `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username , account_info.bookmarked_posts
           FROM user_posts, account_info
           WHERE user_posts.id = ${index} AND account_info.id = user_posts.user_id`,
           async (error, results) => {
             if (error) {
               return res.status(400).send("Error getting data").t;
-            } 
-            else {
+            } else {
               blogObjArray.push(...results);
               // console.log(blogObjArray)
-            //   results.map((index) => {
-            //   var blogInfoObj = new createObjForBookmarkedPosts(
-            //     `${index.id}`,
-            //     `${index.post_title}`,
-            //     `${index.blog_img}`,
-            //     `${index.publish_date}`,
-            //     `${index.username}`
-            //   );
-            //   blogObjArray.push(blogInfoObj);
-            // })
-            //   console.log(blogObjArray)
+              //   results.map((index) => {
+              //   var blogInfoObj = new createObjForBookmarkedPosts(
+              //     `${index.id}`,
+              //     `${index.post_title}`,
+              //     `${index.blog_img}`,
+              //     `${index.publish_date}`,
+              //     `${index.username}`
+              //   );
+              //   blogObjArray.push(blogInfoObj);
+              // })
             }
           }
-      )
-    });
-    if(blogObjArray.length !== arrLength){
-      setTimeout(async () => {
-        return await res.status(200).send(blogObjArray)
-
-      }, 2 * 10)
-    }else{
-    return await res.status(200).send(blogObjArray)
+        );
+      });
+      if (blogObjArray.length !== arrLength) {
+        setTimeout(async () => {
+          return await res.status(200).send(blogObjArray);
+        }, 2 * 10);
+      } else {
+        return await res.status(200).send(blogObjArray);
+      }
     }
-    }
-    const snagBookmarkArr = async () => {
-    await connection.query(
-      `SELECT account_info.bookmarked_posts
-      FROM account_info
-      WHERE id=${userId}` , 
-      async (error, results) => {
-        if (error) {
-          console.log("error error error" + error);
-        } else {
-          let postsToFetch = results[0].bookmarked_posts;
-          let newArr = await postsToFetch.split(",").map(Number);
-          getAllPostInfo(newArr)
-        }
-      } 
-    )
-    }
-    snagBookmarkArr();
+    getUserBookmarks(userId, whatever);
   }),
   (exports.removeBookmarkedPost = async function (req, res) {
     var postId = await req.params.id1;
     var userId = await req.params.id2;
     var uniqueArray = [];
-
     const deleteBookmark = async (arr) => {
-        var index = arr.indexOf(postId);
-          if (index === -1) {
-            arr.splice(index, 1);
-            uniqueArray = await (arr.toString());
-                      await connection.query(
-                        `UPDATE account_info SET bookmarked_posts = "${uniqueArray}"
+      var index = arr.indexOf(postId);
+      if (index === -1) {
+        arr.splice(index, 1);
+        uniqueArray = await arr.toString();
+        await connection.query(
+          `UPDATE account_info SET bookmarked_posts = "${uniqueArray}"
                           WHERE id = ${userId}`,
-                        async (error, results) => {
-                          if (error) {
-                            console.log("error error error" + error);
-                            return res
-                              .status(300)
-                              .send("Failed to remove bookmarked post");
-                          } else {
-                            return res
-                              .status(200)
-                              .send("Successfully removed bookmarked blog");
-                          }
-                        }
-                      );
-          }else{
-            return console.log("Failed because blog was not bookmarked")
+          async (error, results) => {
+            if (error) {
+              console.log("error error error" + error);
+              return res.status(300).send("Failed to remove bookmarked post");
+            } else {
+              return res
+                .status(200)
+                .send("Successfully removed bookmarked blog");
+            }
           }
-    }
-
-    const getBookmarkedPosts = async () => {
-      await connection.query(
-        `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
-        async (error, results) => {
-          if (error) {
-            return res
-              .status(400)
-              .send("Failed to retrieve existing user bookmarks for bookmark removal");
-          } else {
-            let postsToSort = results[0].bookmarked_posts;
-            var bookmarkedPosts = await postsToSort.split(",").map(Number);
-            deleteBookmark(bookmarkedPosts);
-          }
-        }
-      );
-    }
-    getBookmarkedPosts();
+        );
+      } else {
+        return console.log("Failed because blog was not bookmarked");
+      }
+    };
+    getUserBookmarks(userId, deleteBookmark);
   }),
-    (exports.addLike = async function (req, res) {
-      var numOflikesToAdd = req.params.id1;
-      var postId = req.params.id2;
-      var postTitle = req.params.id3;
-      var addLikeQuery = `UPDATE user_posts SET blog_likes=${numOflikesToAdd} WHERE user_id=${postId} AND post_title="${postTitle}"`;
-      connection.query(addLikeQuery, (error, results) => {
-        if (error) {
-          return console.log(error);
-        } else if (results.length === 0) {
-          res.status(404).send(error);
-        } else {
-          console.log(results, "results of adding likes to table");
-          res.status(200).send(results);
-        }
-      });
-    }),
+  (exports.addLike = async function (req, res) {
+    var numOflikesToAdd = req.params.id1;
+    var postId = req.params.id2;
+    var postTitle = req.params.id3;
+    var addLikeQuery = `UPDATE user_posts SET blog_likes=${numOflikesToAdd} WHERE user_id=${postId} AND post_title="${postTitle}"`;
+    connection.query(addLikeQuery, (error, results) => {
+      if (error) {
+        return console.log(error);
+      } else if (results.length === 0) {
+        res.status(404).send(error);
+      } else {
+        console.log(results, "results of adding likes to table");
+        res.status(200).send(results);
+      }
+    });
+  }),
   (exports.deleteUserPost = async function (req, res) {
     console.log("requuuuueeeest for delete", req);
     const query = `DELETE FROM user_posts WHERE id=${req.params.id1}`;
@@ -465,7 +424,7 @@ function createObjForBookmarkedPosts(postId, postTitle, blogImg, publishDate, bl
       if (error) {
         return console.log(error);
       } else {
-        return
+        return;
       }
     });
   }),
