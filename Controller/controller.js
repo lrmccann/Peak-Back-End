@@ -66,7 +66,24 @@ const getUserBookmarks = async (userId, myCallback) => {
     }
   );
 };
-
+(exports.addPostView = async function(req, res) {
+  var postId = req.params.id1;
+  console.log(postId)
+  await connection.query(
+    `UPDATE user_posts 
+    SET post_views = post_views + 1 
+    WHERE id=${postId}`,
+    (error, results) => {
+      if(error){
+        console.log('Failed to update post views');
+        res.status(350).send('Failed to update post views');
+      }else{
+        console.log('Successfully updated post views');
+        res.status(200).send('Successfully updated post views');
+      }
+    }
+  )
+}),
 // controller methods for account-info
 (exports.createNewUser = async function (req, res) {
   var firstName = await req.body.firstName;
@@ -196,7 +213,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   });
 }),
   (exports.getAllPosts = async function (req, res) {
-    var getPosts = `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.post_body , user_posts.blog_img , user_posts.blog_likes , user_posts.publish_date , account_info.username
+    var getPosts = `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.post_body , user_posts.blog_img , user_posts.post_views , user_posts.blog_likes , user_posts.publish_date , account_info.username
                     FROM user_posts, account_info
                     WHERE user_posts.user_id = account_info.id`;
     connection.query(getPosts, async (error, results) => {
@@ -280,6 +297,14 @@ const getUserBookmarks = async (userId, myCallback) => {
     };
     getAuthData();
   }),
+  (exports.bookmarksForHome = async function (req, res) {
+    let userId = req.params.id1;
+    const sendToSite = (arr) => {
+      res.status(200).send(arr);
+    }
+    getUserBookmarks(userId, sendToSite)
+  }),
+
   (exports.bookmarkNewPost = async function (req, res) {
     let bookmarkedPostId = req.params.id1;
     let userId = req.params.id2;
@@ -307,9 +332,10 @@ const getUserBookmarks = async (userId, myCallback) => {
             }
           }
         );
-      } else {
-        res.status(350).send(`Blog already bookmarked for user ${userId}`);
       }
+      //  else {
+      //   res.status(350).send(`Blog already bookmarked for user ${userId}`);
+      // }
     };
     getUserBookmarks(userId, insertNewBookmark);
   }),
@@ -320,7 +346,7 @@ const getUserBookmarks = async (userId, myCallback) => {
       var arrLength = arr.length;
       await arr.map(async (index) => {
         await connection.query(
-          `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username , account_info.bookmarked_posts
+          `SELECT user_posts.id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username 
           FROM user_posts, account_info
           WHERE user_posts.id = ${index} AND account_info.id = user_posts.user_id`,
           async (error, results) => {

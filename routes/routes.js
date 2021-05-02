@@ -18,6 +18,9 @@ module.exports = function(app) {
     app.route('/user-posts')
     .get(getController.getAllPosts);
 
+    app.route('/post-views/:id1')
+    .put(getController.addPostView);
+
 
     // id1 = id of post ; id2 = user id
     app.route('/user-bookmarks/:id1/:id2')
@@ -27,6 +30,9 @@ module.exports = function(app) {
     // id1 = user id
     app.route('/user-all-bookmarks/:id1')
     .get(getController.getBookmarkedPosts);
+
+    app.route('/user-bookmarks-home/:id1')
+    .get(getController.bookmarksForHome);
 
 
     // id1 = like + 1; id2 = post id; id3 = post title
