@@ -11,9 +11,15 @@ const PORT = process.env.PORT || 3005;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// const path = require('path');
+
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname+'/client/build/index.html'));
+//   });
+//   app.use(express.static(path.join(__dirname, 'client/build')));
+
 app.use(express.static('public'));
 
-app.use(cors());
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin",  "*");
@@ -23,10 +29,13 @@ app.use((req, res, next) => {
     next();
   });
 
-  if(process.env.JAWSDB_URL){
+  app.use(cors());
+
+  if(process.env.NODE_ENV === "production"){
   const startMysqlServer = async () => {
     console.error('CONNECTING');
-    connection = mysql.createConnection(process.env.JAWSDB_URL);
+    // connection = mysql.createConnection(process.env.JAWSDB_URL);
+    connection = mysql.createConnection(jawsdbConfig);
     await connection.connect(function(err){
         if(err){
             console.error('CONNECTION FAILED' , err.code);
@@ -42,7 +51,7 @@ app.use((req, res, next) => {
     })
 }
 startMysqlServer();
-  }else if(process.env.JAWSDB_URL === null){
+  }else{
     function startMysqlServerLocalHost () {
 var connection = mysql.createConnection({
     host :  mysqlConfig.host,
@@ -76,8 +85,6 @@ app.get('/' , (req , res) => {
 })
 
 routes(app);
-
-
 
 app.listen(PORT);
 
