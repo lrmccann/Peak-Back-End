@@ -38,8 +38,8 @@ app.use((req, res, next) => {
   if(process.env.NODE_ENV === "production"){
   const startMysqlServer = async () => {
     console.error('CONNECTING');
-    // connection = mysql.createConnection(process.env.JAWSDB_URL);
-    connection = mysql.createConnection(jawsdbConfig);
+    connection = mysql.createConnection(process.env.JAWSDB_URL);
+    // connection = mysql.createConnection(jawsdbConfig);
     await connection.connect(function(err){
         if(err){
             console.error('CONNECTION FAILED' , err.code);
