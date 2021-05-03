@@ -13,7 +13,7 @@ const cors = require("cors");
 
 app.use(express.static('public'));
 
-console.log(process, "here")
+console.log(process.env, "here")
 
 app.use(cors());
 
