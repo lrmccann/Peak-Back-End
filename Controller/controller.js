@@ -61,9 +61,12 @@ const getUserBookmarks = async (userId, myCallback) => {
       } else {
         var postsToFetch = results[0].bookmarked_posts;
         console.log(postsToFetch, "find me here");
-        // if(postsToFetch)
-        var newArr = postsToFetch.split(",").map(Number);
-        return myCallback(newArr);
+        if(postsToFetch === null){
+          return;
+        }else{
+          var newArr = postsToFetch.split(",").map(Number);
+          return myCallback(newArr);
+        }
       }
     }
   );
