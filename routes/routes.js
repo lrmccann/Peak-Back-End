@@ -1,7 +1,7 @@
 const router = require('express').Router();
 
 
-module.exports = function(app) {
+// module.exports = function(app) {
     const getController = require("../Controller/controller");
 
     router.route('/account-info')
@@ -57,4 +57,5 @@ module.exports = function(app) {
     
     router.route('/user-comments/:id1')
     .get(getController.loadAllCommentsForPost);
-};
+// };
+module.exports = router;
