@@ -60,6 +60,8 @@ const getUserBookmarks = async (userId, myCallback) => {
         console.log("error error error" + error);
       } else {
         var postsToFetch = results[0].bookmarked_posts;
+        console.log(postsToFetch, "find me here");
+        // if(postsToFetch)
         var newArr = postsToFetch.split(",").map(Number);
         return myCallback(newArr);
       }
