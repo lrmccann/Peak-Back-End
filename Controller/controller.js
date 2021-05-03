@@ -81,7 +81,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     (error, results) => {
       if(error){
         console.log('Failed to update post views');
-        res.status(350).send('Failed to update post views');
+        res.status(400).send('Failed to update post views');
       }else{
         console.log('Successfully updated post views');
         res.status(200).send('Successfully updated post views');
