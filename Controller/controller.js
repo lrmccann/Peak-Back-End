@@ -305,7 +305,11 @@ const getUserBookmarks = async (userId, myCallback) => {
   (exports.bookmarksForHome = async function (req, res) {
     let userId = req.params.id1;
     const sendToSite = (arr) => {
-      return res.status(200).send(arr);
+      if(arr.length === 0){
+        res.status(205).send("No bookmarks in arr");
+      }else{
+        res.status(200).send(arr);
+      }
     }
     getUserBookmarks(userId, sendToSite)
   }),
