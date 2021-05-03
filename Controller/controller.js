@@ -300,7 +300,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   (exports.bookmarksForHome = async function (req, res) {
     let userId = req.params.id1;
     const sendToSite = (arr) => {
-      res.status(200).send(arr);
+      return res.status(200).send(arr);
     }
     getUserBookmarks(userId, sendToSite)
   }),
