@@ -436,7 +436,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   (exports.getLikedPosts = async function (req, res) {
     var userId = req.params.id1;
     await connection.query(
-      `SELECT liked_posts FROM account_info WHERE id=${userId}`, 
+      `SELECT account_info.liked_posts FROM account_info WHERE id=${userId}`, 
       (error, results) => {
       if (error) {
         console.log(error);
