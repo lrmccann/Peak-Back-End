@@ -64,16 +64,16 @@ const getUserBookmarks = async (userId, myCallback) => {
 };
 // Controller funcs for Login/Signup
 (exports.createNewUser = async function (req, res) {
-  var firstName = req.body.firstName;
-  var lastName = req.body.lastName;
-  var username = req.body.username;
-  var email = req.body.email;
-  var password = req.body.password;
-  var age = req.body.age;
-  var city = req.body.city;
-  var zipcode = req.body.zip;
-  var jobTitle = req.body.jobTitle;
-  var registerDate = req.body.date;
+  const firstName = req.body.firstName;
+  const lastName = req.body.lastName;
+  const username = req.body.username;
+  const email = req.body.email;
+  const password = req.body.password;
+  const age = req.body.age;
+  const city = req.body.city;
+  const zipcode = req.body.zip;
+  const jobTitle = req.body.jobTitle;
+  const registerDate = req.body.date;
   await connection.query(`INSERT INTO account_info(first_name , last_name , username , email , password , age , city , zipcode , job_title , register_date) 
   VALUES("${firstName}" , "${lastName}" , "${username}" , "${email}" , "${password}" , ${age} , "${city}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`
   ,
@@ -88,8 +88,8 @@ const getUserBookmarks = async (userId, myCallback) => {
   });
 }),
   (exports.authenticateUser = async function (req, res) {
-    var username = req.params.id1;
-    var password = req.params.id2;
+    const username = req.params.id1;
+    const password = req.params.id2;
     await connection.query(`SELECT * FROM account_info WHERE username = '${username}' AND password = '${password}'`,
      (error, results) => {
       if (error) {
@@ -148,9 +148,9 @@ const getUserBookmarks = async (userId, myCallback) => {
   //
   // Controller Funcs for Homepage/BlogOps Component
   (exports.addLike = async function (req, res) {
-    var numOflikesToAdd = req.params.id1;
-    var postId = req.params.id2;
-    var postTitle = req.params.id3;
+    const numOflikesToAdd = req.params.id1;
+    const postId = req.params.id2;
+    const postTitle = req.params.id3;
     connection.query(`UPDATE user_posts SET blog_likes=${numOflikesToAdd} WHERE id=${postId} AND post_title="${postTitle}"`,
      (error, results) => {
       if (error) {
@@ -163,7 +163,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     });
   }),
   (exports.getLikedPosts = async function (req, res) {
-    var userId = req.params.id1;
+    const userId = req.params.id1;
     await connection.query(
       `SELECT account_info.liked_posts FROM account_info WHERE id=${userId}`,
       (error, results) => {
@@ -172,20 +172,20 @@ const getUserBookmarks = async (userId, myCallback) => {
         } else if (results.length === 0) {
           res.status(404).send(error);
         } else {
-          var likedPosts = results[0].liked_posts;
+          let likedPosts = results[0].liked_posts;
           if (likedPosts === null) {
             res
               .status(400)
               .send("Error loading your likes array, please refresh");
           } else {
-            var likesArr = likedPosts.split(",").map(Number);
+            let likesArr = likedPosts.split(",").map(Number);
             res.status(200).send(likesArr);
           }
         }
       });
   }),
   (exports.bookmarksForHome = async function (req, res) {
-    let userId = req.params.id1;
+    const userId = req.params.id1;
     const sendToSite = (arr) => {
       if (arr.length === 0) {
         res.status(205).send("No bookmarks in arr");
@@ -196,16 +196,16 @@ const getUserBookmarks = async (userId, myCallback) => {
     getUserBookmarks(userId, sendToSite);
   }),
   (exports.bookmarkNewPost = async function (req, res) {
-    let bookmarkedPostId = req.params.id1;
-    let userId = req.params.id2;
-    let finalArr = [];
+    const bookmarkedPostId = req.params.id1;
+    const userId = req.params.id2;
+    const finalArr = [];
     const insertNewBookmark = async (arr) => {
       let strToMatch = arr.toString();
       if (strToMatch.indexOf(bookmarkedPostId) === -1) {
         finalArr = `${arr},${bookmarkedPostId}`;
         await connection.query(
           `UPDATE account_info SET bookmarked_posts = "${finalArr}"
-        WHERE id = ${userId}`,
+          WHERE id = ${userId}`,
           (error) => {
             if (error) {
               return res
@@ -227,9 +227,9 @@ const getUserBookmarks = async (userId, myCallback) => {
     getUserBookmarks(userId, insertNewBookmark);
   }),
   (exports.removeBookmarkedPost = async function (req, res) {
-    var postId = await req.params.id1;
-    var userId = await req.params.id2;
-    var uniqueArray = [];
+    const postId = req.params.id1;
+    const userId = req.params.id2;
+    const uniqueArray = [];
     const deleteBookmark = async (arr) => {
       var index = arr.indexOf(postId);
       if (index === -1) {
@@ -258,9 +258,9 @@ const getUserBookmarks = async (userId, myCallback) => {
   // Controller Funcs for IndepthBlogPage
   (exports.getAllInfoOnPost = async function (req, res) {
     // Post ID of requested blog page
-    var requestId = req.params.id1;
+    const requestId = req.params.id1;
     // Array to store results from each query
-    let allInfoArr = [];
+    const allInfoArr = [];
     // Gets all data for comments related to post, creates object before pushing to array, call back to prev func
     const getCommentData = async () => {
       await connection.query(
@@ -325,9 +325,9 @@ const getUserBookmarks = async (userId, myCallback) => {
     getAuthData();
   }),
   (exports.postNewComment = async function (req, res) {
-    let userId = req.params.id1;
-    let postId = req.params.id2;
-    let commentBody = req.params.id3;
+    const userId = req.params.id1;
+    const postId = req.params.id2;
+    const commentBody = req.params.id3;
     await connection.query(
       `INSERT INTO user_comments(user_id , post_id , comment_body  )
     VALUES( ${userId} , ${postId} , "${commentBody}")`,
@@ -343,7 +343,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   //
   // Controller Funcs for account page
   (exports.displayTopPosts = async function (req, res) {
-    var userId = await req.params.id1;
+    const userId = await req.params.id1;
     connection.query(`SELECT * FROM user_posts WHERE user_id=${userId} ORDER BY blog_likes DESC`,
      (error, results) => {
       if (error) {
@@ -358,7 +358,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     });
   }),
   (exports.displayTopComments = async function (req, res) {
-    var userId = await req.params.id1;
+    const userId = await req.params.id1;
     connection.query(`SELECT * FROM user_comments WHERE user_id=${userId}`,
      (error, results) => {
       if (error) {
@@ -373,7 +373,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     });
   }),
   (exports.fetchUserInfo = async function (req, res) {
-    var userId = await req.params.id1;
+    const userId = await req.params.id1;
     connection.query(`SELECT * FROM account_info WHERE id = ${userId}`,
      (error, results) => {
       if (error) {
@@ -390,11 +390,11 @@ const getUserBookmarks = async (userId, myCallback) => {
   //
   // Controller funcs for Navbar
   (exports.postNewBlog = async function (req, res) {
-    var imgHeader = await req.body.blogInfoToSend.imgHeaderToSend;
-    var blogTitle = await req.body.blogInfoToSend.blogTitleToSend;
-    var blogBody = await req.body.blogInfoToSend.blogBodyToSend;
-    var userIdToSend = await req.body.blogInfoToSend.userIdToSend;
-    connection.query(`INSERT INTO user_posts(user_id , post_title, post_body, blog_img, blog_likes) 
+    const imgHeader = req.body.blogInfoToSend.imgHeaderToSend;
+    const blogTitle = req.body.blogInfoToSend.blogTitleToSend;
+    const blogBody = req.body.blogInfoToSend.blogBodyToSend;
+    const userIdToSend = req.body.blogInfoToSend.userIdToSend;
+    await connection.query(`INSERT INTO user_posts(user_id , post_title, post_body, blog_img, blog_likes) 
     VALUES("${userIdToSend}", "${blogTitle}", "${blogBody}", "${imgHeader}", 0);`,
      (error, results) => {
       if (error) {
@@ -411,10 +411,10 @@ const getUserBookmarks = async (userId, myCallback) => {
   //
   // Controller funcs for Bookmarks Page
   (exports.getBookmarkedPosts = async function (req, res) {
-    var userId = await req.params.id1;
-    var blogObjArray = [];
+    const userId = req.params.id1;
+    const blogObjArray = [];
     async function whatever(arr) {
-      var arrLength = arr.length;
+      let arrLength = arr.length;
       await arr.map(async (index) => {
         await connection.query(
           `SELECT user_posts.id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username 
