@@ -9,9 +9,6 @@ const router = require('express').Router();
     .post(getController.createNewUser)
     .delete(getController.deleteAccount);
 
-    router.route('/user-details/:id1')
-    .get(getController.fetchUserInfo)
-
     router.route("/account-info-login/:id1/:id2")
     .get(getController.authenticateUser);
 
