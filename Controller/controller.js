@@ -383,6 +383,21 @@ const getUserBookmarks = async (userId, myCallback) => {
       }
     });
   }),
+  (exports.fetchUserInfo = async function (req, res) {
+    var userId = await req.params.id1;
+    var sqlAccountInfo = `SELECT * FROM account_info WHERE id = ${userId}`;
+    connection.query(sqlAccountInfo, (error, results) => {
+      if (error) {
+        res.status(404).send(error);
+      } else {
+        let toSend = null;
+        results.map((index) => {
+          toSend = index;
+        });
+        res.status(200).send(toSend);
+      }
+    });
+  }),
   //
   // Controller funcs for Navbar
   (exports.postNewBlog = async function (req, res) {
