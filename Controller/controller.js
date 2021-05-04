@@ -454,8 +454,8 @@ const getUserBookmarks = async (userId, myCallback) => {
     let postId = req.params.id2;
     let commentBody = req.params.id3;
     await connection.query(
-      `INSERT INTO user_comments(user_id , post_id , comment_body , comment_rank , publish_date )
-      VALUES(${userId} , ${postId} , "${commentBody}" , DEFAULT , CURRENT_DATE())`,
+      `INSERT INTO user_comments(user_id , post_id , comment_body  )
+      VALUES( ${userId} , ${postId} , "${commentBody}")`,
       (error, results) => {
         if(error){
           console.log(error);
