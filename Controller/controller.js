@@ -450,8 +450,24 @@ const getUserBookmarks = async (userId, myCallback) => {
   }),
   // routes for user comments
   (exports.postNewComment = async function (req, res) {
-    console.log("requuuuueeeest", req);
-    console.log("respoooonnnssseee", res);
+    let userId = req.params.id1;
+    let postId = req.params.id2;
+    let commentBody = req.params.id3;
+    await connection.query(
+      `INSERT INTO user_comments(user_id , post_id , comment_body)
+      VALUES(${userId} , ${postId} , "${commentBody}")`,
+      (error, results) => {
+        if(error){
+          console.log(error);
+          res.status(400).send("Failed to post comment");
+        }else{
+          console.log('success' , results);
+          res.status(200).send("Successfully posted new comment");
+        }
+      }
+    )
+    // console.log("requuuuueeeest", req);
+    // console.log("respoooonnnssseee", res);
   }),
   (exports.loadPreviewComments = async function (req, res) {
     var getAllComments = `SELECT * FROM user_comments`;
