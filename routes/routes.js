@@ -5,12 +5,9 @@ const router = require('express').Router();
     const getController = require("../Controller/controller");
 
     router.route('/account-info')
-    .get(getController.getAllUsers)
     .post(getController.createNewUser)
     .delete(getController.deleteAccount);
 
-    router.route('/user-details/:id1')
-    .get(getController.fetchUserInfo)
 
     router.route("/account-info-login/:id1/:id2")
     .get(getController.authenticateUser);
@@ -56,11 +53,8 @@ const router = require('express').Router();
     router.route('/user-comments/:id1')
     .get(getController.loadAllCommentsForPost)
     // .get(getController.displayTopComments)
-    // .post(getController.postNewComment)
     .delete(getController.deleteUserComment);
     
-    // router.route('/user-comments/:id1')
-    // .get(getController.loadAllCommentsForPost);
 
     router.route('/user-comments-post/:id1/:id2/:id3')
     .post(getController.postNewComment);
