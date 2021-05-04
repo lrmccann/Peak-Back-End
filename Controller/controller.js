@@ -52,9 +52,9 @@ const getUserBookmarks = async (userId, myCallback) => {
         console.log("error error error" + error);
       } else {
         var postsToFetch = results[0].bookmarked_posts;
-        if(postsToFetch === null){
+        if (postsToFetch === null) {
           return;
-        }else{
+        } else {
           var newBookmarkArr = postsToFetch.split(",").map(Number);
           return myCallback(newBookmarkArr);
         }
@@ -62,7 +62,6 @@ const getUserBookmarks = async (userId, myCallback) => {
     }
   );
 };
-
 // Controller funcs for Login/Signup
 (exports.createNewUser = async function (req, res) {
   var firstName = await req.body.firstName;
@@ -112,209 +111,156 @@ const getUserBookmarks = async (userId, myCallback) => {
     console.log("requuuuueeeest", req);
     console.log("respoooonnnssseee", res);
   }),
-// 
-// Controller funcs for Home page
-(exports.addPostView = async function(req, res) {
-  const postId = req.params.id1;
-  await connection.query(
-    `UPDATE user_posts 
+  //
+  // Controller funcs for Home page
+  (exports.addPostView = async function (req, res) {
+    const postId = req.params.id1;
+    await connection.query(
+      `UPDATE user_posts 
     SET post_views = post_views + 1 
     WHERE id=${postId}`,
-    (error) => {
-      if(error){
-        res.status(400).send('Failed to update post views');
-      }else{
-        res.status(200).send('Successfully updated post views');
+      (error) => {
+        if (error) {
+          res.status(400).send("Failed to update post views");
+        } else {
+          res.status(200).send("Successfully updated post views");
+        }
       }
-    }
-  )
-}),
-(exports.getAllPosts = async function (req, res) {
-  var getPosts = `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.post_body , user_posts.blog_img , user_posts.post_views , user_posts.blog_likes , user_posts.publish_date , account_info.username
+    );
+  }),
+  (exports.getAllPosts = async function (req, res) {
+    var getPosts = `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.post_body , user_posts.blog_img , user_posts.post_views , user_posts.blog_likes , user_posts.publish_date , account_info.username
                   FROM user_posts, account_info
                   WHERE user_posts.user_id = account_info.id`;
-  connection.query(getPosts, async (error, results) => {
-    if (error) {
-      return console.log(error);
-    } else if (results.length === 0) {
-      res.status(404).send(error);
-    } else {
-      res.status(200).send(results);
-    }
-  });
-}),
-// 
-// Controller Funcs for Homepage/BlogOps Component
-(exports.addLike = async function (req, res) {
-  var numOflikesToAdd = req.params.id1;
-  var postId = req.params.id2;
-  var postTitle = req.params.id3;
-  var addLikeQuery = `UPDATE user_posts SET blog_likes=${numOflikesToAdd} WHERE id=${postId} AND post_title="${postTitle}"`;
-  connection.query(addLikeQuery, (error, results) => {
-    if (error) {
-      return console.log(error);
-    } else if (results.length === 0) {
-      res.status(404).send(error);
-    } else {
-      console.log(results, "results of adding likes to table");
-      res.status(200).send(results);
-    }
-  });
-}),
-(exports.getLikedPosts = async function (req, res) {
-  var userId = req.params.id1;
-  await connection.query(
-    `SELECT account_info.liked_posts FROM account_info WHERE id=${userId}`, 
-    (error, results) => {
-    if (error) {
-      console.log(error, "i am error");
-      res.status(400).send("error loading posts")
-    } else if (results.length === 0) {
-      console.log("results are zero")
-      res.status(404).send(error);
-    } else {
-      console.log(results, "find me")
-      var likedPosts = results[0].liked_posts;
-      if(likedPosts === null){
-        res.status(400).send("Error loading your likes array, please refresh")
-      }else{
-        console.log(likedPosts, "liked posts")
-      var likesArr = likedPosts.split(",").map(Number);
-      console.log(likesArr, "likes arr")
-      res.status(200).send(likesArr);
-      }
-    }
-  });
-}),
-(exports.bookmarksForHome = async function (req, res) {
-  let userId = req.params.id1;
-  const sendToSite = (arr) => {
-    if(arr.length === 0){
-      res.status(205).send("No bookmarks in arr");
-    }else{
-      res.status(200).send(arr);
-    }
-  }
-  getUserBookmarks(userId, sendToSite)
-}),
-
-(exports.bookmarkNewPost = async function (req, res) {
-  let bookmarkedPostId = req.params.id1;
-  let userId = req.params.id2;
-  let finalArr = [];
-  const insertNewBookmark = async (arr) => {
-    let strToMatch = arr.toString();
-    if (strToMatch.indexOf(bookmarkedPostId) === -1) {
-      finalArr = `${arr},${bookmarkedPostId}`;
-      await connection.query(
-        `UPDATE account_info SET bookmarked_posts = "${finalArr}"
-        WHERE id = ${userId}`,
-        (error, results) => {
-          if (error) {
-            return res
-              .status(400)
-              .send(
-                "Error bookmarking post for user : " + userId + " " + error
-              );
-          } else {
-            return res
-              .status(202)
-              .send(
-                `Successfully bookmarked post number ${bookmarkedPostId} for at user id ${userId}`
-              );
-          }
-        }
-      );
-    }
-  };
-  getUserBookmarks(userId, insertNewBookmark);
-}),
-(exports.removeBookmarkedPost = async function (req, res) {
-  var postId = await req.params.id1;
-  var userId = await req.params.id2;
-  var uniqueArray = [];
-  const deleteBookmark = async (arr) => {
-    var index = arr.indexOf(postId);
-    if (index === -1) {
-      arr.splice(index, 1);
-      uniqueArray = await arr.toString();
-      await connection.query(
-        `UPDATE account_info SET bookmarked_posts = "${uniqueArray}"
-                        WHERE id = ${userId}`,
-        async (error, results) => {
-          if (error) {
-            console.log("error error error" + error);
-            return res.status(300).send("Failed to remove bookmarked post");
-          } else {
-            return res
-              .status(200)
-              .send("Successfully removed bookmarked blog");
-          }
-        }
-      );
-    } else {
-      return console.log("Failed because blog was not bookmarked");
-    }
-  };
-  getUserBookmarks(userId, deleteBookmark);
-}),
-// 
-// Controller Funcs for IndepthBlogPage
-
-
-
-  (exports.displayTopPosts = async function (req, res) {
-    var userId = await req.params.id1;
-    var query = `SELECT * FROM user_posts WHERE user_id=${userId} ORDER BY blog_likes DESC`;
-    connection.query(query, (error, results) => {
+    connection.query(getPosts, async (error, results) => {
       if (error) {
-        res
-          .status(404)
-          .send(
-            "We're having some trouble loading this right now, please try again later"
-          );
+        return console.log(error);
+      } else if (results.length === 0) {
+        res.status(404).send(error);
       } else {
-        console.log(results, "results for display top posts");
-        res.status(202).send(results);
+        res.status(200).send(results);
       }
     });
   }),
-  (exports.displayTopComments = async function (req, res) {
-    var userId = await req.params.id1;
-    var query = `SELECT * FROM user_comments WHERE user_id=${userId}`;
-    connection.query(query, (error, results) => {
+  //
+  // Controller Funcs for Homepage/BlogOps Component
+  (exports.addLike = async function (req, res) {
+    var numOflikesToAdd = req.params.id1;
+    var postId = req.params.id2;
+    var postTitle = req.params.id3;
+    var addLikeQuery = `UPDATE user_posts SET blog_likes=${numOflikesToAdd} WHERE id=${postId} AND post_title="${postTitle}"`;
+    connection.query(addLikeQuery, (error, results) => {
       if (error) {
-        res
-          .status(404)
-          .send(
-            "We're having some trouble loading this right now, please try again later"
-          );
+        return console.log(error);
+      } else if (results.length === 0) {
+        res.status(404).send(error);
       } else {
-        res.status(202).send(results);
+        console.log(results, "results of adding likes to table");
+        res.status(200).send(results);
       }
     });
-  });
-// Controller funcs for Navbar
-(exports.postNewBlog = async function (req, res) {
-  var imgHeader = await req.body.blogInfoToSend.imgHeaderToSend;
-  var blogTitle = await req.body.blogInfoToSend.blogTitleToSend;
-  var blogBody = await req.body.blogInfoToSend.blogBodyToSend;
-  var userIdToSend = await req.body.blogInfoToSend.userIdToSend;
-  var postTheBlog = `INSERT INTO user_posts(user_id , post_title, post_body, blog_img, blog_likes) VALUES("${userIdToSend}", "${blogTitle}", "${blogBody}", "${imgHeader}", 0);`;
-  connection.query(postTheBlog, (error, results) => {
-    if (error) {
-      res
-        .status(404)
-        .send("There was an error posting your blog, please try again later.");
-    } else {
-      res.status(202).send(results);
-    }
-  });
-}),
-
-
-
-
+  }),
+  (exports.getLikedPosts = async function (req, res) {
+    var userId = req.params.id1;
+    await connection.query(
+      `SELECT account_info.liked_posts FROM account_info WHERE id=${userId}`,
+      (error, results) => {
+        if (error) {
+          console.log(error, "i am error");
+          res.status(400).send("error loading posts");
+        } else if (results.length === 0) {
+          console.log("results are zero");
+          res.status(404).send(error);
+        } else {
+          console.log(results, "find me");
+          var likedPosts = results[0].liked_posts;
+          if (likedPosts === null) {
+            res
+              .status(400)
+              .send("Error loading your likes array, please refresh");
+          } else {
+            console.log(likedPosts, "liked posts");
+            var likesArr = likedPosts.split(",").map(Number);
+            console.log(likesArr, "likes arr");
+            res.status(200).send(likesArr);
+          }
+        }
+      }
+    );
+  }),
+  (exports.bookmarksForHome = async function (req, res) {
+    let userId = req.params.id1;
+    const sendToSite = (arr) => {
+      if (arr.length === 0) {
+        res.status(205).send("No bookmarks in arr");
+      } else {
+        res.status(200).send(arr);
+      }
+    };
+    getUserBookmarks(userId, sendToSite);
+  }),
+  (exports.bookmarkNewPost = async function (req, res) {
+    let bookmarkedPostId = req.params.id1;
+    let userId = req.params.id2;
+    let finalArr = [];
+    const insertNewBookmark = async (arr) => {
+      let strToMatch = arr.toString();
+      if (strToMatch.indexOf(bookmarkedPostId) === -1) {
+        finalArr = `${arr},${bookmarkedPostId}`;
+        await connection.query(
+          `UPDATE account_info SET bookmarked_posts = "${finalArr}"
+        WHERE id = ${userId}`,
+          (error, results) => {
+            if (error) {
+              return res
+                .status(400)
+                .send(
+                  "Error bookmarking post for user : " + userId + " " + error
+                );
+            } else {
+              return res
+                .status(202)
+                .send(
+                  `Successfully bookmarked post number ${bookmarkedPostId} for at user id ${userId}`
+                );
+            }
+          }
+        );
+      }
+    };
+    getUserBookmarks(userId, insertNewBookmark);
+  }),
+  (exports.removeBookmarkedPost = async function (req, res) {
+    var postId = await req.params.id1;
+    var userId = await req.params.id2;
+    var uniqueArray = [];
+    const deleteBookmark = async (arr) => {
+      var index = arr.indexOf(postId);
+      if (index === -1) {
+        arr.splice(index, 1);
+        uniqueArray = await arr.toString();
+        await connection.query(
+          `UPDATE account_info SET bookmarked_posts = "${uniqueArray}"
+                        WHERE id = ${userId}`,
+          async (error, results) => {
+            if (error) {
+              console.log("error error error" + error);
+              return res.status(300).send("Failed to remove bookmarked post");
+            } else {
+              return res
+                .status(200)
+                .send("Successfully removed bookmarked blog");
+            }
+          }
+        );
+      } else {
+        return console.log("Failed because blog was not bookmarked");
+      }
+    };
+    getUserBookmarks(userId, deleteBookmark);
+  }),
+  //
+  // Controller Funcs for IndepthBlogPage
   (exports.getAllInfoOnPost = async function (req, res) {
     // Post ID of requested blog page
     var requestId = req.params.id1;
@@ -324,9 +270,9 @@ const getUserBookmarks = async (userId, myCallback) => {
     const getCommentData = async () => {
       await connection.query(
         `SELECT * FROM user_posts posts
-            INNER JOIN user_comments comments ON posts.id = comments.post_id
-            INNER JOIN account_info accInfo ON comments.user_id = accInfo.id
-            WHERE posts.id=${requestId}`,
+          INNER JOIN user_comments comments ON posts.id = comments.post_id
+          INNER JOIN account_info accInfo ON comments.user_id = accInfo.id
+          WHERE posts.id=${requestId}`,
         (error, results) => {
           if (error) {
             return res.status(404).send("Error getting data").t;
@@ -366,8 +312,8 @@ const getUserBookmarks = async (userId, myCallback) => {
     const getAuthData = async () => {
       await connection.query(
         `SELECT username from account_info accInfo
-      INNER JOIN user_posts posts ON posts.user_id = accInfo.id
-      WHERE posts.id=${requestId} `,
+    INNER JOIN user_posts posts ON posts.user_id = accInfo.id
+    WHERE posts.id=${requestId} `,
         (error, results) => {
           if (error) {
             console.log(error, "Error retrieving blog author information");
@@ -385,8 +331,79 @@ const getUserBookmarks = async (userId, myCallback) => {
     };
     getAuthData();
   }),
-
-
+  (exports.postNewComment = async function (req, res) {
+    let userId = req.params.id1;
+    let postId = req.params.id2;
+    let commentBody = req.params.id3;
+    await connection.query(
+      `INSERT INTO user_comments(user_id , post_id , comment_body  )
+    VALUES( ${userId} , ${postId} , "${commentBody}")`,
+      (error, results) => {
+        if (error) {
+          console.log(error);
+          res.status(400).send("Failed to post comment");
+        } else {
+          console.log("success", results);
+          res.status(200).send("Successfully posted new comment");
+        }
+      }
+    );
+  }),
+  //
+  // Controller Funcs for account page
+  (exports.displayTopPosts = async function (req, res) {
+    var userId = await req.params.id1;
+    var query = `SELECT * FROM user_posts WHERE user_id=${userId} ORDER BY blog_likes DESC`;
+    connection.query(query, (error, results) => {
+      if (error) {
+        res
+          .status(404)
+          .send(
+            "We're having some trouble loading this right now, please try again later"
+          );
+      } else {
+        console.log(results, "results for display top posts");
+        res.status(202).send(results);
+      }
+    });
+  }),
+  (exports.displayTopComments = async function (req, res) {
+    var userId = await req.params.id1;
+    var query = `SELECT * FROM user_comments WHERE user_id=${userId}`;
+    connection.query(query, (error, results) => {
+      if (error) {
+        res
+          .status(404)
+          .send(
+            "We're having some trouble loading this right now, please try again later"
+          );
+      } else {
+        res.status(202).send(results);
+      }
+    });
+  }),
+  //
+  // Controller funcs for Navbar
+  (exports.postNewBlog = async function (req, res) {
+    var imgHeader = await req.body.blogInfoToSend.imgHeaderToSend;
+    var blogTitle = await req.body.blogInfoToSend.blogTitleToSend;
+    var blogBody = await req.body.blogInfoToSend.blogBodyToSend;
+    var userIdToSend = await req.body.blogInfoToSend.userIdToSend;
+    var postTheBlog = `INSERT INTO user_posts(user_id , post_title, post_body, blog_img, blog_likes) VALUES("${userIdToSend}", "${blogTitle}", "${blogBody}", "${imgHeader}", 0);`;
+    connection.query(postTheBlog, (error, results) => {
+      if (error) {
+        res
+          .status(404)
+          .send(
+            "There was an error posting your blog, please try again later."
+          );
+      } else {
+        res.status(202).send(results);
+      }
+    });
+  }),
+  //
+  // Controller funcs for Bookmarks Page
   (exports.getBookmarkedPosts = async function (req, res) {
     var userId = await req.params.id1;
     var blogObjArray = [];
@@ -415,60 +432,41 @@ const getUserBookmarks = async (userId, myCallback) => {
       }
     }
     getUserBookmarks(userId, whatever);
-  }),
-
-  // (exports.deleteUserPost = async function (req, res) {
-  //   console.log("requuuuueeeest for delete", req);
-  //   const query = `DELETE FROM user_posts WHERE id=${req.params.id1}`;
-
-  //   connection.query(query, (error, results, fields) => {
-  //     if (error) {
-  //       return console.log(error);
-  //     } else if (results.length === 0) {
-  //       res.status(404).send(error);
-  //     } else {
-  //       console.log(results, "results of adding likes to table");
-  //       res.status(200).send(results);
-  //     }
-  //   });
-  // }),
-
-
-  // routes for user comments
-  (exports.postNewComment = async function (req, res) {
-    let userId = req.params.id1;
-    let postId = req.params.id2;
-    let commentBody = req.params.id3;
-    await connection.query(
-      `INSERT INTO user_comments(user_id , post_id , comment_body  )
-      VALUES( ${userId} , ${postId} , "${commentBody}")`,
-      (error, results) => {
-        if(error){
-          console.log(error);
-          res.status(400).send("Failed to post comment");
-        }else{
-          console.log('success' , results);
-          res.status(200).send("Successfully posted new comment");
-        }
-      }
-    )
-  }),
-  // 
-  (exports.loadPreviewComments = async function (req, res) {
-    var getAllComments = `SELECT * FROM user_comments`;
-    connection.query(getAllComments, (error, results, fields) => {
-      if (error) {
-        return console.log(error);
-      } else {
-        return;
-      }
-    });
-  }),
-
-  (exports.deleteUserComment = async function (req, res) {
-    console.log("requuuuueeeest", req);
-    console.log("respoooonnnssseee", res);
   });
+//
+
+// UNFINISHED ROUTES  ////////////////////////////////////////////////
+
+// (exports.deleteUserPost = async function (req, res) {
+//   console.log("requuuuueeeest for delete", req);
+//   const query = `DELETE FROM user_posts WHERE id=${req.params.id1}`;
+
+//   connection.query(query, (error, results, fields) => {
+//     if (error) {
+//       return console.log(error);
+//     } else if (results.length === 0) {
+//       res.status(404).send(error);
+//     } else {
+//       console.log(results, "results of adding likes to table");
+//       res.status(200).send(results);
+//     }
+//   });
+// }),
+// (exports.loadPreviewComments = async function (req, res) {
+//   var getAllComments = `SELECT * FROM user_comments`;
+//   connection.query(getAllComments, (error, results, fields) => {
+//     if (error) {
+//       return console.log(error);
+//     } else {
+//       return;
+//     }
+//   });
+// }),
+
+// (exports.deleteUserComment = async function (req, res) {
+//   console.log("requuuuueeeest", req);
+//   console.log("respoooonnnssseee", res);
+// });
 
 // connection.end(function(err) {
 //     if(err) {
