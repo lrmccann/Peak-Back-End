@@ -49,7 +49,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
     (error, results) => {
       if (error) {
-        console.log("error error error" + error);
+        res.status(400).send('Problem with getting user bookmarks')
       } else {
         var postsToFetch = results[0].bookmarked_posts;
         if (postsToFetch === null) {
@@ -64,17 +64,17 @@ const getUserBookmarks = async (userId, myCallback) => {
 };
 // Controller funcs for Login/Signup
 (exports.createNewUser = async function (req, res) {
-  var firstName = await req.body.firstName;
-  var lastName = await req.body.lastName;
-  var username = await req.body.username;
-  var email = await req.body.email;
-  var password = await req.body.password;
-  var age = await req.body.age;
-  var city = await req.body.city;
-  var zipcode = await req.body.zip;
-  var jobTitle = await req.body.jobTitle;
-  var registerDate = await req.body.date;
-  connection.query( `INSERT INTO account_info(first_name , last_name , username , email , password , age , city , zipcode , job_title , register_date) 
+  var firstName = req.body.firstName;
+  var lastName = req.body.lastName;
+  var username = req.body.username;
+  var email = req.body.email;
+  var password = req.body.password;
+  var age = req.body.age;
+  var city = req.body.city;
+  var zipcode = req.body.zip;
+  var jobTitle = req.body.jobTitle;
+  var registerDate = req.body.date;
+  await connection.query(`INSERT INTO account_info(first_name , last_name , username , email , password , age , city , zipcode , job_title , register_date) 
   VALUES("${firstName}" , "${lastName}" , "${username}" , "${email}" , "${password}" , ${age} , "${city}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`
   ,
      (error, results) => {
@@ -88,10 +88,10 @@ const getUserBookmarks = async (userId, myCallback) => {
   });
 }),
   (exports.authenticateUser = async function (req, res) {
-    var username = await req.params.id1;
-    var password = await req.params.id2;
-    var sqlAccountInfo = `SELECT * FROM account_info WHERE username = '${username}' AND password = '${password}'`;
-    connection.query(sqlAccountInfo, (error, results) => {
+    var username = req.params.id1;
+    var password = req.params.id2;
+    await connection.query(`SELECT * FROM account_info WHERE username = '${username}' AND password = '${password}'`,
+     (error, results) => {
       if (error) {
         res.status(404).send(error);
       } else if (results.length === 0) {
@@ -131,10 +131,11 @@ const getUserBookmarks = async (userId, myCallback) => {
     );
   }),
   (exports.getAllPosts = async function (req, res) {
-    var getPosts = `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.post_body , user_posts.blog_img , user_posts.post_views , user_posts.blog_likes , user_posts.publish_date , account_info.username
-                  FROM user_posts, account_info
-                  WHERE user_posts.user_id = account_info.id`;
-    connection.query(getPosts, async (error, results) => {
+    await connection.query( 
+      `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.post_body , user_posts.blog_img , user_posts.post_views , user_posts.blog_likes , user_posts.publish_date , account_info.username
+    FROM user_posts, account_info
+    WHERE user_posts.user_id = account_info.id`,
+     async (error, results) => {
       if (error) {
         return console.log(error);
       } else if (results.length === 0) {
@@ -150,14 +151,13 @@ const getUserBookmarks = async (userId, myCallback) => {
     var numOflikesToAdd = req.params.id1;
     var postId = req.params.id2;
     var postTitle = req.params.id3;
-    var addLikeQuery = `UPDATE user_posts SET blog_likes=${numOflikesToAdd} WHERE id=${postId} AND post_title="${postTitle}"`;
-    connection.query(addLikeQuery, (error, results) => {
+    connection.query(`UPDATE user_posts SET blog_likes=${numOflikesToAdd} WHERE id=${postId} AND post_title="${postTitle}"`,
+     (error, results) => {
       if (error) {
-        return console.log(error);
+        res.status(400).send(error);
       } else if (results.length === 0) {
         res.status(404).send(error);
       } else {
-        console.log(results, "results of adding likes to table");
         res.status(200).send(results);
       }
     });
@@ -168,22 +168,17 @@ const getUserBookmarks = async (userId, myCallback) => {
       `SELECT account_info.liked_posts FROM account_info WHERE id=${userId}`,
       (error, results) => {
         if (error) {
-          console.log(error, "i am error");
           res.status(400).send("error loading posts");
         } else if (results.length === 0) {
-          console.log("results are zero");
           res.status(404).send(error);
         } else {
-          console.log(results, "find me");
           var likedPosts = results[0].liked_posts;
           if (likedPosts === null) {
             res
               .status(400)
               .send("Error loading your likes array, please refresh");
           } else {
-            console.log(likedPosts, "liked posts");
             var likesArr = likedPosts.split(",").map(Number);
-            console.log(likesArr, "likes arr");
             res.status(200).send(likesArr);
           }
         }
@@ -211,7 +206,7 @@ const getUserBookmarks = async (userId, myCallback) => {
         await connection.query(
           `UPDATE account_info SET bookmarked_posts = "${finalArr}"
         WHERE id = ${userId}`,
-          (error, results) => {
+          (error) => {
             if (error) {
               return res
                 .status(400)
@@ -243,9 +238,8 @@ const getUserBookmarks = async (userId, myCallback) => {
         await connection.query(
           `UPDATE account_info SET bookmarked_posts = "${uniqueArray}"
                         WHERE id = ${userId}`,
-          async (error, results) => {
+          async (error) => {
             if (error) {
-              console.log("error error error" + error);
               return res.status(300).send("Failed to remove bookmarked post");
             } else {
               return res
@@ -289,7 +283,6 @@ const getUserBookmarks = async (userId, myCallback) => {
               );
               allInfoArr.push(commentObj);
             });
-            // console.log(allInfoArr, "final array of data to send")
             res.status(200).send(allInfoArr);
           }
         }
@@ -313,11 +306,10 @@ const getUserBookmarks = async (userId, myCallback) => {
     const getAuthData = async () => {
       await connection.query(
         `SELECT username from account_info accInfo
-    INNER JOIN user_posts posts ON posts.user_id = accInfo.id
-    WHERE posts.id=${requestId} `,
+        INNER JOIN user_posts posts ON posts.user_id = accInfo.id
+        WHERE posts.id=${requestId} `,
         (error, results) => {
           if (error) {
-            console.log(error, "Error retrieving blog author information");
             return res
               .status(404)
               .send("Error retrieving blog author information");
@@ -339,12 +331,10 @@ const getUserBookmarks = async (userId, myCallback) => {
     await connection.query(
       `INSERT INTO user_comments(user_id , post_id , comment_body  )
     VALUES( ${userId} , ${postId} , "${commentBody}")`,
-      (error, results) => {
+      (error) => {
         if (error) {
-          console.log(error);
           res.status(400).send("Failed to post comment");
         } else {
-          console.log("success", results);
           res.status(200).send("Successfully posted new comment");
         }
       }
@@ -354,8 +344,8 @@ const getUserBookmarks = async (userId, myCallback) => {
   // Controller Funcs for account page
   (exports.displayTopPosts = async function (req, res) {
     var userId = await req.params.id1;
-    var query = `SELECT * FROM user_posts WHERE user_id=${userId} ORDER BY blog_likes DESC`;
-    connection.query(query, (error, results) => {
+    connection.query(`SELECT * FROM user_posts WHERE user_id=${userId} ORDER BY blog_likes DESC`,
+     (error, results) => {
       if (error) {
         res
           .status(404)
@@ -363,15 +353,14 @@ const getUserBookmarks = async (userId, myCallback) => {
             "We're having some trouble loading this right now, please try again later"
           );
       } else {
-        console.log(results, "results for display top posts");
         res.status(202).send(results);
       }
     });
   }),
   (exports.displayTopComments = async function (req, res) {
     var userId = await req.params.id1;
-    var query = `SELECT * FROM user_comments WHERE user_id=${userId}`;
-    connection.query(query, (error, results) => {
+    connection.query(`SELECT * FROM user_comments WHERE user_id=${userId}`,
+     (error, results) => {
       if (error) {
         res
           .status(404)
@@ -385,8 +374,8 @@ const getUserBookmarks = async (userId, myCallback) => {
   }),
   (exports.fetchUserInfo = async function (req, res) {
     var userId = await req.params.id1;
-    var sqlAccountInfo = `SELECT * FROM account_info WHERE id = ${userId}`;
-    connection.query(sqlAccountInfo, (error, results) => {
+    connection.query(`SELECT * FROM account_info WHERE id = ${userId}`,
+     (error, results) => {
       if (error) {
         res.status(404).send(error);
       } else {
@@ -405,8 +394,9 @@ const getUserBookmarks = async (userId, myCallback) => {
     var blogTitle = await req.body.blogInfoToSend.blogTitleToSend;
     var blogBody = await req.body.blogInfoToSend.blogBodyToSend;
     var userIdToSend = await req.body.blogInfoToSend.userIdToSend;
-    var postTheBlog = `INSERT INTO user_posts(user_id , post_title, post_body, blog_img, blog_likes) VALUES("${userIdToSend}", "${blogTitle}", "${blogBody}", "${imgHeader}", 0);`;
-    connection.query(postTheBlog, (error, results) => {
+    connection.query(`INSERT INTO user_posts(user_id , post_title, post_body, blog_img, blog_likes) 
+    VALUES("${userIdToSend}", "${blogTitle}", "${blogBody}", "${imgHeader}", 0);`,
+     (error, results) => {
       if (error) {
         res
           .status(404)
