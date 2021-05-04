@@ -74,12 +74,14 @@ const getUserBookmarks = async (userId, myCallback) => {
   var zipcode = await req.body.zip;
   var jobTitle = await req.body.jobTitle;
   var registerDate = await req.body.date;
-  var mysqlQuery = `INSERT INTO account_info(first_name , last_name , username , email , password , age , city , zipcode , job_title , register_date) VALUES("${firstName}" , "${lastName}" , "${username}" , "${email}" , "${password}" , ${age} , "${city}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`;
-  connection.query(mysqlQuery, (error, results) => {
+  connection.query( `INSERT INTO account_info(first_name , last_name , username , email , password , age , city , zipcode , job_title , register_date) 
+  VALUES("${firstName}" , "${lastName}" , "${username}" , "${email}" , "${password}" , ${age} , "${city}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`
+  ,
+     (error, results) => {
     if (error) {
       res.status(404).send(error);
     } else if (results.length === 0) {
-      res.send("Please try again");
+      res.status(400).send("Please try again");
     } else if (results.length !== 0) {
       res.status(200).send("User Created Successfully");
     }
