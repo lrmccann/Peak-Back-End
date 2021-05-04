@@ -453,17 +453,16 @@ const getUserBookmarks = async (userId, myCallback) => {
     }
   });
 }),
-// (exports.loadPreviewComments = async function (req, res) {
-//   var getAllComments = `SELECT * FROM user_comments`;
-//   connection.query(getAllComments, (error, results, fields) => {
-//     if (error) {
-//       return console.log(error);
-//     } else {
-//       return;
-//     }
-//   });
-// }),
-
+(exports.loadPreviewComments = async function (req, res) {
+  var getAllComments = `SELECT * FROM user_comments`;
+  connection.query(getAllComments, (error, results, fields) => {
+    if (error) {
+      return console.log(error);
+    } else {
+      return;
+    }
+  });
+}),
 (exports.deleteUserComment = async function (req, res) {
   console.log("requuuuueeeest", req);
   console.log("respoooonnnssseee", res);
