@@ -452,7 +452,7 @@ const getUserBookmarks = async (userId, myCallback) => {
         }
       }
     });
-  })
+  }),
   (exports.deleteUserPost = async function (req, res) {
     console.log("requuuuueeeest for delete", req);
     const query = `DELETE FROM user_posts WHERE id=${req.params.id1}`;
