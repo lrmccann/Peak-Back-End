@@ -439,7 +439,7 @@ const getUserBookmarks = async (userId, myCallback) => {
       `SELECT account_info.liked_posts FROM account_info WHERE id=${userId}`, 
       (error, results) => {
       if (error) {
-        console.log(error);
+        console.log(error, "i am error");
         res.status(400).send("error loading posts")
       } else if (results.length === 0) {
         console.log("results are zero")
