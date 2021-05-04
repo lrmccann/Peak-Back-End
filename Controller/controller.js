@@ -446,7 +446,7 @@ const getUserBookmarks = async (userId, myCallback) => {
         res.status(404).send(error);
       } else {
         console.log(results, "find me")
-        var likedPosts = results[0].bookmarked_posts;
+        var likedPosts = results[0].liked_posts;
         if(likedPosts === null){
           res.status(400).send("Error loading your likes array, please refresh")
         }else{
