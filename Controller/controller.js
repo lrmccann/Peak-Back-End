@@ -56,7 +56,7 @@ const getUserBookmarks = async (userId, myCallback) => {
           return;
         } else {
           var newBookmarkArr = postsToFetch.split(",").map(Number);
-          return myCallback(newBookmarkArr);
+          myCallback(newBookmarkArr);
         }
       }
     }
@@ -187,8 +187,7 @@ const getUserBookmarks = async (userId, myCallback) => {
             res.status(200).send(likesArr);
           }
         }
-      }
-    );
+      });
   }),
   (exports.bookmarksForHome = async function (req, res) {
     let userId = req.params.id1;
@@ -198,7 +197,7 @@ const getUserBookmarks = async (userId, myCallback) => {
       } else {
         res.status(200).send(arr);
       }
-    };
+    }
     getUserBookmarks(userId, sendToSite);
   }),
   (exports.bookmarkNewPost = async function (req, res) {
