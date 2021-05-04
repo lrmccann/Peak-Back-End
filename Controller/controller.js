@@ -44,14 +44,6 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
   this.joinDate = joinDate;
 }
 
-// function createObjForBookmarkedPosts(postId, postTitle, blogImg, publishDate, blogAuth){
-//   this.postId = postId;
-//   this.postTitle = postTitle;
-//   this.blogImg = blogImg;
-//   this.publishDate = publishDate;
-//   this.blogAuth = blogAuth;
-// }
-
 const getUserBookmarks = async (userId, myCallback) => {
   await connection.query(
     `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
@@ -60,17 +52,17 @@ const getUserBookmarks = async (userId, myCallback) => {
         console.log("error error error" + error);
       } else {
         var postsToFetch = results[0].bookmarked_posts;
-        console.log(postsToFetch, "find me here");
         if(postsToFetch === null){
           return;
         }else{
-          var newArr = postsToFetch.split(",").map(Number);
-          return myCallback(newArr);
+          var newBookmarkArr = postsToFetch.split(",").map(Number);
+          return myCallback(newBookmarkArr);
         }
       }
     }
   );
 };
+
 (exports.addPostView = async function(req, res) {
   var postId = req.params.id1;
   console.log(postId)
@@ -78,12 +70,10 @@ const getUserBookmarks = async (userId, myCallback) => {
     `UPDATE user_posts 
     SET post_views = post_views + 1 
     WHERE id=${postId}`,
-    (error, results) => {
+    (error) => {
       if(error){
-        console.log('Failed to update post views');
         res.status(400).send('Failed to update post views');
       }else{
-        console.log('Successfully updated post views');
         res.status(200).send('Successfully updated post views');
       }
     }
@@ -163,7 +153,6 @@ const getUserBookmarks = async (userId, myCallback) => {
     console.log("requuuuueeeest", req);
     console.log("respoooonnnssseee", res);
   }),
-  // routes for user-posts
   (exports.displayTopPosts = async function (req, res) {
     var userId = await req.params.id1;
     var query = `SELECT * FROM user_posts WHERE user_id=${userId} ORDER BY blog_likes DESC`;
@@ -195,7 +184,7 @@ const getUserBookmarks = async (userId, myCallback) => {
       }
     });
   });
-
+// Controller funcs for
 (exports.postNewBlog = async function (req, res) {
   var imgHeader = await req.body.blogInfoToSend.imgHeaderToSend;
   var blogTitle = await req.body.blogInfoToSend.blogTitleToSend;
@@ -207,12 +196,7 @@ const getUserBookmarks = async (userId, myCallback) => {
       res
         .status(404)
         .send("There was an error posting your blog, please try again later.");
-      console.error(error);
     } else {
-      console.log(
-        results,
-        "results from query, should just be a 202 or something?"
-      );
       res.status(202).send(results);
     }
   });
@@ -227,7 +211,6 @@ const getUserBookmarks = async (userId, myCallback) => {
       } else if (results.length === 0) {
         res.status(404).send(error);
       } else {
-        // console.log(results)
         res.status(200).send(results);
       }
     });
@@ -342,9 +325,6 @@ const getUserBookmarks = async (userId, myCallback) => {
           }
         );
       }
-      //  else {
-      //   res.status(350).send(`Blog already bookmarked for user ${userId}`);
-      // }
     };
     getUserBookmarks(userId, insertNewBookmark);
   }),
@@ -363,17 +343,6 @@ const getUserBookmarks = async (userId, myCallback) => {
               return res.status(400).send("Error getting data").t;
             } else {
               blogObjArray.push(...results);
-              // console.log(blogObjArray)
-              //   results.map((index) => {
-              //   var blogInfoObj = new createObjForBookmarkedPosts(
-              //     `${index.id}`,
-              //     `${index.post_title}`,
-              //     `${index.blog_img}`,
-              //     `${index.publish_date}`,
-              //     `${index.username}`
-              //   );
-              //   blogObjArray.push(blogInfoObj);
-              // })
             }
           }
         );
