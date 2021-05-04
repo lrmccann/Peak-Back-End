@@ -123,5 +123,8 @@ const router = require('express').Router();
 
     router.route('/user-comments/:id1/:id2/:id3')
     .post(getController.postNewComment);
+
+        router.route('/liked-posts/:id1')
+    .get(getController.getLikedPosts);
 // };
 module.exports = router;
