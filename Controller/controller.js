@@ -463,6 +463,10 @@ const getUserBookmarks = async (userId, myCallback) => {
     }
   });
 }),
+(exports.loadAllCommentsForPost = async function (req, res) {
+  console.log("requuuuueeeest", req);
+  console.log("respoooonnnssseee", res);
+}),
 (exports.deleteUserComment = async function (req, res) {
   console.log("requuuuueeeest", req);
   console.log("respoooonnnssseee", res);
