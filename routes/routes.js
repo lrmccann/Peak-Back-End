@@ -51,14 +51,15 @@ const router = require('express').Router();
 
 
     router.route('/user-comments/:id1')
-    .get(getController.displayTopComments)
+    .get(getController.loadAllCommentsForPost)
+    // .get(getController.displayTopComments)
     // .post(getController.postNewComment)
     .delete(getController.deleteUserComment);
     
-    router.route('/user-comments/:id1')
-    .get(getController.loadAllCommentsForPost);
+    // router.route('/user-comments/:id1')
+    // .get(getController.loadAllCommentsForPost);
 
-    router.route('/user-comments/:id1/:id2/:id3')
+    router.route('/user-comments-post/:id1/:id2/:id3')
     .post(getController.postNewComment);
 // };
 module.exports = router;
