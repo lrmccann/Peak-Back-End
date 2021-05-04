@@ -129,6 +129,21 @@ const getUserBookmarks = async (userId, myCallback) => {
     }
   )
 }),
+(exports.getAllPosts = async function (req, res) {
+  var getPosts = `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.post_body , user_posts.blog_img , user_posts.post_views , user_posts.blog_likes , user_posts.publish_date , account_info.username
+                  FROM user_posts, account_info
+                  WHERE user_posts.user_id = account_info.id`;
+  connection.query(getPosts, async (error, results) => {
+    if (error) {
+      return console.log(error);
+    } else if (results.length === 0) {
+      res.status(404).send(error);
+    } else {
+      res.status(200).send(results);
+    }
+  });
+}),
+
 
   (exports.fetchUserInfo = async function (req, res) {
     var userId = await req.params.id1;
@@ -145,6 +160,7 @@ const getUserBookmarks = async (userId, myCallback) => {
       }
     });
   }),
+
 
   (exports.displayTopPosts = async function (req, res) {
     var userId = await req.params.id1;
@@ -194,20 +210,10 @@ const getUserBookmarks = async (userId, myCallback) => {
     }
   });
 }),
-  (exports.getAllPosts = async function (req, res) {
-    var getPosts = `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.post_body , user_posts.blog_img , user_posts.post_views , user_posts.blog_likes , user_posts.publish_date , account_info.username
-                    FROM user_posts, account_info
-                    WHERE user_posts.user_id = account_info.id`;
-    connection.query(getPosts, async (error, results) => {
-      if (error) {
-        return console.log(error);
-      } else if (results.length === 0) {
-        res.status(404).send(error);
-      } else {
-        res.status(200).send(results);
-      }
-    });
-  }),
+
+
+
+
   (exports.getAllInfoOnPost = async function (req, res) {
     // Post ID of requested blog page
     var requestId = req.params.id1;
@@ -321,35 +327,6 @@ const getUserBookmarks = async (userId, myCallback) => {
     };
     getUserBookmarks(userId, insertNewBookmark);
   }),
-  (exports.getBookmarkedPosts = async function (req, res) {
-    var userId = await req.params.id1;
-    var blogObjArray = [];
-    async function whatever(arr) {
-      var arrLength = arr.length;
-      await arr.map(async (index) => {
-        await connection.query(
-          `SELECT user_posts.id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username 
-          FROM user_posts, account_info
-          WHERE user_posts.id = ${index} AND account_info.id = user_posts.user_id`,
-          async (error, results) => {
-            if (error) {
-              return res.status(400).send("Error getting data").t;
-            } else {
-              blogObjArray.push(...results);
-            }
-          }
-        );
-      });
-      if (blogObjArray.length !== arrLength) {
-        setTimeout(async () => {
-          return await res.status(200).send(blogObjArray);
-        }, 2 * 10);
-      } else {
-        return await res.status(200).send(blogObjArray);
-      }
-    }
-    getUserBookmarks(userId, whatever);
-  }),
   (exports.removeBookmarkedPost = async function (req, res) {
     var postId = await req.params.id1;
     var userId = await req.params.id2;
@@ -379,6 +356,41 @@ const getUserBookmarks = async (userId, myCallback) => {
     };
     getUserBookmarks(userId, deleteBookmark);
   }),
+
+
+
+  (exports.getBookmarkedPosts = async function (req, res) {
+    var userId = await req.params.id1;
+    var blogObjArray = [];
+    async function whatever(arr) {
+      var arrLength = arr.length;
+      await arr.map(async (index) => {
+        await connection.query(
+          `SELECT user_posts.id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username 
+          FROM user_posts, account_info
+          WHERE user_posts.id = ${index} AND account_info.id = user_posts.user_id`,
+          async (error, results) => {
+            if (error) {
+              return res.status(400).send("Error getting data").t;
+            } else {
+              blogObjArray.push(...results);
+            }
+          }
+        );
+      });
+      if (blogObjArray.length !== arrLength) {
+        setTimeout(async () => {
+          return await res.status(200).send(blogObjArray);
+        }, 2 * 10);
+      } else {
+        return await res.status(200).send(blogObjArray);
+      }
+    }
+    getUserBookmarks(userId, whatever);
+  }),
+
+
+
   (exports.addLike = async function (req, res) {
     var numOflikesToAdd = req.params.id1;
     var postId = req.params.id2;
@@ -420,21 +432,23 @@ const getUserBookmarks = async (userId, myCallback) => {
       }
     });
   }),
-  (exports.deleteUserPost = async function (req, res) {
-    console.log("requuuuueeeest for delete", req);
-    const query = `DELETE FROM user_posts WHERE id=${req.params.id1}`;
+  // (exports.deleteUserPost = async function (req, res) {
+  //   console.log("requuuuueeeest for delete", req);
+  //   const query = `DELETE FROM user_posts WHERE id=${req.params.id1}`;
 
-    connection.query(query, (error, results, fields) => {
-      if (error) {
-        return console.log(error);
-      } else if (results.length === 0) {
-        res.status(404).send(error);
-      } else {
-        console.log(results, "results of adding likes to table");
-        res.status(200).send(results);
-      }
-    });
-  }),
+  //   connection.query(query, (error, results, fields) => {
+  //     if (error) {
+  //       return console.log(error);
+  //     } else if (results.length === 0) {
+  //       res.status(404).send(error);
+  //     } else {
+  //       console.log(results, "results of adding likes to table");
+  //       res.status(200).send(results);
+  //     }
+  //   });
+  // }),
+
+
   // routes for user comments
   (exports.postNewComment = async function (req, res) {
     let userId = req.params.id1;
@@ -465,10 +479,7 @@ const getUserBookmarks = async (userId, myCallback) => {
       }
     });
   }),
-  (exports.loadAllCommentsForPost = async function (req, res) {
-    console.log("requuuuueeeest", req);
-    console.log("respoooonnnssseee", res);
-  }),
+  
   (exports.deleteUserComment = async function (req, res) {
     console.log("requuuuueeeest", req);
     console.log("respoooonnnssseee", res);
