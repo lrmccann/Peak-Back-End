@@ -9,6 +9,8 @@ const router = require('express').Router();
     .post(getController.createNewUser)
     .delete(getController.deleteAccount);
 
+    router.route('/user-details/:id1')
+    .get(getController.fetchUserInfo)
 
     router.route("/account-info-login/:id1/:id2")
     .get(getController.authenticateUser);
@@ -37,9 +39,6 @@ const router = require('express').Router();
     router.route("/numOfLikesForPost/:id1/:id2/:id3")
     .put(getController.addLike);
 
-    router.route('/liked-posts/:id1')
-    .get(getController.getLikedPosts);
-
     router.route('/user-posts/:id1')
     .get(getController.getAllInfoOnPost)
     .delete(getController.deleteUserPost);
@@ -52,15 +51,14 @@ const router = require('express').Router();
 
 
     router.route('/user-comments/:id1')
-    .get(getController.loadAllCommentsForPost)
-    // .get(getController.displayTopComments)
+    .get(getController.displayTopComments)
     // .post(getController.postNewComment)
     .delete(getController.deleteUserComment);
     
-    // router.route('/user-comments/:id1')
-    // .get(getController.loadAllCommentsForPost);
+    router.route('/user-comments/:id1')
+    .get(getController.loadAllCommentsForPost);
 
-    router.route('/user-comments-post/:id1/:id2/:id3')
+    router.route('/user-comments/:id1/:id2/:id3')
     .post(getController.postNewComment);
 // };
 module.exports = router;
