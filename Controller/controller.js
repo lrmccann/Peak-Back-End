@@ -435,19 +435,24 @@ const getUserBookmarks = async (userId, myCallback) => {
   }),
   (exports.getLikedPosts = async function (req, res) {
     var userId = req.params.id1;
-    connection.query(
+    await connection.query(
       `SELECT liked_posts FROM account_info WHERE id=${userId}`, 
       (error, results) => {
       if (error) {
-        return console.log(error);
+        console.log(error);
+        res.status(400).send("error loading posts")
       } else if (results.length === 0) {
+        console.log("results are zero")
         res.status(404).send(error);
       } else {
+        console.log(results, "find me")
         var likedPosts = results[0].bookmarked_posts;
         if(likedPosts === null){
-          return res.status(400).send("Error loading your likes array, please refresh")
+          res.status(400).send("Error loading your likes array, please refresh")
         }else{
+          console.log(likedPosts, "liked posts")
         var likesArr = likedPosts.split(",").map(Number);
+        console.log(likesArr, "likes arr")
         res.status(200).send(likesArr);
         }
       }
