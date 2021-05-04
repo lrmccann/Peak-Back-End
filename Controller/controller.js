@@ -433,26 +433,26 @@ const getUserBookmarks = async (userId, myCallback) => {
       }
     }
     getUserBookmarks(userId, whatever);
-  });
+  }),
 //
 
 // UNFINISHED ROUTES  ////////////////////////////////////////////////
 
-// (exports.deleteUserPost = async function (req, res) {
-//   console.log("requuuuueeeest for delete", req);
-//   const query = `DELETE FROM user_posts WHERE id=${req.params.id1}`;
+(exports.deleteUserPost = async function (req, res) {
+  console.log("requuuuueeeest for delete", req);
+  const query = `DELETE FROM user_posts WHERE id=${req.params.id1}`;
 
-//   connection.query(query, (error, results, fields) => {
-//     if (error) {
-//       return console.log(error);
-//     } else if (results.length === 0) {
-//       res.status(404).send(error);
-//     } else {
-//       console.log(results, "results of adding likes to table");
-//       res.status(200).send(results);
-//     }
-//   });
-// }),
+  connection.query(query, (error, results, fields) => {
+    if (error) {
+      return console.log(error);
+    } else if (results.length === 0) {
+      res.status(404).send(error);
+    } else {
+      console.log(results, "results of adding likes to table");
+      res.status(200).send(results);
+    }
+  });
+}),
 // (exports.loadPreviewComments = async function (req, res) {
 //   var getAllComments = `SELECT * FROM user_comments`;
 //   connection.query(getAllComments, (error, results, fields) => {
@@ -464,10 +464,10 @@ const getUserBookmarks = async (userId, myCallback) => {
 //   });
 // }),
 
-// (exports.deleteUserComment = async function (req, res) {
-//   console.log("requuuuueeeest", req);
-//   console.log("respoooonnnssseee", res);
-// });
+(exports.deleteUserComment = async function (req, res) {
+  console.log("requuuuueeeest", req);
+  console.log("respoooonnnssseee", res);
+});
 
 // connection.end(function(err) {
 //     if(err) {

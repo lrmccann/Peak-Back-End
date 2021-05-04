@@ -5,7 +5,7 @@ const router = require('express').Router();
     const getController = require("../Controller/controller");
 
     router.route('/account-info')
-    .get(getController.getAllUsers)
+    // .get(getController.getAllUsers)
     .post(getController.createNewUser)
     .delete(getController.deleteAccount);
 
