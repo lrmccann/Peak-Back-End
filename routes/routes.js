@@ -39,6 +39,9 @@ const router = require('express').Router();
     router.route("/numOfLikesForPost/:id1/:id2/:id3")
     .put(getController.addLike);
 
+    router.route('/liked-posts/:id1')
+    .get(getController.getLikedPosts);
+
     router.route('/user-posts/:id1')
     .get(getController.getAllInfoOnPost)
     .delete(getController.deleteUserPost);

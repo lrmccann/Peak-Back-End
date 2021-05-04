@@ -421,7 +421,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     var numOflikesToAdd = req.params.id1;
     var postId = req.params.id2;
     var postTitle = req.params.id3;
-    var addLikeQuery = `UPDATE user_posts SET blog_likes=${numOflikesToAdd} WHERE user_id=${postId} AND post_title="${postTitle}"`;
+    var addLikeQuery = `UPDATE user_posts SET blog_likes=${numOflikesToAdd} WHERE id=${postId} AND post_title="${postTitle}"`;
     connection.query(addLikeQuery, (error, results) => {
       if (error) {
         return console.log(error);
@@ -433,6 +433,26 @@ const getUserBookmarks = async (userId, myCallback) => {
       }
     });
   }),
+  (exports.getLikedPosts = async function (req, res) {
+    var userId = req.params.id1;
+    connection.query(
+      `SELECT liked_posts FROM account_info WHERE id=${userId}`, 
+      (error, results) => {
+      if (error) {
+        return console.log(error);
+      } else if (results.length === 0) {
+        res.status(404).send(error);
+      } else {
+        var likedPosts = results[0].bookmarked_posts;
+        if(likedPosts === null){
+          return res.status(400).send("Error loading your likes array, please refresh")
+        }else{
+        var likesArr = likedPosts.split(",").map(Number);
+        res.status(200).send(likesArr);
+        }
+      }
+    });
+  })
   (exports.deleteUserPost = async function (req, res) {
     console.log("requuuuueeeest for delete", req);
     const query = `DELETE FROM user_posts WHERE id=${req.params.id1}`;
@@ -466,9 +486,8 @@ const getUserBookmarks = async (userId, myCallback) => {
         }
       }
     )
-    // console.log("requuuuueeeest", req);
-    // console.log("respoooonnnssseee", res);
   }),
+  // 
   (exports.loadPreviewComments = async function (req, res) {
     var getAllComments = `SELECT * FROM user_comments`;
     connection.query(getAllComments, (error, results, fields) => {
