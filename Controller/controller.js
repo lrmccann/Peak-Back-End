@@ -63,23 +63,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   );
 };
 
-(exports.addPostView = async function(req, res) {
-  var postId = req.params.id1;
-  console.log(postId)
-  await connection.query(
-    `UPDATE user_posts 
-    SET post_views = post_views + 1 
-    WHERE id=${postId}`,
-    (error) => {
-      if(error){
-        res.status(400).send('Failed to update post views');
-      }else{
-        res.status(200).send('Successfully updated post views');
-      }
-    }
-  )
-}),
-// controller methods for account-info
+// Controller funcs for Login/Signup
 (exports.createNewUser = async function (req, res) {
   var firstName = await req.body.firstName;
   var lastName = await req.body.lastName;
@@ -124,6 +108,28 @@ const getUserBookmarks = async (userId, myCallback) => {
       }
     });
   }),
+  (exports.deleteAccount = async function (req, res) {
+    console.log("requuuuueeeest", req);
+    console.log("respoooonnnssseee", res);
+  }),
+
+// Controller funcs for Home page
+(exports.addPostView = async function(req, res) {
+  const postId = req.params.id1;
+  await connection.query(
+    `UPDATE user_posts 
+    SET post_views = post_views + 1 
+    WHERE id=${postId}`,
+    (error) => {
+      if(error){
+        res.status(400).send('Failed to update post views');
+      }else{
+        res.status(200).send('Successfully updated post views');
+      }
+    }
+  )
+}),
+
   (exports.fetchUserInfo = async function (req, res) {
     var userId = await req.params.id1;
     var sqlAccountInfo = `SELECT * FROM account_info WHERE id = ${userId}`;
@@ -139,20 +145,7 @@ const getUserBookmarks = async (userId, myCallback) => {
       }
     });
   }),
-  (exports.getAllUsers = async function (req, res) {
-    var sqlAccountInfo = `SELECT * FROM account_info`;
-    connection.query(sqlAccountInfo, (error, results, fields) => {
-      if (error) {
-        return console.log(error);
-      } else {
-        return;
-      }
-    });
-  }),
-  (exports.deleteAccount = async function (req, res) {
-    console.log("requuuuueeeest", req);
-    console.log("respoooonnnssseee", res);
-  }),
+
   (exports.displayTopPosts = async function (req, res) {
     var userId = await req.params.id1;
     var query = `SELECT * FROM user_posts WHERE user_id=${userId} ORDER BY blog_likes DESC`;
