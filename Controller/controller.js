@@ -198,7 +198,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   (exports.bookmarkNewPost = async function (req, res) {
     const bookmarkedPostId = req.params.id1;
     const userId = req.params.id2;
-    const finalArr = [];
+    let finalArr = [];
     const insertNewBookmark = async (arr) => {
       let strToMatch = arr.toString();
       if (strToMatch.indexOf(bookmarkedPostId) === -1) {
