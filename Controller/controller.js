@@ -64,6 +64,11 @@ const getUserBookmarks = async (userId, myCallback) => {
 };
 // Controller funcs for Login/Signup
 (exports.createNewUser = async function (req, res) {
+
+  // const returnUserData = async () => {
+  //   await connection.query(`SELECT * FROM account_info`)
+  // }
+  // const signupUser = () => {
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const username = req.body.username;
@@ -86,6 +91,9 @@ const getUserBookmarks = async (userId, myCallback) => {
       res.status(200).send(results);
     }
   });
+// }
+// signupUser();
+
 }),
   (exports.authenticateUser = async function (req, res) {
     const username = req.params.id1;

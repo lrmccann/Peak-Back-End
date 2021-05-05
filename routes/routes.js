@@ -51,4 +51,7 @@ const router = require('express').Router();
     router.route('/liked-posts/:id1')
     .get(getController.getLikedPosts);
 
+    router.route('/user-details/:id1')
+    .get(getController.fetchUserInfo);
+
 module.exports = router;
