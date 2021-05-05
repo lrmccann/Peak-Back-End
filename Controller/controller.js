@@ -64,11 +64,6 @@ const getUserBookmarks = async (userId, myCallback) => {
 };
 // Controller funcs for Login/Signup
 (exports.createNewUser = async function (req, res) {
-
-  // const returnUserData = async () => {
-  //   await connection.query(`SELECT * FROM account_info`)
-  // }
-  // const signupUser = () => {
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const username = req.body.username;
@@ -76,11 +71,12 @@ const getUserBookmarks = async (userId, myCallback) => {
   const password = req.body.password;
   const age = req.body.age;
   const city = req.body.city;
+  const state = req.body.state;
   const zipcode = req.body.zip;
   const jobTitle = req.body.jobTitle;
   const registerDate = req.body.date;
   await connection.query(`INSERT INTO account_info(first_name , last_name , username , email , password , age , city , zipcode , job_title , register_date) 
-  VALUES("${firstName}" , "${lastName}" , "${username}" , "${email}" , "${password}" , ${age} , "${city}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`
+  VALUES("${firstName}" , "${lastName}" , "${username}" , "${email}" , "${password}" , ${age} , "${city}" , "${state}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`
   ,
      (error, results) => {
     if (error) {
@@ -91,9 +87,6 @@ const getUserBookmarks = async (userId, myCallback) => {
       res.status(200).send(results);
     }
   });
-// }
-// signupUser();
-
 }),
   (exports.authenticateUser = async function (req, res) {
     const username = req.params.id1;
