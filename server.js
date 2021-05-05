@@ -2,7 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const routes = require("./routes/routes");
 const mysqlConfig = require("./Controller/mysqlConfig");
-const jawsdbConfig = require("./Controller/jawsdbConfig");
 const mysql = require("mysql");
 const app = express();
 const PORT = process.env.PORT || 3005;
