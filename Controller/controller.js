@@ -75,7 +75,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   const zipcode = req.body.zip;
   const jobTitle = req.body.jobTitle;
   const registerDate = req.body.date;
-  await connection.query(`INSERT INTO account_info(first_name , last_name , username , email , password , age , city , zipcode , job_title , register_date) 
+  await connection.query(`INSERT INTO account_info(first_name , last_name , username , email , password , age , city , state ,  zipcode , job_title , register_date) 
   VALUES("${firstName}" , "${lastName}" , "${username}" , "${email}" , "${password}" , ${age} , "${city}" , "${state}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`
   ,
      (error, results) => {
