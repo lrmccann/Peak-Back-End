@@ -83,7 +83,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     } else if (results.length === 0) {
       res.status(400).send("Please try again");
     } else if (results.length !== 0) {
-      res.status(200).send("User Created Successfully");
+      res.status(200).send(results);
     }
   });
 }),
