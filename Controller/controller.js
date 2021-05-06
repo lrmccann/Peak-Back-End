@@ -89,7 +89,16 @@ const getUserBookmarks = async (userId, myCallback) => {
   });
 }),
 (exports.addPrefTopics = async function (req, res) {
-  console.log(req, "request for topic controller");
+  // console.log(req, "request for topic controller");
+  const userChoiceOne = req.body.choiceOne;
+  const userChoiceTwo = req.body.choiceTwo;
+  const userChoiceThree = req.body.choiceThree;
+  const userChoiceFour = req.body.choiceFour;
+  const userChoiceFive = req.body.choiceFive;
+
+  console.log(userChoiceOne , userChoiceTwo , userChoiceThree , userChoiceFour , userChoiceFive);
+
+  // await connection.query(`UPDATE account_info SET preferred_topic = ${userChoiceOne}, ${userChoiceTwo}, ${userChoiceThree}, ${userChoiceFour}, ${userChoiceFive})`)
 }),
   (exports.authenticateUser = async function (req, res) {
     const username = req.params.id1;
