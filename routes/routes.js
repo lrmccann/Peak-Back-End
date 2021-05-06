@@ -5,6 +5,8 @@ const router = require('express').Router();
     router.route('/account-info')
     .post(getController.createNewUser)
     .delete(getController.deleteAccount)
+
+    router.route('/account_info/:id1')
     .put(getController.addPrefTopics);
 
     router.route("/account-info-login/:id1/:id2")
