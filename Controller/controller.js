@@ -98,7 +98,7 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   // console.log(userChoiceOne , userChoiceTwo , userChoiceThree , userChoiceFour , userChoiceFive);
 
-  await connection.query(`UPDATE account_info SET preferred_topics = '${userChoiceOne}', '${userChoiceTwo}', '${userChoiceThree}', '${userChoiceFour}', '${userChoiceFive}' WHERE id=${userId}`,
+  await connection.query(`UPDATE account_info SET preferred_topics = '${userChoiceOne}, ${userChoiceTwo}, ${userChoiceThree}, ${userChoiceFour}, ${userChoiceFive}' WHERE id=${userId}`,
     (error , response) => {
       if(error){
         console.log(error);
