@@ -100,6 +100,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   await connection.query(`UPDATE account_info SET preferred_topic = '${userChoiceOne}', '${userChoiceTwo}', '${userChoiceThree}', '${userChoiceFour}', '${userChoiceFive}'`,
     (error , response) => {
       if(error){
+        console.log(error);
         res.status(400).send(error);
       }else{
         console.log(response, "response to add topics");
