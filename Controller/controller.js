@@ -1,6 +1,7 @@
 const mysqlConfig = require("./mysqlConfig");
 const bcrypt = require("bcrypt");
 const mysql = require("mysql");
+const cloudinary = require("cloudinary");
 
 var connection = "";
 
@@ -62,6 +63,14 @@ const getUserBookmarks = async (userId, myCallback) => {
     }
   );
 };
+// uploading images to cloudinary
+(exports.uploadBlogImg = async function (req, res) {
+  console.log(req, "request for upload BLOG img")
+}),
+(exports.uploadUserImg = async function (req, res) {
+  console.log(req, "request for upload USER img")
+}),
+
 // Controller funcs for Login/Signup
 (exports.createNewUser = async function (req, res) {
   const firstName = req.body.firstName;

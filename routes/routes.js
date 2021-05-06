@@ -57,4 +57,14 @@ const router = require('express').Router();
     router.route('/user-details/:id1')
     .get(getController.fetchUserInfo);
 
+    // id1 = img name; id2 = img type; id3 = blog title
+    router.route('/blog-images/:id1/:id2/:id3')
+    // .get()
+    .post(getController.uploadBlogImg);
+
+//  id1 = img name; id2 = img type; id3 = user's name
+    router.route('/user-images/:id1/:id2/:id3')
+    // .get()
+    .post(getController.uploadUserImg);
+
 module.exports = router;

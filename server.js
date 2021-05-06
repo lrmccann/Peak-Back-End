@@ -6,6 +6,7 @@ const mysql = require("mysql");
 const app = express();
 const PORT = process.env.PORT || 3005;
 const cors = require("cors");
+const cloudinary = require("cloudinary");
 
 app.use(express.static('public'));
 // console.log(process.env, "here")
@@ -23,6 +24,12 @@ app.use((req, res, next) => {
     app.use(express.json());
     app.use(express.urlencoded({extended: true}));
     app.use(bodyParser.json());
+
+    cloudinary.v2.config({
+        cloud_name : `${process.env.cloud_name}`,
+        api_key : `${process.env.cloud_api_key}`,
+        api_secret : `${process.env.cloud_api_secret_key}`
+    })
 
     app.use(routes);
 
