@@ -89,16 +89,23 @@ const getUserBookmarks = async (userId, myCallback) => {
   });
 }),
 (exports.addPrefTopics = async function (req, res) {
-  // console.log(req, "request for topic controller");
   const userChoiceOne = req.body.choiceOne;
   const userChoiceTwo = req.body.choiceTwo;
   const userChoiceThree = req.body.choiceThree;
   const userChoiceFour = req.body.choiceFour;
   const userChoiceFive = req.body.choiceFive;
 
-  console.log(userChoiceOne , userChoiceTwo , userChoiceThree , userChoiceFour , userChoiceFive);
+  // console.log(userChoiceOne , userChoiceTwo , userChoiceThree , userChoiceFour , userChoiceFive);
 
-  // await connection.query(`UPDATE account_info SET preferred_topic = ${userChoiceOne}, ${userChoiceTwo}, ${userChoiceThree}, ${userChoiceFour}, ${userChoiceFive})`)
+  await connection.query(`UPDATE account_info SET preferred_topic = '${userChoiceOne}', '${userChoiceTwo}', '${userChoiceThree}', '${userChoiceFour}', '${userChoiceFive}'`,
+    (error , response) => {
+      if(error){
+        res.status(400).send(error);
+      }else{
+        console.log(response, "response to add topics");
+        res.status(200).send(response);
+      }
+    });
 }),
   (exports.authenticateUser = async function (req, res) {
     const username = req.params.id1;
