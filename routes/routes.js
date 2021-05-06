@@ -4,7 +4,8 @@ const router = require('express').Router();
 
     router.route('/account-info')
     .post(getController.createNewUser)
-    .delete(getController.deleteAccount);
+    .delete(getController.deleteAccount)
+    .put(getController.addPrefTopics);
 
     router.route("/account-info-login/:id1/:id2")
     .get(getController.authenticateUser);

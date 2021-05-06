@@ -88,6 +88,9 @@ const getUserBookmarks = async (userId, myCallback) => {
     }
   });
 }),
+(exports.addPrefTopics = async function (req, res) {
+  console.log(req, "request for topic controller");
+}),
   (exports.authenticateUser = async function (req, res) {
     const username = req.params.id1;
     const password = req.params.id2;
