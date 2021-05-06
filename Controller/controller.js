@@ -89,6 +89,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   });
 }),
 (exports.addPrefTopics = async function (req, res) {
+  const userId = req.params.id1;
   const userChoiceOne = req.body.choiceOne;
   const userChoiceTwo = req.body.choiceTwo;
   const userChoiceThree = req.body.choiceThree;
@@ -97,7 +98,7 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   // console.log(userChoiceOne , userChoiceTwo , userChoiceThree , userChoiceFour , userChoiceFive);
 
-  await connection.query(`UPDATE account_info SET preferred_topic = '${userChoiceOne}', '${userChoiceTwo}', '${userChoiceThree}', '${userChoiceFour}', '${userChoiceFive}'`,
+  await connection.query(`UPDATE account_info SET preferred_topic = '${userChoiceOne}', '${userChoiceTwo}', '${userChoiceThree}', '${userChoiceFour}', '${userChoiceFive}' WHERE id=${userId}`,
     (error , response) => {
       if(error){
         console.log(error);
