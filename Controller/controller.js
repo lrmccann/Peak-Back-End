@@ -65,10 +65,31 @@ const getUserBookmarks = async (userId, myCallback) => {
 };
 // uploading images to cloudinary
 (exports.uploadBlogImg = async function (req, res) {
-  console.log(req, "request for upload BLOG img")
+  // console.log(req, "request for upload BLOG img");
+  const fileName = req.params.id1;
+  const fileType = req.params.id2;
+  const blogTitle = req.params.id3;
+
+  await cloudinary.v2.uploader.upload(`${fileName}`, 
+  {resource_type: `${fileType}`, public_id: `peak/blogImgs/${blogTitle}`,
+  overwrite: true, notification_url: "http://peak-blogspace.s3-website.us-east-2.amazonaws.com/"},
+  function(error, result) {
+    if(error) {
+      console.error(error, "didnt work");
+    }else{
+      console.log(result , "did work here are results");
+    }
+  })
+
+
+console.log(fileName, fileType , blogTitle)
+
+
+
+
 }),
 (exports.uploadUserImg = async function (req, res) {
-  console.log(req, "request for upload USER img")
+  console.log(req, "request for upload USER img");
 }),
 
 // Controller funcs for Login/Signup
