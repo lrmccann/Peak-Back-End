@@ -71,7 +71,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   const blogTitle = req.params.id3;
 
   await cloudinary.v2.uploader.upload(`${fileName}`, 
-  {resource_type: `${fileType}`, public_id: `peak/blogImgs/${blogTitle}`,
+  {resource_type: `${fileType}`, public_id: `peak/blogImgs`,
   overwrite: true, notification_url: "http://peak-blogspace.s3-website.us-east-2.amazonaws.com/"},
   function(error, result) {
     if(error) {
