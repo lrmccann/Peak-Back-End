@@ -77,6 +77,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   // const fileType = req.params.id2;
   const blogTitle = req.params.id2;
 
+  console.log(fileName, "im hereeee");
 
   const fileContent = fs.readFileSync(fileName);
 
