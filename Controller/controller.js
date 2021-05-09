@@ -2,6 +2,12 @@ const mysqlConfig = require("./mysqlConfig");
 const bcrypt = require("bcrypt");
 const mysql = require("mysql");
 const cloudinary = require("cloudinary");
+const fs = require("fs");
+
+// const AWS = require('aws-sdk');
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+
+
 
 var connection = "";
 
@@ -66,21 +72,31 @@ const getUserBookmarks = async (userId, myCallback) => {
 // uploading images to cloudinary
 (exports.uploadBlogImg = async function (req, res) {
   // console.log(req, "request for upload BLOG img");
-  console.log(req.body, "request body")
+  // console.log(req.body, "request body")
   const fileName = req.params.id1;
-  const fileType = req.params.id2;
-  const blogTitle = req.params.id3;
+  // const fileType = req.params.id2;
+  const blogTitle = req.params.id2;
 
-  await cloudinary.v2.uploader.upload(`${fileName}`, 
-  {resource_type: `${fileType}`, public_id: `peak/blogImgs/${blogTitle}`,
-  overwrite: true, notification_url: "http://peak-blogspace.s3-website.us-east-2.amazonaws.com/"},
-  function(error, result) {
-    if(error) {
-      console.error(error, "didnt work");
-    }else{
-      console.log(result , "did work here are results");
-    }
-  })
+
+  const fileContent = fs.readFileSync(fileName);
+
+  const params = {
+    Bucket : 'peak-blogspace-photobucket',
+    Key : `${blogTitle}`,
+    Body : fileContent
+  }
+console.log(fileContent, "some file content i guess")
+
+  // await cloudinary.v2.uploader.upload(`${fileName}`, 
+  // {resource_type: `${fileType}`, public_id: `peak/blogImgs/${blogTitle}`,
+  // overwrite: true, notification_url: "http://peak-blogspace.s3-website.us-east-2.amazonaws.com/"},
+  // function(error, result) {
+  //   if(error) {
+  //     console.error(error, "didnt work");
+  //   }else{
+  //     console.log(result , "did work here are results");
+  //   }
+  // })
 
 
 console.log(fileName, fileType , blogTitle)
