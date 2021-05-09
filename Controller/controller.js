@@ -66,6 +66,7 @@ const getUserBookmarks = async (userId, myCallback) => {
 // uploading images to cloudinary
 (exports.uploadBlogImg = async function (req, res) {
   // console.log(req, "request for upload BLOG img");
+  console.log(req.body, "request body")
   const fileName = req.params.id1;
   const fileType = req.params.id2;
   const blogTitle = req.params.id3;
