@@ -83,14 +83,19 @@ const getUserBookmarks = async (userId, myCallback) => {
   
   // })
 
-  let someParams = {
+  const someParams = {
     Bucket: 'peak-blogspace-photobucket',
     Key : `blog-images/${title}.png`,
     Body : req.body.data.fileURL,
     ACL : 'public-read-write'
   }
 
-  const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf'} , region: REGION });
+  const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf'}});
+
+  const idkYet = decodeURI(req.body.data.fileURL);
+
+
+  console.log(idkYet, "find me here here ")
 
   const run = async () => {
     try {
