@@ -73,26 +73,26 @@ const getUserBookmarks = async (userId, myCallback) => {
 // uploading images to cloudinary
 (exports.uploadBlogImg = async function (req, res) {
   console.log(req.body.data.fileURL, "WHOOOLEEE STRING")
+  const title = req.params.id1;
 
   fs.readFile(req.body.data.fileURL , function (error, data) {
     if(error) {throw error ; }else{
     console.log(data, "abcdefg")
     }
-    console.log(data, "lmnop")
+    // console.log(data, "lmnop")
   })
 
   // aws.S3.ManagedUpload({
   //   params: {
   //     Bucket: 'peak-blogspace-photobucket',
-  //     Key : 
+  //     Key : `${title}`,
+  //     Body : 
   //   }
   // })
 
 
   const readFile = new FileReader();
 
-
-  const title = req.params.id1;
   // const fileType = req.params.id2;
 
   // console.log(fileName, "im hereeee");
