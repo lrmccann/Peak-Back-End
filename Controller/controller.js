@@ -91,12 +91,15 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   const s3 = new S3Client({ region: REGION });
 
+  const run = () => {
     try {
       const data = await s3.send(new PutObjectCommand(someParams));
       console.log("Success", data);
     } catch (err) {
       console.log("Error", err);
     }
+  }
+  run();
 
 
   // const readFile = new FileReader();
