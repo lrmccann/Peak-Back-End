@@ -71,22 +71,27 @@ const getUserBookmarks = async (userId, myCallback) => {
 };
 // uploading images to cloudinary
 (exports.uploadBlogImg = async function (req, res) {
-  // console.log(req, "request for upload BLOG img");
-  // console.log(req.body, "request body")
+  console.log(req, "request for upload BLOG img");
+  console.log(req.body, "request body")
+
+
+  const readFile = new FileReader();
+
+
   const fileName = req.params.id1;
-  // const fileType = req.params.id2;
+  const fileType = req.params.id2;
   const blogTitle = req.params.id2;
 
-  console.log(fileName, "im hereeee");
+  // console.log(fileName, "im hereeee");
 
-  const fileContent = fs.readFileSync(fileName);
+  // const fileContent = fs.readFileSync(fileName);
 
-  const params = {
-    Bucket : 'peak-blogspace-photobucket',
-    Key : `${blogTitle}`,
-    Body : fileContent
-  }
-console.log(fileContent, "some file content i guess")
+//   const params = {
+//     Bucket : 'peak-blogspace-photobucket',
+//     Key : `${blogTitle}`,
+//     Body : fileContent
+//   }
+// console.log(fileContent, "some file content i guess")
 
   // await cloudinary.v2.uploader.upload(`${fileName}`, 
   // {resource_type: `${fileType}`, public_id: `peak/blogImgs/${blogTitle}`,
