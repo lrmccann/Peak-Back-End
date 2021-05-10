@@ -58,7 +58,7 @@ const router = require('express').Router();
     .get(getController.fetchUserInfo);
 
     // id1 = img name; id2 = img type; id3 = blog title
-    router.route('/blog-images/:id1/:id2')
+    router.route('/blog-images/:id1')
     // .get()
     .post(getController.uploadBlogImg);
 
