@@ -136,7 +136,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   //   }
   // })
 
-console.log(someParams, "some Params");
+// console.log(someParams, "some Params");
 
 
 
