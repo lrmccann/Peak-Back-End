@@ -89,7 +89,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     Body : req.body.data.fileURL
   }
 
-  const s3 = new S3Client({ region: REGION });
+  const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf'} , region: REGION });
 
   const run = async () => {
     try {
