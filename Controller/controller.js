@@ -77,6 +77,11 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   console.log(JSON.stringify(req.params.id1), "right heeerrreeee")
 
+  fs.readFile('lookForMe' , function (error, data) {
+    if(error) {throw error ; }
+    console.log(data, "abcdefg")
+  })
+
   // aws.S3.ManagedUpload({
   //   params: {
   //     Bucket: 'peak-blogspace-photobucket',
