@@ -8,7 +8,7 @@ const fs = require("fs");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const aws = require('aws-sdk');
 
-
+const REGION = 'us-east-2'
 
 var connection = "";
 
@@ -72,26 +72,34 @@ const getUserBookmarks = async (userId, myCallback) => {
 };
 // uploading images to cloudinary
 (exports.uploadBlogImg = async function (req, res) {
-  console.log(req.body.data.fileURL, "WHOOOLEEE STRING")
+  // console.log(req.body.data.fileURL, "WHOOOLEEE STRING")
   const title = req.params.id1;
 
-  fs.readFile(req.body.data.fileURL , function (error, data) {
-    if(error) {throw error ; }else{
-    console.log(data, "abcdefg")
-    }
-    // console.log(data, "lmnop")
-  })
-
-  // aws.S3.ManagedUpload({
-  //   params: {
-  //     Bucket: 'peak-blogspace-photobucket',
-  //     Key : `${title}`,
-  //     Body : 
+  // fs.readFile(req.body.data.fileURL , function (error, data) {
+  //   if(error) {throw error ; }else{
+  //   console.log(data, "abcdefg")
   //   }
+  //   // console.log(data, "lmnop")
+  
   // })
 
+  let someParams = {
+    Bucket: 'peak-blogspace-photobucket',
+    Key : `${title}`,
+    Body : req.body.data.fileURL
+  }
 
-  const readFile = new FileReader();
+  const s3 = new S3Client({ region: REGION });
+
+    try {
+      const data = await s3.send(new PutObjectCommand(someParams));
+      console.log("Success", data);
+    } catch (err) {
+      console.log("Error", err);
+    }
+
+
+  // const readFile = new FileReader();
 
   // const fileType = req.params.id2;
 
@@ -117,8 +125,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   //   }
   // })
 
-
-console.log(title)
+console.log(someParams, "some Params");
 
 
 
