@@ -83,12 +83,12 @@ const getUserBookmarks = async (userId, myCallback) => {
   
   // })
 
-  const noClue = encodeURI(req.body.data.fileURL);
+  // const noClue = encodeURI(req.body.data.fileURL);
 
   const someParams = {
     Bucket: 'peak-blogspace-photobucket',
     Key : `blog-images/`,
-    Body : noClue,
+    Body : req.body.data.fileURL,
     ACL : 'public-read-write'
   }
 
@@ -97,7 +97,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   // const idkYet = decodeURI(req.body.data.fileURL);
 
 
-  console.log(noClue, "find me here here ")
+  console.log(req.body.data.fileURL, "find me here here ")
 
   const run = async () => {
     try {
