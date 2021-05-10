@@ -85,7 +85,7 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   let someParams = {
     Bucket: 'peak-blogspace-photobucket',
-    Key : `blog-images/${title}`,
+    Key : `blog-images/${title}.png`,
     Body : req.body.data.fileURL
   }
 
