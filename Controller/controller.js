@@ -90,7 +90,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     ACL : 'public-read-write'
   }
 
-  const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf'}});
+  const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf'}, region : REGION , signingRegion : REGION});
 
   const idkYet = decodeURI(req.body.data.fileURL);
 
