@@ -20,10 +20,10 @@ app.use((req, res, next) => {
     next();
   });
 
-    app.use(express.urlencoded({ extended: true }));
-    app.use(express.json());
-    app.use(express.urlencoded({extended: true}));
-    app.use(bodyParser.json());
+    app.use(express.urlencoded({ extended: true , limit: '3mb' }));
+    app.use(express.json({extended: true, limit : '3mb'}));
+
+    // app.use(bodyParser.json());
 
     cloudinary.v2.config({
         cloud_name : `${process.env.cloud_name}`,
