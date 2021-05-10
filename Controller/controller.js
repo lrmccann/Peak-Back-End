@@ -6,6 +6,7 @@ const fs = require("fs");
 
 // const AWS = require('aws-sdk');
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const aws = require('aws-sdk');
 
 
 
@@ -74,12 +75,19 @@ const getUserBookmarks = async (userId, myCallback) => {
   console.log(req, "request for upload BLOG img");
   console.log(req.body, "request body")
 
+  // aws.S3.ManagedUpload({
+  //   params: {
+  //     Bucket: 'peak-blogspace-photobucket',
+  //     Key : 
+  //   }
+  // })
+
 
   const readFile = new FileReader();
 
 
   const fileName = req.params.id1;
-  const fileType = req.params.id2;
+  // const fileType = req.params.id2;
   const blogTitle = req.params.id2;
 
   // console.log(fileName, "im hereeee");
