@@ -75,6 +75,8 @@ const getUserBookmarks = async (userId, myCallback) => {
   console.log(req, "request for upload BLOG img");
   console.log(req.body, "request body")
 
+  console.log(JSON.stringify(req.params.id1), "right heeerrreeee")
+
   // aws.S3.ManagedUpload({
   //   params: {
   //     Bucket: 'peak-blogspace-photobucket',
