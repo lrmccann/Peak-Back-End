@@ -74,13 +74,13 @@ const getUserBookmarks = async (userId, myCallback) => {
 (exports.uploadBlogImg = async function (req, res) {
   const title = req.params.id1;
 
-  const noClue = encodeURI(req.body.data.fileURL);
+  const noClue = req.body.data.fileURL;
 
   const base64data = new Buffer.from(req.body.data.fileURL, 'binary');
 
   aws.config.update({ 
-    credentials : {accessKeyId: "AKIATKAJGQIM7TUK3SWG" , secretAccessKey: "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" }, 
-    region: "us-east-2"
+    credentials : {accessKeyId: "AKIATKAJGQIM7TUK3SWG" , secretAccessKey: encodeURI("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") }, 
+    region: encodeURI("us-east-2")
   })
   // const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' }, region : REGION , signingRegion : REGION});
 
@@ -102,12 +102,10 @@ const getUserBookmarks = async (userId, myCallback) => {
   console.log("Bucket : " + someParams.Bucket, "Body : " + someParams.Body );
   console.log(s3, "s3 what dis say?")
 
-  // console.log(req.body.data.fileURL, "find me here here ")
-
   // await s3.getSignedUrl .upload(someParams, function (err, awsData){
 
 
-     s3.upload(someParams, function (err, awsData){
+     s3.putObject(someParams, function (err, awsData){
        if(err){
          console.log(err, "DIS WHEN IT  FAILS");
          res.status(469).send("failed" , err)
