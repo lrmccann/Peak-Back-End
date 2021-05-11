@@ -88,7 +88,7 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   const someParams = {
     Bucket: encodeURI('peak-blogspace-photobucket'),
-    Key : encodeURI(`/blog-images/${title}.png`),
+    Key : encodeURI(`blog-images/${title}.png`),
     // Body : encodeURI(noClue) //// this one works but the file doesnt load img
     // Body : noClue  ///// doesnt work because its expecting the body to be a string, buffer , stream , blob or typed array object
     // Body: encodeURI(base64data) //// doesnt work, this is when we're using base64 IN THE BUFFER
