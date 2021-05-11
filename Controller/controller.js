@@ -79,16 +79,17 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   const someParams = {
     Bucket: 'peak-blogspace-photobucket',
-    Key : encodeURIComponent(`blog-images/${title}.png`),
+    Key : `blog-images/${title}.png`,
     Body : base64data,
     ACL : 'public-read-write',
     ContentEncoding: 'Buffer',
-    ContentType: `image/png`
+    ContentType: `image/png`,
+    region : REGION
   }
 
   console.log(someParams);
 
-  aws.config.update({ credentials : {accessKeyId: 'AKIATKAJGQIM7TUK3SWG' , secretAccessKey: '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' } , region: REGION})
+  aws.config.update({ credentials : {accessKeyId: 'AKIATKAJGQIM7TUK3SWG' , secretAccessKey: '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' }})
   // const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' }, region : REGION , signingRegion : REGION});
 
   const s3 = new aws.S3({apiVersion: '2006-03-01'});
