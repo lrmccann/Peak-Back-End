@@ -120,10 +120,10 @@ const getUserBookmarks = async (userId, myCallback) => {
      s3.putObject(someParams, function (err, awsData){
        if(err){
          console.log(err, "DIS WHEN IT  FAILS");
-         return res.status(400).send("failed" , err)
+              res.status(400).send("failed" , err)
         //  throw err;
        }else{
-       return res.status(200).send("SUCCESSFULLY SENT TO AWS RES" , awsData);
+            res.status(200).send("SUCCESSFULLY SENT TO AWS RES" , awsData);
        }
      })
 
