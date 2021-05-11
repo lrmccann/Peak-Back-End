@@ -100,8 +100,11 @@ const getUserBookmarks = async (userId, myCallback) => {
     location = Location;
     key = Key;
   } catch (error) {
-     // console.log(error)
+     console.log(error)
   }
+
+  console.log(location, "some location");
+  console.log(key, "some keyyyy")
 
   // const run = async () => {
   //   try {
