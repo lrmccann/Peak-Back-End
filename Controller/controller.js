@@ -91,7 +91,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     Key : encodeURI(`blog-images/${title}.png`),
     // Body : encodeURI(noClue) //// this one works but the file doesnt load img
     // Body : noClue  ///// doesnt work because its expecting the body to be a string, buffer , stream , blob or typed array object
-    
+
     // Body: encodeURI(base64data) //// doesnt work, this is when we're using base64 IN THE BUFFER
     Body: base64data,    // this one works with base64 IN BUFFER
     ContentEncoding: 'base64',
@@ -120,8 +120,8 @@ const getUserBookmarks = async (userId, myCallback) => {
      s3.putObject(someParams, function (err, awsData){
        if(err){
          console.log(err, "DIS WHEN IT  FAILS");
-         res.status(469).send("failed" , err)
-         throw err;
+         return res.status(469).send("failed" , err)
+        //  throw err;
        }
        return res.status(200).send("SUCCESSFULLY SENT TO AWS RES" , awsData);
      })
