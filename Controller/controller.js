@@ -79,8 +79,8 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   const someParams = {
     Bucket: 'peak-blogspace-photobucket',
-    Key : encodeURIComponent(`blog-images/${title}`),
-    Body : encodeURIComponent(base64data),
+    Key : encodeURIComponent(`blog-images/${title}.png`),
+    Body : base64data,
     ACL : 'public-read-write',
     ContentEncoding: 'Buffer',
     ContentType: `image/png`
@@ -99,7 +99,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   let location = '';
   let key = '';
   try {
-    const { Location, Key } = await s3.upload(someParams).promise();
+    const { Location, Key } = await s3.putObject(someParams).promise();
     location = Location;
     key = Key;
   } catch (error) {
