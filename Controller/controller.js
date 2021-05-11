@@ -5,7 +5,7 @@ const cloudinary = require("cloudinary");
 const fs = require("fs");
 
 // const AWS = require('aws-sdk');
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+// const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const aws = require('aws-sdk');
 
 const REGION = 'us-east-2'
@@ -72,18 +72,9 @@ const getUserBookmarks = async (userId, myCallback) => {
 };
 // uploading images to cloudinary
 (exports.uploadBlogImg = async function (req, res) {
-  // console.log(req.body.data.fileURL, "WHOOOLEEE STRING")
   const title = req.params.id1;
-
-  // fs.readFile(req.body.data.fileURL , function (error, data) {
-  //   if(error) {throw error ; }else{
-  //   console.log(data, "abcdefg")
-  //   }
-  //   // console.log(data, "lmnop")
-  
-  // })
-
   // const noClue = encodeURI(req.body.data.fileURL);
+
 
   const someParams = {
     Bucket: 'peak-blogspace-photobucket',
@@ -94,54 +85,33 @@ const getUserBookmarks = async (userId, myCallback) => {
     ContentType: `image/png`
   }
 
-  const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' }, region : REGION , signingRegion : REGION});
+  aws.config.update({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' }, region : REGION , signingRegion : REGION})
+  // const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' }, region : REGION , signingRegion : REGION});
 
-  // const idkYet = decodeURI(req.body.data.fileURL);
+  const s3 = new aws.S3();
+
+  // console.log(req.body.data.fileURL, "find me here here ")
 
 
-  console.log(req.body.data.fileURL, "find me here here ")
-
-  const run = async () => {
-    try {
-      const data = await s3.send(new PutObjectCommand(someParams));
-      console.log("Success", data);
-    } catch (err) {
-      console.log("Error", err);
-    }
+  let location = '';
+  let key = '';
+  try {
+    const { Location, Key } = await s3.upload(someParams).promise();
+    location = Location;
+    key = Key;
+  } catch (error) {
+     // console.log(error)
   }
-  run();
 
-
-  // const readFile = new FileReader();
-
-  // const fileType = req.params.id2;
-
-  // console.log(fileName, "im hereeee");
-
-  // const fileContent = fs.readFileSync(fileName);
-
-//   const params = {
-//     Bucket : 'peak-blogspace-photobucket',
-//     Key : `${blogTitle}`,
-//     Body : fileContent
-//   }
-// console.log(fileContent, "some file content i guess")
-
-  // await cloudinary.v2.uploader.upload(`${fileName}`, 
-  // {resource_type: `${fileType}`, public_id: `peak/blogImgs/${blogTitle}`,
-  // overwrite: true, notification_url: "http://peak-blogspace.s3-website.us-east-2.amazonaws.com/"},
-  // function(error, result) {
-  //   if(error) {
-  //     console.error(error, "didnt work");
-  //   }else{
-  //     console.log(result , "did work here are results");
+  // const run = async () => {
+  //   try {
+  //     const data = await s3.send(new PutObjectCommand(someParams));
+  //     console.log("Success", data);
+  //   } catch (err) {
+  //     console.log("Error", err);
   //   }
-  // })
-
-// console.log(someParams, "some Params");
-
-
-
+  // }
+  // run();
 
 }),
 (exports.uploadUserImg = async function (req, res) {
