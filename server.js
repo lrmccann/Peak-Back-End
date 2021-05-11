@@ -17,10 +17,11 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
     res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
      res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    //  res.header("AWS4-HMAC-SHA256")
     next();
   });
 
-    app.use(express.urlencoded({ extended: true , limit: '3mb' }));
+    app.use(express.urlencoded({ extended: true , limit: '20mb' }));
     app.use(express.json({extended: true, limit : '20mb'}));
 
     // app.use(bodyParser.json());

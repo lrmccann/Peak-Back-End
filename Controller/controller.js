@@ -84,7 +84,7 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   const someParams = {
     Bucket: 'peak-blogspace-photobucket',
-    Key : `blog-images/${title}.png`,
+    Key : `peak-blogspace-photobucket/blog-images/${title}.png`,
     Body : base64data,
     ACL : 'public-read-write',
     ContentEncoding: 'Buffer',
@@ -118,8 +118,8 @@ const getUserBookmarks = async (userId, myCallback) => {
     //  console.log(error)
   // }
 
-  console.log(location, "some location");
-  console.log(key, "some keyyyy")
+  // console.log(location, "some location");
+  // console.log(key, "some keyyyy")
 
   // const run = async () => {
   //   try {
