@@ -101,7 +101,7 @@ const getUserBookmarks = async (userId, myCallback) => {
               url : `https://peak-blogspace-photobucket.s3.us-east-2.amazonaws.com/blog-images/${title}.${imgType}`
             })
             // .send(`https://peak-blogspace-photobucket.s3.us-east-2.amazonaws.com/blog-images/${title}.${imgType}`);
-       }
+       } 
      });
 }),
 (exports.uploadUserImg = async function (req, res) {
