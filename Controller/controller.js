@@ -76,6 +76,8 @@ const getUserBookmarks = async (userId, myCallback) => {
   const imgType = req.params.id2;
   const base64data = new Buffer.from(req.body.data.fileURL, 'base64');
 
+  console.log(req.params, "loooooook heeerrreeeeee" , imgType)
+
   aws.config.update({ 
     credentials : {accessKeyId: "AKIATKAJGQIM7TUK3SWG" , secretAccessKey: "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" }, 
     region: "us-east-2"
@@ -84,7 +86,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   const s3 = new aws.S3();
   const someParams = {
     Bucket: encodeURI('peak-blogspace-photobucket'),
-    Key : encodeURI(`blog-images/${title}.png`),
+    Key : encodeURI(`blog-images/${title}.${imgType}`),
     Body: base64data,
     ContentEncoding: 'base64',
     ContentType : encodeURI(`image/${imgType}`)
