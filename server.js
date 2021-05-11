@@ -21,7 +21,7 @@ app.use((req, res, next) => {
   });
 
     app.use(express.urlencoded({ extended: true , limit: '3mb' }));
-    app.use(express.json({extended: true, limit : '3mb'}));
+    app.use(express.json({extended: true, limit : '20mb'}));
 
     // app.use(bodyParser.json());
 
