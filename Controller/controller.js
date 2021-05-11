@@ -95,7 +95,12 @@ const getUserBookmarks = async (userId, myCallback) => {
               res.status(400).send("failed" , err)
        }else{
         //  console.log(awsData, "look for data here")
-            res.status(200).send(`https://peak-blogspace-photobucket.s3.us-east-2.amazonaws.com/blog-images/${title}.${imgType}`);
+            res.status(200)
+            .json({
+              "awsData" : awsData,
+              "url" : `https://peak-blogspace-photobucket.s3.us-east-2.amazonaws.com/blog-images/${title}.${imgType}`
+            })
+            // .send(`https://peak-blogspace-photobucket.s3.us-east-2.amazonaws.com/blog-images/${title}.${imgType}`);
        }
      });
 }),
