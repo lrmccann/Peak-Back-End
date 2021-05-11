@@ -73,7 +73,9 @@ const getUserBookmarks = async (userId, myCallback) => {
 // uploading images to cloudinary
 (exports.uploadBlogImg = async function (req, res) {
   const title = req.params.id1;
-  // const noClue = encodeURI(req.body.data.fileURL);
+
+  const noClue = encodeURI(req.body.data.fileURL);
+
   const base64data = new Buffer.from(req.body.data.fileURL, 'binary');
 
   aws.config.update({ 
@@ -88,8 +90,10 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   const someParams = {
     Bucket: encodeURI('peak-blogspace-photobucket'),
-    Key : `${title}.png`,
-    Body : base64data,
+    Key : encodeURI(`/${title}.png`),
+    Body : encodeURI(noClue)
+    // Body : base64data,
+
     // ACL : 'public-read-write',
     // ContentEncoding: 'Buffer',
     // ContentType: `image/png`
