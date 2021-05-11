@@ -76,50 +76,42 @@ const getUserBookmarks = async (userId, myCallback) => {
   // const noClue = encodeURI(req.body.data.fileURL);
   const base64data = new Buffer.from(req.body.data.fileURL, 'binary');
 
-  aws.config.update({ credentials : {accessKeyId: 'AKIATKAJGQIM7TUK3SWG' , secretAccessKey: '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' }, region: 'us-east-2'})
+  aws.config.update({ 
+    credentials : {accessKeyId: "AKIATKAJGQIM7TUK3SWG" , secretAccessKey: "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" }, 
+    region: "us-east-2"
+  })
   // const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' }, region : REGION , signingRegion : REGION});
 
-  const s3 = new aws.S3({apiVersion: "2012-10-17"});
+  // const s3 = new aws.S3({apiVersion: "2012-10-17"});
+  const s3 = new aws.S3();
 
 
   const someParams = {
-    Bucket: 'peak-blogspace-photobucket',
-    Key : `peak-blogspace-photobucket/blog-images/${title}.png`,
+    Bucket: encodeURI('peak-blogspace-photobucket'),
+    Key : `${title}.png`,
     Body : base64data,
-    ACL : 'public-read-write',
-    ContentEncoding: 'Buffer',
-    ContentType: `image/png`
+    // ACL : 'public-read-write',
+    // ContentEncoding: 'Buffer',
+    // ContentType: `image/png`
   }
 
-  console.log(someParams);
+  console.log("Bucket : " + someParams.Bucket, "Body : " + someParams.Body );
+  console.log(s3, "s3 what dis say?")
 
   // console.log(req.body.data.fileURL, "find me here here ")
 
+  // await s3.getSignedUrl .upload(someParams, function (err, awsData){
 
-  // let location = '';
-  // let key = '';
-  // try {
-    // const { Location, Key } =
-     await s3.upload(someParams, function (err, awsData){
+
+     s3.upload(someParams, function (err, awsData){
        if(err){
-         console.log(err, "FAILED")
+         console.log(err, "DIS WHEN IT  FAILS");
+         res.status(469).send("failed" , err)
          throw err;
        }
-       res.send({
-        "response_code": 200,
-        "response_message": "Success",
-        "response_data": data
-       })
+       return res.status(200).send("SUCCESSFULLY SENT TO AWS RES" , awsData);
      })
-    // .promise();
-    // location = Location;
-    // key = Key;
-  // } catch (error) {
-    //  console.log(error)
-  // }
 
-  // console.log(location, "some location");
-  // console.log(key, "some keyyyy")
 
   // const run = async () => {
   //   try {
