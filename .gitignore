@@ -1,1 +1,3 @@
 NODE_MODULES
+.env
+.env.development

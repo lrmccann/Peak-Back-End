@@ -6,7 +6,9 @@ const mysql = require("mysql");
 const app = express();
 const PORT = process.env.PORT || 3005;
 const cors = require("cors");
-const cloudinary = require("cloudinary");
+// const cloudinary = require("cloudinary");
+
+console.log(process.env);
 
 app.use(express.static('public'));
 // console.log(process.env, "here")

@@ -5,6 +5,9 @@ const aws = require("aws-sdk");
 
 var connection = "";
 
+const {AWS_ACCESS_KEY , AWS_SECRET_KEY , AWS_REGION , AWS_BUCKET} = process.env;
+console.log(AWS_ACCESS_KEY, AWS_REGION , "loook here boi")
+
 var connectionInfo = mysql.createConnection({
   host: mysqlConfig.host,
   database: mysqlConfig.database,
