@@ -1,26 +1,26 @@
-const mysqlConfig = require("./mysqlConfig");
 const bcrypt = require("bcrypt");
 const mysql = require("mysql");
 const aws = require("aws-sdk");
 
 var connection = "";
 
-const {AWS_ACCESS_KEY , AWS_SECRET_KEY , AWS_REGION , AWS_BUCKET} = process.env;
-console.log(AWS_ACCESS_KEY, AWS_REGION , "loook here boi")
+const {AWS_ACCESS_KEY , AWS_SECRET_KEY , AWS_REGION , AWS_BUCKET ,
+   SQL_HOST , SQL_DB , SQL_USERNAME , SQL_PASSWORD} = process.env;
+
+   console.log(AWS_ACCESS_KEY , AWS_SECRET_KEY , AWS_REGION , AWS_BUCKET ,
+    SQL_HOST , SQL_DB , SQL_USERNAME , SQL_PASSWORD, "mhmmm")
 
 var connectionInfo = mysql.createConnection({
-  host: mysqlConfig.host,
-  database: mysqlConfig.database,
-  user: mysqlConfig.userName,
-  password: mysqlConfig.passowrd,
+  host: SQL_HOST,
+  database: SQL_DB,
+  user: SQL_USERNAME,
+  password: SQL_PASSWORD,
   insecureAuth: true,
   multipleStatements: true,
 });
 
 if (process.env.JAWSDB_URL) {
-  const JAWSDB_URL =
-    "mysql://abcmgygb3vzp12j8:liluc5l0j218a8nj@hwr4wkxs079mtb19.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/xj2vbbkogwll9zgl";
-  connection = mysql.createConnection(JAWSDB_URL);
+  connection = mysql.createConnection(process.env.JAWSDB_URL);
 } else {
   connection = connectionInfo;
 }
@@ -74,15 +74,15 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   aws.config.update({
     credentials: {
-      accessKeyId: "AKIATKAJGQIM7TUK3SWG",
-      secretAccessKey: "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",
+      accessKeyId: `"${AWS_ACCESS_KEY}"`,
+      secretAccessKey: `"${AWS_SECRET_KEY}"`,
     },
-    region: "us-east-2",
+    region: `"${AWS_REGION}"`,
   });
 
   const s3 = new aws.S3();
   const someParams = {
-    Bucket: encodeURI("peak-blogspace-photobucket"),
+    Bucket: encodeURI(`"${AWS_BUCKET}"`),
     Key: encodeURI(`blog-images/${title}.${imgType}`),
     Body: base64data,
     ContentEncoding: "base64",

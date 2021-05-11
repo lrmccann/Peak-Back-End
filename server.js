@@ -7,7 +7,6 @@ const PORT = process.env.PORT || 3005;
 const cors = require("cors");
 
 app.use(express.static('public'));
-console.log(process.env, "here")
 app.use(cors());
 
 app.use((req, res, next) => {
@@ -64,7 +63,6 @@ let connection = mysql.createConnection({
                 startMysqlServerLocalHost();
             }
         })
-        console.log(`connnected as ${mysqlConfig.host} ${connection.threadId}`)
         });
 }
 startMysqlServerLocalHost();
