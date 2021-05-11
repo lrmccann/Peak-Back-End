@@ -7,9 +7,6 @@ var connection = "";
 const {AWS_ACCESS_KEY , AWS_SECRET_KEY , AWS_REGION , AWS_BUCKET ,
    SQL_HOST , SQL_DB , SQL_USERNAME , SQL_PASSWORD} = process.env;
 
-   console.log(AWS_ACCESS_KEY , AWS_SECRET_KEY , AWS_REGION , AWS_BUCKET ,
-    SQL_HOST , SQL_DB , SQL_USERNAME , SQL_PASSWORD, "mhmmm")
-
 var connectionInfo = mysql.createConnection({
   host: SQL_HOST,
   database: SQL_DB,
