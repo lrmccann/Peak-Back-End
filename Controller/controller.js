@@ -70,74 +70,36 @@ const getUserBookmarks = async (userId, myCallback) => {
     }
   );
 };
-// uploading images to cloudinary
+// uploading images to aws
 (exports.uploadBlogImg = async function (req, res) {
   const title = req.params.id1;
-  const noClue = req.body.data.fileURL;
+  const imgType = req.params.id2;
   const base64data = new Buffer.from(req.body.data.fileURL, 'base64');
 
   aws.config.update({ 
     credentials : {accessKeyId: "AKIATKAJGQIM7TUK3SWG" , secretAccessKey: "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" }, 
     region: "us-east-2"
-  })
-  // const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' }, region : REGION , signingRegion : REGION});
+  });
 
-  // const s3 = new aws.S3({apiVersion: "2012-10-17"});
   const s3 = new aws.S3();
-
-
   const someParams = {
     Bucket: encodeURI('peak-blogspace-photobucket'),
     Key : encodeURI(`blog-images/${title}.png`),
-    // Body : encodeURI(noClue) //// this one works but the file doesnt load img
-    // Body : noClue  ///// doesnt work because its expecting the body to be a string, buffer , stream , blob or typed array object
-
-    // Body: encodeURI(base64data) //// doesnt work, this is when we're using base64 IN THE BUFFER
-    Body: base64data,    // this one works with base64 IN BUFFER
+    Body: base64data,
     ContentEncoding: 'base64',
-    ContentType : encodeURI('image/png')
-
-
-
-
-
-
-    // Body : base64data,
-
-    // ACL : 'public-read-write',
-    // ContentEncoding: 'Buffer',
-    // ContentType: `image/png`
+    ContentType : encodeURI(`image/${imgType}`)
   }
 
-  console.log("Bucket : " + someParams.Bucket, "Body : " + someParams.Body );
-  console.log(s3, "s3 what dis say?")
-
-  // console.log(req.body.data.fileURL, "find me here here ")
-
-  // await s3.getSignedUrl .upload(someParams, function (err, awsData){
-
-
+  // console.log("Bucket : " + someParams.Bucket, "Body : " + someParams.Body );
+  // console.log(s3, "s3 what dis say?")
      s3.putObject(someParams, function (err, awsData){
        if(err){
          console.log(err, "DIS WHEN IT  FAILS");
               res.status(400).send("failed" , err)
-        //  throw err;
        }else{
-            res.status(200).send(awsData);
+            res.status(200).send(`https://peak-blogspace-photobucket.s3.us-east-2.amazonaws.com/blog-images/${title}.${imgType}`);
        }
-     })
-
-
-  // const run = async () => {
-  //   try {
-  //     const data = await s3.send(new PutObjectCommand(someParams));
-  //     console.log("Success", data);
-  //   } catch (err) {
-  //     console.log("Error", err);
-  //   }
-  // }
-  // run();
-
+     });
 }),
 (exports.uploadUserImg = async function (req, res) {
   console.log(req, "request for upload USER img");

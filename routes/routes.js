@@ -57,10 +57,8 @@ const router = require('express').Router();
     router.route('/user-details/:id1')
     .get(getController.fetchUserInfo);
 
-    // id1 = img name; id2 = img type; id3 = blog title
-    router.route('/blog-images/:id1')
-    // .get()
-    // .
+    // id1 = data url; id2 = img type;
+    router.route('/blog-images/:id1/:id2')
     .put(getController.uploadBlogImg);
 
 //  id1 = img name; id2 = img type; id3 = user's name
