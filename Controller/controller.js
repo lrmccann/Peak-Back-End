@@ -91,7 +91,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   aws.config.update({ credentials : {accessKeyId: 'AKIATKAJGQIM7TUK3SWG' , secretAccessKey: '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' }, region: 'us-east-2'})
   // const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' }, region : REGION , signingRegion : REGION});
 
-  const s3 = new aws.S3({apiVersion: '2006-03-01'});
+  const s3 = new aws.S3({apiVersion: "2012-10-17"});
 
   // console.log(req.body.data.fileURL, "find me here here ")
 
