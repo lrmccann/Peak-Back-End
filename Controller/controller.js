@@ -8,7 +8,7 @@ const fs = require("fs");
 // const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const aws = require('aws-sdk');
 
-const REGION = 'us-east-2'
+const REGION = 'us-east-2';
 
 var connection = "";
 
@@ -79,16 +79,16 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   const someParams = {
     Bucket: 'peak-blogspace-photobucket',
-    Key : encodeURIComponent(`blog-images`) + '/',
+    Key : encodeURIComponent(`blog-images/${title}`),
     Body : encodeURIComponent(base64data),
     ACL : 'public-read-write',
     ContentEncoding: 'Buffer',
-    ContentType: `image/png`
+    ContentType: `image/png`,
   }
 
   console.log(someParams);
 
-  aws.config.update({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' }, region : REGION , signingRegion : REGION})
+  aws.config.update({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' } , region: REGION})
   // const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' }, region : REGION , signingRegion : REGION});
 
   const s3 = new aws.S3();
