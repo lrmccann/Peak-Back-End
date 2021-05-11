@@ -74,7 +74,7 @@ const getUserBookmarks = async (userId, myCallback) => {
 (exports.uploadBlogImg = async function (req, res) {
   const title = req.params.id1;
   const noClue = req.body.data.fileURL;
-  const base64data = new Buffer.from(req.body.data.fileURL, 'binary');
+  const base64data = new Buffer.from(req.body.data.fileURL, 'base64');
 
   aws.config.update({ 
     credentials : {accessKeyId: "AKIATKAJGQIM7TUK3SWG" , secretAccessKey: "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" }, 
@@ -88,8 +88,15 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   const someParams = {
     Bucket: encodeURI('peak-blogspace-photobucket'),
-    Key : encodeURI(`/${title}.png`),
-    Body : encodeURI(noClue)
+    Key : encodeURI(`/blog-images/${title}.png`),
+    // Body : encodeURI(noClue) //// this one works but the file doesnt load img
+    Body : noClue
+
+
+
+
+
+
     // Body : base64data,
 
     // ACL : 'public-read-write',
