@@ -1,17 +1,13 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const routes = require("./routes/routes");
 const mysqlConfig = require("./Controller/mysqlConfig");
 const mysql = require("mysql");
 const app = express();
 const PORT = process.env.PORT || 3005;
 const cors = require("cors");
-// const cloudinary = require("cloudinary");
-
-console.log(process.env);
 
 app.use(express.static('public'));
-// console.log(process.env, "here")
+console.log(process.env, "here")
 app.use(cors());
 
 app.use((req, res, next) => {
@@ -19,20 +15,11 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
     res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
      res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    //  res.header("AWS4-HMAC-SHA256")
     next();
   });
 
     app.use(express.urlencoded({ extended: true , limit: '20mb' }));
     app.use(express.json({extended: true, limit : '20mb'}));
-
-    // app.use(bodyParser.json());
-
-    cloudinary.v2.config({
-        cloud_name : `${process.env.cloud_name}`,
-        api_key : `${process.env.cloud_api_key}`,
-        api_secret : `${process.env.cloud_api_secret_key}`
-    })
 
     app.use(routes);
 
