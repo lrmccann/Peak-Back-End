@@ -1,9 +1,6 @@
 const mysqlConfig = require("./mysqlConfig");
 const bcrypt = require("bcrypt");
 const mysql = require("mysql");
-const cloudinary = require("cloudinary");
-const fs = require("fs");
-
 const aws = require("aws-sdk");
 
 var connection = "";
@@ -138,8 +135,6 @@ const getUserBookmarks = async (userId, myCallback) => {
     const userChoiceThree = req.body.choiceThree;
     const userChoiceFour = req.body.choiceFour;
     const userChoiceFive = req.body.choiceFive;
-
-    // console.log(userChoiceOne , userChoiceTwo , userChoiceThree , userChoiceFour , userChoiceFive);
 
     await connection.query(
       `UPDATE account_info SET preferred_topics = '${userChoiceOne}, ${userChoiceTwo}, ${userChoiceThree}, ${userChoiceFour}, ${userChoiceFive}' WHERE id=${userId}`,
@@ -485,6 +480,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   //
   // Controller funcs for Navbar
   (exports.postNewBlog = async function (req, res) {
+    const imgHeader = req.body.headerImg;
     const blogTitle = req.body.blogTitle;
     const blogBody = req.body.blogBody;
     const userIdToSend = req.body.userId;
