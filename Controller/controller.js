@@ -85,6 +85,8 @@ const getUserBookmarks = async (userId, myCallback) => {
     ContentType: `image/png`
   }
 
+  console.log(someParams);
+
   aws.config.update({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' }, region : REGION , signingRegion : REGION})
   // const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' }, region : REGION , signingRegion : REGION});
 
