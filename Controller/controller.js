@@ -74,14 +74,15 @@ const getUserBookmarks = async (userId, myCallback) => {
 (exports.uploadBlogImg = async function (req, res) {
   const title = req.params.id1;
   // const noClue = encodeURI(req.body.data.fileURL);
+  var base64data = new Buffer.from(req.body.data.fileURL, 'binary');
 
 
   const someParams = {
     Bucket: 'peak-blogspace-photobucket',
     Key : encodeURIComponent(`blog-images`) + '/',
-    Body : req.body.data.fileURL,
+    Body : encodeURIComponent(base64data),
     ACL : 'public-read-write',
-    ContentEncoding: 'base64',
+    ContentEncoding: 'Buffer',
     ContentType: `image/png`
   }
 
