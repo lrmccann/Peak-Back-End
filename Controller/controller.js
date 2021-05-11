@@ -74,10 +74,10 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   aws.config.update({
     credentials: {
-      accessKeyId: `"${AWS_ACCESS_KEY}"`,
-      secretAccessKey: `"${AWS_SECRET_KEY}"`,
+      accessKeyId: `${AWS_ACCESS_KEY}`,
+      secretAccessKey: `${AWS_SECRET_KEY}`,
     },
-    region: `"${AWS_REGION}"`,
+    region: `${AWS_REGION}`,
   });
 
   const s3 = new aws.S3();
