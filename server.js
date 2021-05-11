@@ -1,10 +1,11 @@
 const express = require("express");
 const routes = require("./routes/routes");
-const mysqlConfig = require("./Controller/mysqlConfig");
 const mysql = require("mysql");
 const app = express();
 const PORT = process.env.PORT || 3005;
 const cors = require("cors");
+
+const {SQL_HOST , SQL_DB , SQL_USERNAME , SQL_PASSWORD} = process.env;
 
 app.use(express.static('public'));
 app.use(cors());
@@ -44,10 +45,10 @@ startMysqlServer();
   }else {
     function startMysqlServerLocalHost () {
 let connection = mysql.createConnection({
-    host :  mysqlConfig.host,
-    database : mysqlConfig.database,
-    user : mysqlConfig.userName,
-    password : mysqlConfig.passowrd,
+    host :  SQL_HOST,
+    database : SQL_DB,
+    user : SQL_USERNAME,
+    password : SQL_PASSWORD,
     insecureAuth : true,
     
 });
