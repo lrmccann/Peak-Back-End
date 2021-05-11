@@ -123,7 +123,7 @@ const getUserBookmarks = async (userId, myCallback) => {
               res.status(400).send("failed" , err)
         //  throw err;
        }else{
-            res.status(200).send("SUCCESSFULLY SENT TO AWS RES" , awsData);
+            res.status(200).send(awsData);
        }
      })
 
