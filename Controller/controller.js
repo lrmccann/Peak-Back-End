@@ -76,8 +76,6 @@ const getUserBookmarks = async (userId, myCallback) => {
   const imgType = req.params.id2;
   const base64data = new Buffer.from(req.body.data.fileURL, 'base64');
 
-  console.log(req.params, "loooooook heeerrreeeeee" , imgType)
-
   aws.config.update({ 
     credentials : {accessKeyId: "AKIATKAJGQIM7TUK3SWG" , secretAccessKey: "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" }, 
     region: "us-east-2"
@@ -92,13 +90,11 @@ const getUserBookmarks = async (userId, myCallback) => {
     ContentType : encodeURI(`image/${imgType}`)
   }
 
-  // console.log("Bucket : " + someParams.Bucket, "Body : " + someParams.Body );
-  // console.log(s3, "s3 what dis say?")
      s3.putObject(someParams, function (err, awsData){
        if(err){
-         console.log(err, "DIS WHEN IT  FAILS");
               res.status(400).send("failed" , err)
        }else{
+         console.log(awsData, "look for data here")
             res.status(200).send(`https://peak-blogspace-photobucket.s3.us-east-2.amazonaws.com/blog-images/${title}.${imgType}`);
        }
      });
