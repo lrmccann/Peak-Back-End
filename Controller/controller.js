@@ -469,7 +469,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     let userIdAsInt = userIdToSend.replace(/'/g,'')
 
     await connection.query(`INSERT INTO user_posts(user_id , post_title, post_body, blog_img, blog_likes) 
-    VALUES( ${userIdAsInt}, ${blogTitle}, ${blogBody}, ${imgHeader}, 0);`,
+    VALUES( ${userIdToSend}, "${blogTitle}", "${blogBody}", "${imgHeader}", 0);`,
      (error, results) => {
       if (error) {
         console.log(error, "find me find me find me")
