@@ -453,23 +453,24 @@ const getUserBookmarks = async (userId, myCallback) => {
   //
   // Controller funcs for Navbar
   (exports.postNewBlog = async function (req, res) {
-    const imgHeader = req.body.blogInfoToSend.imgHeaderToSend;
-    const blogTitle = req.body.blogInfoToSend.blogTitleToSend;
-    const blogBody = req.body.blogInfoToSend.blogBodyToSend;
-    const userIdToSend = req.body.blogInfoToSend.userIdToSend;
-    await connection.query(`INSERT INTO user_posts(user_id , post_title, post_body, blog_img, blog_likes) 
-    VALUES("${userIdToSend}", "${blogTitle}", "${blogBody}", "${imgHeader}", 0);`,
-     (error, results) => {
-      if (error) {
-        res
-          .status(404)
-          .send(
-            "There was an error posting your blog, please try again later."
-          );
-      } else {
-        res.status(202).send(results);
-      }
-    });
+    console.log(req.body, "look here boi")
+    // const imgHeader = req.body.blogInfoToSend.imgHeaderToSend;
+    // const blogTitle = req.body.blogInfoToSend.blogTitleToSend;
+    // const blogBody = req.body.blogInfoToSend.blogBodyToSend;
+    // const userIdToSend = req.body.blogInfoToSend.userIdToSend;
+    // await connection.query(`INSERT INTO user_posts(user_id , post_title, post_body, blog_img, blog_likes) 
+    // VALUES("${userIdToSend}", "${blogTitle}", "${blogBody}", "${imgHeader}", 0);`,
+    //  (error, results) => {
+    //   if (error) {
+    //     res
+    //       .status(404)
+    //       .send(
+    //         "There was an error posting your blog, please try again later."
+    //       );
+    //   } else {
+    //     res.status(202).send(results);
+    //   }
+    // });
   }),
   //
   // Controller funcs for Bookmarks Page
