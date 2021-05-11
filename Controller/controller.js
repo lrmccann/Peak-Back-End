@@ -74,7 +74,12 @@ const getUserBookmarks = async (userId, myCallback) => {
 (exports.uploadBlogImg = async function (req, res) {
   const title = req.params.id1;
   // const noClue = encodeURI(req.body.data.fileURL);
-  var base64data = new Buffer.from(req.body.data.fileURL, 'binary');
+  const base64data = new Buffer.from(req.body.data.fileURL, 'binary');
+
+  aws.config.update({ credentials : {accessKeyId: 'AKIATKAJGQIM7TUK3SWG' , secretAccessKey: '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' }, region: 'us-east-2'})
+  // const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' }, region : REGION , signingRegion : REGION});
+
+  const s3 = new aws.S3({apiVersion: "2012-10-17"});
 
 
   const someParams = {
@@ -88,23 +93,30 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   console.log(someParams);
 
-  aws.config.update({ credentials : {accessKeyId: 'AKIATKAJGQIM7TUK3SWG' , secretAccessKey: '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' }, region: 'us-east-2'})
-  // const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' }, region : REGION , signingRegion : REGION});
-
-  const s3 = new aws.S3({apiVersion: "2012-10-17"});
-
   // console.log(req.body.data.fileURL, "find me here here ")
 
 
-  let location = '';
-  let key = '';
-  try {
-    const { Location, Key } = await s3.putObject(someParams).promise();
-    location = Location;
-    key = Key;
-  } catch (error) {
-     console.log(error)
-  }
+  // let location = '';
+  // let key = '';
+  // try {
+    // const { Location, Key } =
+     await s3.upload(someParams, function (err, awsData){
+       if(err){
+         console.log(err, "FAILED")
+         throw err;
+       }
+       res.send({
+        "response_code": 200,
+        "response_message": "Success",
+        "response_data": data
+       })
+     })
+    // .promise();
+    // location = Location;
+    // key = Key;
+  // } catch (error) {
+    //  console.log(error)
+  // }
 
   console.log(location, "some location");
   console.log(key, "some keyyyy")
