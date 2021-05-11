@@ -89,9 +89,9 @@ const getUserBookmarks = async (userId, myCallback) => {
     ContentType: encodeURI(`image/${imgType}`),
   };
 
-  s3.putObject(someParams, function (err, awsData) {
+  s3.putObject(someParams, function (err) {
     if (err) {
-      res.status(400).send("failed", err);
+      res.status(400).send(err);
     } else {
       res
         .status(202)
