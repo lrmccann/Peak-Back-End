@@ -83,7 +83,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     Body : encodeURIComponent(base64data),
     ACL : 'public-read-write',
     ContentEncoding: 'Buffer',
-    ContentType: `image/png`,
+    ContentType: `image/png`
   }
 
   console.log(someParams);
@@ -91,7 +91,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   aws.config.update({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' } , region: REGION})
   // const s3 = new S3Client({ credentials : {accessKeyId: 'AKIATKAJGQIM3AD2LUM5' , secretAccessKey: 'sNWnLTzjela3uRaKOGj53KqwuuEFXzRKwmT94xf' }, region : REGION , signingRegion : REGION});
 
-  const s3 = new aws.S3();
+  const s3 = new aws.S3({apiVersion: '2006-03-01'});
 
   // console.log(req.body.data.fileURL, "find me here here ")
 
