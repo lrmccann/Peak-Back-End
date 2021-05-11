@@ -82,7 +82,7 @@ const getUserBookmarks = async (userId, myCallback) => {
 
   const s3 = new aws.S3();
   const someParams = {
-    Bucket: encodeURI(`"${AWS_BUCKET}"`),
+    Bucket: encodeURI(`${AWS_BUCKET}`),
     Key: encodeURI(`blog-images/${title}.${imgType}`),
     Body: base64data,
     ContentEncoding: "base64",
