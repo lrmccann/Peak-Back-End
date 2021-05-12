@@ -100,9 +100,43 @@ const getUserBookmarks = async (userId, myCallback) => {
 }),
   (exports.uploadUserImg = async function (req, res) {
     console.log(req, "request for upload USER img");
+    const fileName = req.params.id1;
+    const fileType = req.params.id2;
+    const base64data = new Buffer.from(req.body.data.fileData, "base64");
+  
+    aws.config.update({
+      credentials: {
+        accessKeyId: `${AWS_ACCESS_KEY}`,
+        secretAccessKey: `${AWS_SECRET_KEY}`,
+      },
+      region: `${AWS_REGION}`,
+    });
+  
+    const s3 = new aws.S3();
+    const someParams = {
+      Bucket: encodeURI(`${AWS_BUCKET}`),
+      Key: encodeURI(`profile-pics/${fileName}.${fileType}`),
+      Body: base64data,
+      ContentEncoding: "base64",
+      ContentType: encodeURI(`image/${fileType}`),
+    };
+  
+    s3.putObject(someParams, function (err) {
+      if (err) {
+        console.error(err, "find error here");
+        res.status(400).send(err);
+      } else {
+        res
+          .status(202)
+          .send(
+            `https://peak-blogspace-photobucket.s3.us-east-2.amazonaws.com/profile-pics/${fileName}.${fileType}`
+          );
+      }
+    });
   }),
   // Controller funcs for Login/Signup
   (exports.createNewUser = async function (req, res) {
+    const icon = req.body.icon;
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
     const username = req.body.username;
@@ -114,16 +148,15 @@ const getUserBookmarks = async (userId, myCallback) => {
     const zipcode = req.body.zip;
     const jobTitle = req.body.jobTitle;
     const registerDate = req.body.date;
+
     await connection.query(
-      `INSERT INTO account_info(first_name , last_name , username , email , password , age , city , state ,  zipcode , job_title , register_date) 
-  VALUES("${firstName}" , "${lastName}" , "${username}" , "${email}" , "${password}" , ${age} , "${city}" , "${state}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`,
+      `INSERT INTO account_info(icon , first_name , last_name , username , email , password , age , city , state ,  zipcode , job_title , register_date) 
+  VALUES( "${icon}" , "${firstName}" , "${lastName}" , "${username}" , "${email}" , "${password}" , ${age} , "${city}" , "${state}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`,
       (error, results) => {
-        if (error) {
+        if (error || results.length === 0) {
           res.status(404).send(error);
-        } else if (results.length === 0) {
-          res.status(400).send("Please try again");
         } else if (results.length !== 0) {
-          res.status(200).send(results);
+          res.status(202).send("User created Successfully");
         }
       }
     );
@@ -472,7 +505,7 @@ const getUserBookmarks = async (userId, myCallback) => {
           results.map((index) => {
             toSend = index;
           });
-          res.status(200).send(toSend);
+          res.status(202).send(toSend);
         }
       }
     );

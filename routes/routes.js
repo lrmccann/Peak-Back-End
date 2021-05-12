@@ -61,9 +61,8 @@ const router = require('express').Router();
     router.route('/blog-images/:id1/:id2')
     .put(getController.uploadBlogImg);
 
-//  id1 = img name; id2 = img type; id3 = user's name
-    router.route('/user-images/:id1/:id2/:id3')
-    // .get()
-    .post(getController.uploadUserImg);
+//  id1 = img name to save under in aws; id2 = img type;
+    router.route('/user-images/:id1/:id2')
+    .put(getController.uploadUserImg);
 
 module.exports = router;
