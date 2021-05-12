@@ -177,7 +177,7 @@ const getUserBookmarks = async (userId, myCallback) => {
           res.status(400).send(error);
         } else {
           console.log(response, "response to add topics");
-          res.status(200).send(response);
+          res.status(202).send(response);
         }
       }
     );
