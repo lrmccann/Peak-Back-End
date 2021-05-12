@@ -201,7 +201,7 @@ const getUserBookmarks = async (userId, myCallback) => {
             console.log(tokenToSend, "our seeeecreeet token")
             res.cookie('jwToken', tokenToSend, {
               secure : false,
-              httpOnly : true
+              // httpOnly : true
             });
             results.map((index) => {
               res.status(200).send(index);
