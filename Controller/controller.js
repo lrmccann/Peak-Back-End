@@ -222,11 +222,6 @@ const getUserBookmarks = async (userId, myCallback) => {
           }else{
             res.status(404).send("User does not exist, check password and try again!")
           }
-
-          // res.status(200).json({
-          //   results: removeArr,
-          //   JWT: generateJsonWebToken(),
-          // });
         }
       }
     );

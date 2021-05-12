@@ -1,6 +1,7 @@
 const router = require('express').Router();
 
     const getController = require("../Controller/controller");
+    const isAuth = require("../Controller/isAuth");
 
     router.route('/account-info')
     .post(getController.createNewUser)
@@ -13,7 +14,7 @@ const router = require('express').Router();
     .get(getController.authenticateUser);
 
     router.route('/user-posts')
-    .get(getController.getAllPosts);
+    .get(isAuth.default, getController.getAllPosts);
 
     router.route('/post-views/:id1')
     .put(getController.addPostView);
