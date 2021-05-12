@@ -194,7 +194,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     const password = req.params.id2;
     await connection.query(
       `SELECT * FROM account_info WHERE username = '${username}' AND password = '${password}'`,
-      (error, results) => {
+      async (error, results) => {
         if (error || results.length === 0) {
           res.status(404).send(error);
         } else if (results.length !== 0) {
