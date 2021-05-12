@@ -84,6 +84,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     Body: base64data,
     ContentEncoding: "base64",
     ContentType: encodeURI(`image/${imgType}`),
+    ACL : 'public-read'
   };
 
   s3.putObject(someParams, function (err) {
@@ -119,6 +120,7 @@ const getUserBookmarks = async (userId, myCallback) => {
       Body: base64data,
       ContentEncoding: "base64",
       ContentType: encodeURI(`image/${fileType}`),
+      ACL : 'public-read'
     };
   
     s3.putObject(someParams, function (err) {
