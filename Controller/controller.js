@@ -1,4 +1,5 @@
-const bcrypt = require("bcrypt");
+// const bcrypt = require("bcrypt");
+const argon2 = require('argon2');
 const mysql = require("mysql");
 const aws = require("aws-sdk");
 
@@ -23,6 +24,8 @@ if (process.env.JAWSDB_URL) {
 }
 
 const createSessiontoken = () => {
+
+
   return (
     Math.random().toString(36).substring(2, 15) +
     Math.random().toString(36).substring(2, 15)
@@ -30,12 +33,12 @@ const createSessiontoken = () => {
 };
 
 const saltHash = (pass) => {
-  const salt = bcrypt.genSalt(10);
-  const password = bcrypt.hashSync(pass, salt);
-  console.log(
-    "bycrypt password stuff , salt : " + salt + "password : " + password
-  );
-  return { salt, password };
+  // const salt = bcrypt.genSalt(10);
+  // const password = bcrypt.hashSync(pass, salt);
+  // console.log(
+    // "bycrypt password stuff , salt : " + salt + "password : " + password
+  // );
+  // return { salt, password };
 };
 
 function createObjForComments(username, commentBody, commentRank, joinDate) {
@@ -100,7 +103,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   });
 }),
   (exports.uploadUserImg = async function (req, res) {
-    console.log(req, "request for upload USER img");
+    // console.log(req, "request for upload USER img");
     const fileName = req.params.id1;
     const fileType = req.params.id2;
     const base64data = new Buffer.from(req.body.data.fileData, "base64");
@@ -151,9 +154,11 @@ const getUserBookmarks = async (userId, myCallback) => {
     const jobTitle = req.body.jobTitle;
     const registerDate = req.body.date;
 
+    const passwordHashed = await argon2.hash(password);
+
     await connection.query(
       `INSERT INTO account_info(icon , first_name , last_name , username , email , password , age , city , state ,  zipcode , job_title , register_date) 
-  VALUES( "${icon}" , "${firstName}" , "${lastName}" , "${username}" , "${email}" , "${password}" , ${age} , "${city}" , "${state}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`,
+  VALUES( "${icon}" , "${firstName}" , "${lastName}" , "${username}" , "${email}" , "${passwordHashed}" , ${age} , "${city}" , "${state}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`,
       (error, results) => {
         if (error || results.length === 0) {
           res.status(404).send(error);
@@ -190,11 +195,11 @@ const getUserBookmarks = async (userId, myCallback) => {
     await connection.query(
       `SELECT * FROM account_info WHERE username = '${username}' AND password = '${password}'`,
       (error, results) => {
-        if (error) {
+        if (error || results.length === 0) {
           res.status(404).send(error);
-        } else if (results.length === 0) {
-          res.send("Invalid Username or Password");
         } else if (results.length !== 0) {
+          console.log(results, "results for sign in")
+          const correctPassword = await argon2.verify(results.password)
           let removeArr = null;
           results.map((index) => {
             removeArr = index;
@@ -251,7 +256,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     const addOrRemoveLikes = req.params.id1;
     const postId = req.params.id2;
     const postTitle = req.params.id3;
-    console.log(addOrRemoveLikes , "add or remove right here")
+    // console.log(addOrRemoveLikes , "add or remove right here")
     if(addOrRemoveLikes === "add"){
     connection.query(
       `UPDATE user_posts SET blog_likes = blog_likes + 1 WHERE id=${postId} AND post_title="${postTitle}"`,
