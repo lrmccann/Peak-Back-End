@@ -220,7 +220,7 @@ const getUserBookmarks = async (userId, myCallback) => {
         if (error || results.length === 0) {
           res.status(404).send(error);
         } else if (results.length !== 0) {
-          console.log(results, "LOOOOK HERE LOGAN")
+          console.log(results[0], "LOOOOK HERE LOGAN")
           if(await argon2.verify(results[0].password , password)){
             getAllUserData(results[0].email);
           }else{
