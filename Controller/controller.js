@@ -23,22 +23,13 @@ if (process.env.JAWSDB_URL) {
   connection = connectionInfo;
 }
 
-const createSessiontoken = () => {
+const generateJsonWebToken = () => {
 
 
   return (
     Math.random().toString(36).substring(2, 15) +
     Math.random().toString(36).substring(2, 15)
   );
-};
-
-const saltHash = (pass) => {
-  // const salt = bcrypt.genSalt(10);
-  // const password = bcrypt.hashSync(pass, salt);
-  // console.log(
-    // "bycrypt password stuff , salt : " + salt + "password : " + password
-  // );
-  // return { salt, password };
 };
 
 function createObjForComments(username, commentBody, commentRank, joinDate) {
@@ -195,9 +186,9 @@ const getUserBookmarks = async (userId, myCallback) => {
 
     const getAllUserData = async (userEmail) => {
       await connection.query(
-        `SELECT icon , first_name , last_name , username , email , age , city , state ,  zipcode , job_title , register_date
+        `SELECT account_info.icon , account_info.first_name , account_info.last_name , account_info.username , account_info.email , account_info.age , account_info.city , account_info.state ,  account_info.zipcode , account_info.job_title , account_info.register_date
         FROM account_info
-        WHERE account_info.email = ${userEmail} `,
+        WHERE email = ${userEmail} `,
         (error, results) => {
           if(error){
             res.status(404).send("error retrieving account information")
@@ -218,7 +209,7 @@ const getUserBookmarks = async (userId, myCallback) => {
         if (error || results.length === 0) {
           res.status(404).send(error);
         } else if (results.length !== 0) {
-          console.log(results[0].email, "LOOOOK HERE LOGAN")
+          // console.log(results[0].email, "LOOOOK HERE LOGAN")
           if(await argon2.verify(results[0].password , password)){
             getAllUserData(results[0].email);
           }else{
@@ -227,7 +218,7 @@ const getUserBookmarks = async (userId, myCallback) => {
 
           // res.status(200).json({
           //   results: removeArr,
-          //   sessionToken: createSessiontoken(),
+          //   JWT: generateJsonWebToken(),
           // });
         }
       }
