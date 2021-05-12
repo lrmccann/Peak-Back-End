@@ -2,6 +2,7 @@ import * as jwt from 'express-jwt';
 
 // We are assuming that the JWT will come in the header Authorization but it could come in the req.body or in a query param, you have to decide what works best for you.
 const getTokenFromHeader = (req) => {
+  console.log(req, "LOOOOGAAAAN LOOOK HERE LOGAN")
   if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
     return req.headers.authorization.split(' ')[1];
   }else{
