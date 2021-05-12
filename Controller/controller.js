@@ -313,7 +313,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   (exports.removeBookmarkedPost = async function (req, res) {
     const postId = req.params.id1;
     const userId = req.params.id2;
-    const uniqueArray = [];
+    let uniqueArray = [];
     const deleteBookmark = async (arr) => {
       var index = arr.indexOf(postId);
       if (index === -1) {
@@ -344,7 +344,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     // Post ID of requested blog page
     const requestId = req.params.id1;
     // Array to store results from each query
-    const allInfoArr = [];
+    let allInfoArr = [];
     // Gets all data for comments related to post, creates object before pushing to array, call back to prev func
     const getCommentData = async () => {
       await connection.query(
