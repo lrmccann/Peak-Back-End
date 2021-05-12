@@ -198,7 +198,7 @@ const getUserBookmarks = async (userId, myCallback) => {
             res.status(404).send("error retrieving account information")
           }else{
             let tokenToSend = generateJsonWebToken(results[0]);
-            // console.log(tokenToSend, "our seeeecreeet token")
+            console.log(tokenToSend, "our seeeecreeet token")
             res.cookie('jwToken', tokenToSend, {
               secure : false,
               httpOnly : true
