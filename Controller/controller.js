@@ -199,11 +199,14 @@ const getUserBookmarks = async (userId, myCallback) => {
           res.status(404).send(error);
         } else if (results.length !== 0) {
           console.log(results, "results for sign in")
-          const correctPassword = await argon2.verify(results.password)
+          // password pulled from sql vs the password the user entered
+          const correctPassword = await argon2.verify(results[0].password , password);
+          console.log(correctPassword, "correct password var?")
           let removeArr = null;
           results.map((index) => {
             removeArr = index;
           });
+          console.log(removeArr, "what is this??????")
           res.status(200).send(removeArr);
           // res.status(200).json({
           //   results: removeArr,
