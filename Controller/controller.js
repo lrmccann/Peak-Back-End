@@ -192,22 +192,40 @@ const getUserBookmarks = async (userId, myCallback) => {
   (exports.authenticateUser = async function (req, res) {
     const username = req.params.id1;
     const password = req.params.id2;
+
+    const getAllUserData = async (userEmail) => {
+      await connection.query(
+        `SELECT icon , first_name , last_name , username , email , age , city , state ,  zipcode , job_title , register_date
+        FROM account_info
+        WHERE account_info.email = ${userEmail} `,
+        (error, results) => {
+          if(error){
+            res.status(404).send("error retrieving account information")
+          }else{
+            let removeArr = null;
+            results.map((index) => {
+              removeArr = index;
+            });
+            res.status(200).send(removeArr);
+          }
+        }
+      );
+    }
+
+    const verifyPassword = async () => {
     await connection.query(
-      `SELECT * FROM account_info WHERE username = '${username}' AND password = '${password}'`,
+      // `SELECT password FROM account_info WHERE username = '${username}' AND password = '${password}'`,
+      `SELECT email , password FROM account_info WHERE username = '${username}'`,
       async (error, results) => {
         if (error || results.length === 0) {
           res.status(404).send(error);
         } else if (results.length !== 0) {
-          console.log(results, "results for sign in")
-          // password pulled from sql vs the password the user entered
-          const correctPassword = await argon2.verify(results[0].password , password);
-          console.log(correctPassword, "correct password var?")
-          let removeArr = null;
-          results.map((index) => {
-            removeArr = index;
-          });
-          console.log(removeArr, "what is this??????")
-          res.status(200).send(removeArr);
+          if(await argon2.verify(results[0].password , password)){
+            getAllUserData(results[0].email);
+          }else{
+            res.status(404).send("User does not exist, check password and try again!")
+          }
+
           // res.status(200).json({
           //   results: removeArr,
           //   sessionToken: createSessiontoken(),
@@ -215,6 +233,8 @@ const getUserBookmarks = async (userId, myCallback) => {
         }
       }
     );
+    }
+    verifyPassword();
   }),
   (exports.deleteAccount = async function (req, res) {
     console.log("requuuuueeeest", req);
