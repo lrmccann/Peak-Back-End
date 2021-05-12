@@ -2,6 +2,7 @@
 const argon2 = require('argon2');
 const mysql = require("mysql");
 const aws = require("aws-sdk");
+const jwt = require('jsonwebtoken');
 
 var connection = "";
 
@@ -23,7 +24,7 @@ if (process.env.JAWSDB_URL) {
   connection = connectionInfo;
 }
 
-const generateJsonWebToken = () => {
+const generateJsonWebToken = (user) => {
 
 
   return (
@@ -94,7 +95,6 @@ const getUserBookmarks = async (userId, myCallback) => {
   });
 }),
   (exports.uploadUserImg = async function (req, res) {
-    // console.log(req, "request for upload USER img");
     const fileName = req.params.id1;
     const fileType = req.params.id2;
     const base64data = new Buffer.from(req.body.data.fileData, "base64");
@@ -191,8 +191,10 @@ const getUserBookmarks = async (userId, myCallback) => {
         WHERE email = ${userEmail} `,
         (error, results) => {
           if(error){
+            console.log("or fail right here?" , error)
             res.status(404).send("error retrieving account information")
           }else{
+
             results.map((index) => {
               res.status(200).send(index);
             })
@@ -213,6 +215,7 @@ const getUserBookmarks = async (userId, myCallback) => {
           if(await argon2.verify(results[0].password , password)){
             getAllUserData(results[0].email);
           }else{
+            console.log("fail here?")
             res.status(404).send("User does not exist, check password and try again!")
           }
 
