@@ -198,7 +198,11 @@ const getUserBookmarks = async (userId, myCallback) => {
             res.status(404).send("error retrieving account information")
           }else{
             let tokenToSend = generateJsonWebToken(results[0]);
-            console.log(tokenToSend, "our seeeecreeet token")
+            // console.log(tokenToSend, "our seeeecreeet token")
+            res.cookie('jwToken', tokenToSend, {
+              secure : false,
+              httpOnly : true
+            });
             results.map((index) => {
               res.status(200).send(index);
             })
@@ -219,7 +223,6 @@ const getUserBookmarks = async (userId, myCallback) => {
           if(await argon2.verify(results[0].password , password)){
             getAllUserData(results[0].email);
           }else{
-            console.log("fail here?")
             res.status(404).send("User does not exist, check password and try again!")
           }
 
