@@ -7,7 +7,8 @@ const jwt = require('jsonwebtoken');
 var connection = "";
 
 const {AWS_ACCESS_KEY , AWS_SECRET_KEY , AWS_REGION , AWS_BUCKET ,
-   SQL_HOST , SQL_DB , SQL_USERNAME , SQL_PASSWORD} = process.env;
+   SQL_HOST , SQL_DB , SQL_USERNAME , SQL_PASSWORD, JWT_SIGNATURE
+  } = process.env;
 
 var connectionInfo = mysql.createConnection({
   host: SQL_HOST,
@@ -25,12 +26,14 @@ if (process.env.JAWSDB_URL) {
 }
 
 const generateJsonWebToken = (user) => {
-
-
-  return (
-    Math.random().toString(36).substring(2, 15) +
-    Math.random().toString(36).substring(2, 15)
-  );
+  const data ={
+    id : user.id,
+    lastName: user.last_name,
+    email : user.email
+  };
+  const signature = `'${JWT_SIGNATURE}'`;
+  const expiration = '6h';
+  return jwt.sign({ data, }, signature , {expiresIn : expiration })
 };
 
 function createObjForComments(username, commentBody, commentRank, joinDate) {
@@ -186,15 +189,16 @@ const getUserBookmarks = async (userId, myCallback) => {
 
     const getAllUserData = async (userEmail) => {
       await connection.query(
-        `SELECT account_info.icon , account_info.first_name , account_info.last_name , account_info.username , account_info.email , account_info.age , account_info.city , account_info.state ,  account_info.zipcode , account_info.job_title , account_info.register_date
+        `SELECT id , icon , first_name , last_name , username , email , age , city , state ,  zipcode , job_title , register_date
         FROM account_info
-        WHERE email = ${userEmail} `,
+        WHERE email = '${userEmail}'`,
         (error, results) => {
           if(error){
             console.log("or fail right here?" , error)
             res.status(404).send("error retrieving account information")
           }else{
-
+            let tokenToSend = generateJsonWebToken(results[0]);
+            console.log(tokenToSend, "our seeeecreeet token")
             results.map((index) => {
               res.status(200).send(index);
             })
