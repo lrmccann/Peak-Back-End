@@ -177,7 +177,7 @@ const getUserBookmarks = async (userId, myCallback) => {
           console.log(error);
           res.status(400).send(error);
         } else {
-          console.log(response, "response to add topics");
+          // console.log(response, "response to add topics");
           res.status(202).send(response);
         }
       }
@@ -199,10 +199,7 @@ const getUserBookmarks = async (userId, myCallback) => {
           }else{
             let tokenToSend = generateJsonWebToken(results[0]);
             console.log(tokenToSend, "our seeeecreeet token")
-            res.cookie('jwToken', tokenToSend, {
-              secure : false,
-              // httpOnly : true
-            });
+            res.cookie('jwToken', `'${tokenToSend}'`);
             results.map((index) => {
               res.status(200).send(index);
             })
