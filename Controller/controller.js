@@ -156,7 +156,7 @@ const getUserBookmarks = async (userId, myCallback) => {
         if (error || results.length === 0) {
           res.status(404).send(error);
         } else if (results.length !== 0) {
-          res.status(202).send("User created Successfully");
+          res.status(202).send(results);
         }
       }
     );
