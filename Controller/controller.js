@@ -334,19 +334,16 @@ const getUserLikes = async (userId, myCallback) => {
                     error,
                     "Error ADDING like by post id from arr"
                   );
-                  res.status(404).send(error);
+                  return res.status(404).send(error);
                 } else {
                   console.log(
                     response,
                     "response for ADDING like by post id from arr"
                   );
-                  res.status(202).send(response);
+                  return res.status(202).send(response);
                 }
               }
             );
-          // }else{
-
-          // }
         }
       };
       const addLikeCount = async () => {
@@ -354,10 +351,9 @@ const getUserLikes = async (userId, myCallback) => {
           `UPDATE user_posts SET blog_likes = blog_likes + 1 WHERE id=${postId}`,
           (error, results) => {
             console.log(results, "results to add like");
-            if (error || results.length === 0) {
-              res.status(400).send(error);
+            if (error || results.changedRows === 0) {
+              return res.status(400).send(error);
             } else {
-
               getUserLikes(userId, addLikeArr);
             }
           }
