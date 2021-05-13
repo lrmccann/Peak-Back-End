@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 const { JWT_SIGNATURE } = process.env;
 
 (exports.authenticateToken = function (req, res, next) {
-  console.log(req, "request for middleware");
+  console.log(req.headers, "HEADERSSSSSSSSSSSSS");
+  console.log(req.rawHeaders, "RAWWWWHEADDEERRSSSS")
   const authHeader = req.header('Authorization');
   if (authHeader == null) return res.sendStatus(401);
   jwt.verify(authHeader, JWT_SIGNATURE ,
