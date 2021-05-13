@@ -6,7 +6,7 @@ const { JWT_SIGNATURE } = process.env;
 (exports.authenticateToken = function (req, res, next) {
   console.log(req, "request here logan!!!")
   const authHeader = req.rawHeaders.find( ({ authToken }) => authToken === 'Authorization' );
-  // const authHeader = req.rawHeaders['Authorization']
+  const authHeader = req.rawHeaders('Authorization');
   console.log(authHeader, "LOGAN HERE HERE")
   const token = authHeader && authHeader.split(' ')[1]
 
