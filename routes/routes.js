@@ -14,7 +14,7 @@ const router = require('express').Router();
     .get(getController.authenticateUser);
 
     router.route('/user-posts')
-    .get(isAuth.default, getController.getAllPosts);
+    .get(isAuth.authenticateToken, getController.getAllPosts);
 
     router.route('/post-views/:id1')
     .put(getController.addPostView);

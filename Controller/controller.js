@@ -198,10 +198,13 @@ const getUserBookmarks = async (userId, myCallback) => {
             res.status(404).send("error retrieving account information")
           }else{
             let tokenToSend = generateJsonWebToken(results[0]);
-            console.log(tokenToSend, "our seeeecreeet token")
-            res.cookie('jwToken', `'${tokenToSend}'`);
+            // console.log(tokenToSend, "our seeeecreeet token")
+            // res.cookie('jwToken', `'${tokenToSend}'`);
             results.map((index) => {
-              res.status(200).send(index);
+              res.status(200).json({
+                userData : index,
+                sessToken : tokenToSend
+              });
             })
           }
         }

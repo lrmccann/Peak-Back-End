@@ -4,8 +4,6 @@ const mysql = require("mysql");
 const app = express();
 const PORT = process.env.PORT || 3005;
 const cors = require("cors");
-// require = require("esm")(module/*, options*/);
-// module.exports = require("./Controller/isAuth.js");
 
 const {SQL_HOST , SQL_DB , SQL_USERNAME , SQL_PASSWORD} = process.env;
 
