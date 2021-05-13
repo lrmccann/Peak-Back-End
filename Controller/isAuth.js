@@ -12,20 +12,20 @@ const { JWT_SIGNATURE } = process.env;
      (err, pass) => {
       if(err){
             const newAuthHeader = req.header('Authorization');
-              console.log(newAuthHeader, "NEW AUTH HEADERS");
+              // console.log(newAuthHeader, "NEW AUTH HEADERS");
               jwt.verify(newAuthHeader, JWT_SIGNATURE ,
                 (err, pass) => {
                  if(err){
-                   console.log(err, "error authenticating jwt IN 2");
+                  //  console.log(err, "error authenticating jwt IN 2");
                    res.status(400).send("FAILED");
                  }else{
-                   console.log("Success!!! JWT authenticated IN 2" , pass);
+                  //  console.log("Success!!! JWT authenticated IN 2" , pass);
                    res.status(200).send("PASSED SECOND TIME");
                  }
               //  next();
              });
       }else{
-        console.log("Success!!! JWT authenticated" , pass);
+        // console.log("Success!!! JWT authenticated" , pass);
         res.status(200).send("PASSED FIRST TIME")
       }
     next();

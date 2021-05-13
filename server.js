@@ -12,9 +12,11 @@ app.use(cors());
 
 app.use((req, res, next) => {
     // res.setHeader("Access-Control-Allow-Headers" , 'Authorization');
+    console.log(req.rawHeaders, "RAW HEADERS HERE")
     res.setHeader("Access-Control-Allow-Origin",  "*");
     res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
     res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.setHeader('Authorization', '')
      res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
   });
