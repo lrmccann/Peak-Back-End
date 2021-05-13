@@ -9,12 +9,13 @@ const { JWT_SIGNATURE } = process.env;
   // if (authHeader == null) return res.sendStatus(401);
   if(authHeader == null){
     let newAuthHeader = req.header('authorization');
+    console.log(newAuthHeader, "NEW AUTH HEADERS")
     jwt.verify(newAuthHeader, JWT_SIGNATURE ,
       (err, pass) => {
        if(err){
-         console.log(err, "error authenticating jwt");
+         console.log(err, "error authenticating jwt IN 2");
        }else{
-         console.log("Success!!! JWT authenticated" , pass);
+         console.log("Success!!! JWT authenticated IN 2" , pass);
        }
      next();
    });
