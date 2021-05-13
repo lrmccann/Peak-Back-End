@@ -22,7 +22,7 @@ const { JWT_SIGNATURE } = process.env;
                    console.log("Success!!! JWT authenticated IN 2" , pass);
                    res.status(200).send("PASSED SECOND TIME");
                  }
-               next();
+              //  next();
              });
       }else{
         console.log("Success!!! JWT authenticated" , pass);
