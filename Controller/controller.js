@@ -157,7 +157,16 @@ const getUserBookmarks = async (userId, myCallback) => {
         if (error || results.length === 0) {
           res.status(404).send(error);
         } else if (results.length !== 0) {
-          res.status(202).send(results);
+          let userObj = {
+            id : results.insertId,
+            lastName : lastName,
+            email : email
+          }
+          let tokenToSend = generateJsonWebToken(userObj )
+          res.status(202).json({
+            userData : results,
+            sessToken : tokenToSend
+          });
         }
       }
     );
