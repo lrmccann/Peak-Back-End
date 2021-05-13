@@ -11,7 +11,7 @@ const { JWT_SIGNATURE } = process.env;
   jwt.verify(authHeader, JWT_SIGNATURE ,
      (err, pass) => {
       if(err){
-            let newAuthHeader = req.header('authorization');
+            const newAuthHeader = req.header('Authorization');
               console.log(newAuthHeader, "NEW AUTH HEADERS");
               jwt.verify(newAuthHeader, JWT_SIGNATURE ,
                 (err, pass) => {
