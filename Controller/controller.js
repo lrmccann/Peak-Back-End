@@ -49,11 +49,11 @@ const getUserBookmarks = async (userId, myCallback) => {
     (error, results) => {
       var postsToFetch = results[0].bookmarked_posts;
       if (postsToFetch === 'NULL') {
-        return res.status(202).send("Bookmarks empty!!!");
+        return myCallback([]);
       }
          else {
           var newBookmarkArr = postsToFetch.split(",").map(Number);
-          myCallback(newBookmarkArr);
+          return myCallback(newBookmarkArr);
         }
       }
   );
@@ -572,6 +572,9 @@ const getUserBookmarks = async (userId, myCallback) => {
     const userId = req.params.id1;
     const blogObjArray = [];
     async function whatever(arr) {
+      if(arr.length === 0){
+        res.status(210).send("array is empty");
+      }else{
       let arrLength = arr.length;
       await arr.map(async (index) => {
         await connection.query(
@@ -595,6 +598,7 @@ const getUserBookmarks = async (userId, myCallback) => {
         return res.status(200).send(blogObjArray);
       }
     }
+  }
     getUserBookmarks(userId, whatever);
   }),
   //
