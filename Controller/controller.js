@@ -1,14 +1,22 @@
 // const bcrypt = require("bcrypt");
-const argon2 = require('argon2');
+const argon2 = require("argon2");
 const mysql = require("mysql");
 const aws = require("aws-sdk");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 var connection = "";
 
-const {AWS_ACCESS_KEY , AWS_SECRET_KEY , AWS_REGION , AWS_BUCKET ,
-   SQL_HOST , SQL_DB , SQL_USERNAME , SQL_PASSWORD, JWT_SIGNATURE
-  } = process.env;
+const {
+  AWS_ACCESS_KEY,
+  AWS_SECRET_KEY,
+  AWS_REGION,
+  AWS_BUCKET,
+  SQL_HOST,
+  SQL_DB,
+  SQL_USERNAME,
+  SQL_PASSWORD,
+  JWT_SIGNATURE,
+} = process.env;
 
 var connectionInfo = mysql.createConnection({
   host: SQL_HOST,
@@ -26,14 +34,14 @@ if (process.env.JAWSDB_URL) {
 }
 
 const generateJsonWebToken = (user) => {
-  const data ={
-    id : user.id,
+  const data = {
+    id: user.id,
     lastName: user.last_name,
-    email : user.email
+    email: user.email,
   };
   const signature = `'${JWT_SIGNATURE}'`;
-  const expiration = '6h';
-  return jwt.sign({ data, }, signature , {expiresIn : expiration })
+  const expiration = "6h";
+  return jwt.sign({ data }, signature, { expiresIn: expiration });
 };
 
 function createObjForComments(username, commentBody, commentRank, joinDate) {
@@ -48,14 +56,30 @@ const getUserBookmarks = async (userId, myCallback) => {
     `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
     (error, results) => {
       var postsToFetch = results[0].bookmarked_posts;
-      if (postsToFetch === 'NULL') {
+      if (postsToFetch === "NULL") {
         return myCallback([]);
+      } else {
+        var newBookmarkArr = postsToFetch.split(",").map(Number);
+        return myCallback(newBookmarkArr);
       }
-         else {
-          var newBookmarkArr = postsToFetch.split(",").map(Number);
-          return myCallback(newBookmarkArr);
-        }
+    }
+  );
+};
+
+const getUserLikes = async (userId, myCallback) => {
+  await connection.query(
+    `SELECT liked_posts FROM account_info WHERE id=${userId}`,
+    (error, results) => {
+      var likedPosts = results[0].liked_posts;
+      if (likedPosts === "NULL") {
+        return myCallback([]);
+      } else {
+        var likesArr = likedPosts.split(",").map(Number);
+        console.log(likesArr , "likes arr in top func, before sending to other modules 123456789");
+        console.log(results, "results of arr in top func before sending to other modules");
+        return myCallback(likesArr);
       }
+    }
   );
 };
 // uploading images to aws
@@ -79,7 +103,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     Body: base64data,
     ContentEncoding: "base64",
     ContentType: encodeURI(`image/${imgType}`),
-    ACL : 'public-read'
+    ACL: "public-read",
   };
 
   s3.putObject(someParams, function (err) {
@@ -98,7 +122,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     const fileName = req.params.id1;
     const fileType = req.params.id2;
     const base64data = new Buffer.from(req.body.data.fileData, "base64");
-  
+
     aws.config.update({
       credentials: {
         accessKeyId: `${AWS_ACCESS_KEY}`,
@@ -106,7 +130,7 @@ const getUserBookmarks = async (userId, myCallback) => {
       },
       region: `${AWS_REGION}`,
     });
-  
+
     const s3 = new aws.S3();
     const someParams = {
       Bucket: encodeURI(`${AWS_BUCKET}`),
@@ -114,9 +138,9 @@ const getUserBookmarks = async (userId, myCallback) => {
       Body: base64data,
       ContentEncoding: "base64",
       ContentType: encodeURI(`image/${fileType}`),
-      ACL : 'public-read'
+      ACL: "public-read",
     };
-  
+
     s3.putObject(someParams, function (err) {
       if (err) {
         console.error(err, "find error here");
@@ -155,14 +179,14 @@ const getUserBookmarks = async (userId, myCallback) => {
           res.status(404).send(error);
         } else if (results.length !== 0) {
           let userObj = {
-            id : results.insertId,
-            lastName : lastName,
-            email : email
-          }
-          let tokenToSend = generateJsonWebToken(userObj )
+            id: results.insertId,
+            lastName: lastName,
+            email: email,
+          };
+          let tokenToSend = generateJsonWebToken(userObj);
           res.status(202).json({
-            userData : results,
-            sessToken : tokenToSend
+            userData: results,
+            sessToken: tokenToSend,
           });
         }
       }
@@ -199,42 +223,40 @@ const getUserBookmarks = async (userId, myCallback) => {
         FROM account_info
         WHERE email = '${userEmail}'`,
         (error, results) => {
-          if(error){
-            console.log("or fail right here?" , error)
-            res.status(404).send("error retrieving account information")
-          }else{
+          if (error) {
+            console.log("or fail right here?", error);
+            res.status(404).send("error retrieving account information");
+          } else {
             let tokenToSend = generateJsonWebToken(results[0]);
-            // console.log(tokenToSend, "our seeeecreeet token")
-            // res.cookie('jwToken', `'${tokenToSend}'`);
             results.map((index) => {
               res.status(200).json({
-                userData : index,
-                sessToken : tokenToSend
+                userData: index,
+                sessToken: tokenToSend,
               });
-            })
+            });
           }
         }
       );
-    }
+    };
 
     const verifyPassword = async () => {
-    await connection.query(
-      // `SELECT password FROM account_info WHERE username = '${username}' AND password = '${password}'`,
-      `SELECT email , password FROM account_info WHERE username = '${username}'`,
-      async (error, results) => {
-        if (error || results.length === 0) {
-          res.status(404).send(error);
-        } else if (results.length !== 0) {
-          // console.log(results[0].email, "LOOOOK HERE LOGAN")
-          if(await argon2.verify(results[0].password , password)){
-            getAllUserData(results[0].email);
-          }else{
-            res.status(404).send("User does not exist, check password and try again!")
+      await connection.query(
+        `SELECT email , password FROM account_info WHERE username = '${username}'`,
+        async (error, results) => {
+          if (error || results.length === 0) {
+            res.status(404).send(error);
+          } else if (results.length !== 0) {
+            if (await argon2.verify(results[0].password, password)) {
+              getAllUserData(results[0].email);
+            } else {
+              res
+                .status(404)
+                .send("User does not exist, check password and try again!");
+            }
           }
         }
-      }
-    );
-    }
+      );
+    };
     verifyPassword();
   }),
   (exports.deleteAccount = async function (req, res) {
@@ -279,34 +301,117 @@ const getUserBookmarks = async (userId, myCallback) => {
   (exports.addLike = async function (req, res) {
     const addOrRemoveLikes = req.params.id1;
     const postId = req.params.id2;
-    const postTitle = req.params.id3;
-    // console.log(addOrRemoveLikes , "add or remove right here")
-    if(addOrRemoveLikes === "add"){
-    connection.query(
-      `UPDATE user_posts SET blog_likes = blog_likes + 1 WHERE id=${postId} AND post_title="${postTitle}"`,
-      (error, results) => {
-        if (error) {
-          res.status(400).send(error);
-        } else if (results.length === 0) {
-          res.status(404).send(error);
+    const userId = req.params.id3;
+    if (addOrRemoveLikes === "add") {
+      const addLikeArr = async (arr) => {
+        console.log(arr, "ARRAY IN ADD LIKE FROM TOP FUNC")
+        let finalArr = [];
+        if (arr.length === 0) {
+          await connection.query(
+            `INSERT INTO account_info.liked_posts
+            VALUE("${postId}")`,
+            (error, response) => {
+              if (error) {
+                console.log(error, "Error on initial insertion of like ");
+                return res.status(404).send(error);
+              } else {
+                console.log(
+                  response,
+                  "Successfully added post id to likes on initial insertion"
+                );
+                return res.status(202).send(response);
+              }
+            }
+          );
         } else {
-          res.status(200).send(results);
+          // if (strToMatch.indexOf(postId) === -1) {
+            finalArr = `${arr},${postId}`;
+            await connection.query(
+              `UPDATE account_info
+            SET liked_posts = "${finalArr}"`,
+              (error, response) => {
+                if (error) {
+                  console.log(
+                    error,
+                    "Error ADDING like by post id from arr"
+                  );
+                  res.status(404).send(error);
+                } else {
+                  console.log(
+                    response,
+                    "response for ADDING like by post id from arr"
+                  );
+                  res.status(202).send(response);
+                }
+              }
+            );
+          // }else{
+
+          // }
         }
-      }
-    );
-    } else if(addOrRemoveLikes === "remove"){
-      connection.query(
-        `UPDATE user_posts SET blog_likes = blog_likes - 1 WHERE id=${postId} AND post_title="${postTitle}"`,
-        (error, results) => {
-          if (error) {
-            res.status(400).send(error);
-          } else if (results.length === 0) {
-            res.status(404).send(error);
-          } else {
-            res.status(200).send(results);
+      };
+      const addLikeCount = async () => {
+        await connection.query(
+          `UPDATE user_posts SET blog_likes = blog_likes + 1 WHERE id=${postId}`,
+          (error, results) => {
+            console.log(results, "results to add like");
+            if (error || results.length === 0) {
+              res.status(400).send(error);
+            } else {
+
+              getUserLikes(userId, addLikeArr);
+            }
+          }
+        );
+      };
+      addLikeCount();
+  } 
+    else if (addOrRemoveLikes === "remove") {
+      const removeLikeArr = async (arr) => {
+        console.log(arr, "ARRAY IN REMOVE LIKE FROM TOP FUNC")
+        let strToMatch = arr.toString();
+        let finalArr = [];
+        if (arr.length === 0) {
+          res.send(450).send("No posts to remove from arr!");
+        } else {
+          if (strToMatch.indexOf(postId) === -1) {
+            finalArr = `${arr},${postId}`;
+            await connection.query(
+              `UPDATE account_info
+            SET liked_posts = "${finalArr}"`,
+              (error, response) => {
+                if (error) {
+                  console.log(
+                    error,
+                    "Error for removing like by post id from arr"
+                  );
+                  res.status(404).send(error);
+                } else {
+                  console.log(
+                    response,
+                    "response for removing like by post id from arr"
+                  );
+                  res.status(202).send(response);
+                }
+              }
+            );
           }
         }
-      );
+      };
+      const removeLikeCount = async () => {
+        await connection.query(
+          `UPDATE user_posts SET blog_likes = blog_likes - 1 WHERE id=${postId}`,
+          (error, results) => {
+            console.log(results, "results to remove like");
+            if (error || results.length === 0) {
+              res.status(400).send(error);
+            } else {
+              getUserLikes(userId, removeLikeArr);
+            }
+          }
+        );
+      };
+      removeLikeCount();
     }
   }),
   (exports.getLikedPosts = async function (req, res) {
@@ -572,33 +677,33 @@ const getUserBookmarks = async (userId, myCallback) => {
     const userId = req.params.id1;
     const blogObjArray = [];
     async function whatever(arr) {
-      if(arr.length === 0){
+      if (arr.length === 0) {
         res.status(210).send("array is empty");
-      }else{
-      let arrLength = arr.length;
-      await arr.map(async (index) => {
-        await connection.query(
-          `SELECT user_posts.id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username 
+      } else {
+        let arrLength = arr.length;
+        await arr.map(async (index) => {
+          await connection.query(
+            `SELECT user_posts.id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username 
           FROM user_posts, account_info
           WHERE user_posts.id = ${index} AND account_info.id = user_posts.user_id`,
-          async (error, results) => {
-            if (error) {
-              return res.status(400).send("Error getting data");
-            } else {
-              blogObjArray.push(...results);
+            async (error, results) => {
+              if (error) {
+                return res.status(400).send("Error getting data");
+              } else {
+                blogObjArray.push(...results);
+              }
             }
-          }
-        );
-      });
-      if (blogObjArray.length !== arrLength) {
-        setTimeout(async () => {
+          );
+        });
+        if (blogObjArray.length !== arrLength) {
+          setTimeout(async () => {
+            return res.status(200).send(blogObjArray);
+          }, 2 * 10);
+        } else {
           return res.status(200).send(blogObjArray);
-        }, 2 * 10);
-      } else {
-        return res.status(200).send(blogObjArray);
+        }
       }
     }
-  }
     getUserBookmarks(userId, whatever);
   }),
   //
