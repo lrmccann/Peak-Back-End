@@ -47,9 +47,8 @@ const getUserBookmarks = async (userId, myCallback) => {
   await connection.query(
     `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
     (error, results) => {
-      console.log(results, "results from og func LOGAN")
       var postsToFetch = results[0].bookmarked_posts;
-      if (postsToFetch === null) {
+      if (postsToFetch === 'NULL') {
         return res.status(202).send("Bookmarks empty!!!");
       }
          else {
