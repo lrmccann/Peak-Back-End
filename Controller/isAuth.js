@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const { JWT_SIGNATURE } = process.env;
 
 (exports.authenticateToken = function (req, res, next) {
+  console.log(req, "request here logan!!!")
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1]
 
