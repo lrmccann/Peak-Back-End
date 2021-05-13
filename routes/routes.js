@@ -5,7 +5,7 @@ const router = require('express').Router();
 
     router.route('/account-info')
     .post(getController.createNewUser)
-    .delete(getController.deleteAccount)
+    .delete(isAuth.authenticateToken , getController.deleteAccount)
 
     router.route('/account_info/:id1')
     .put(getController.addPrefTopics);
@@ -17,53 +17,53 @@ const router = require('express').Router();
     .get(isAuth.authenticateToken, getController.getAllPosts);
 
     router.route('/post-views/:id1')
-    .put(getController.addPostView);
+    .put(isAuth.authenticateToken , getController.addPostView);
 
     router.route('/user-bookmarks/:id1/:id2')
-    .put(getController.bookmarkNewPost)
-    .delete(getController.removeBookmarkedPost);
+    .put(isAuth , getController.bookmarkNewPost)
+    .delete(isAuth.authenticateToken , getController.removeBookmarkedPost);
 
     router.route('/user-all-bookmarks/:id1')
-    .get(getController.getBookmarkedPosts);
+    .get(isAuth.authenticateToken , getController.getBookmarkedPosts);
 
     router.route('/user-bookmarks-home/:id1')
-    .get(getController.bookmarksForHome);
+    .get(isAuth , getController.bookmarksForHome);
 
     router.route("/numOfLikesForPost/:id1/:id2/:id3")
-    .put(getController.addLike);
+    .put(isAuth.authenticateToken , getController.addLike);
 
     router.route('/user-posts/:id1')
-    .get(getController.getAllInfoOnPost)
-    .delete(getController.deleteUserPost);
+    .get( isAuth.authenticateToken ,getController.getAllInfoOnPost)
+    .delete(isAuth.authenticateToken ,getController.deleteUserPost);
 
     router.route('/getUserPost/:id1')
-    .get(getController.displayTopPosts);
+    .get(isAuth.authenticateToken ,getController.displayTopPosts);
 
     router.route('/create-new-post')
-    .post(getController.postNewBlog);
+    .post(isAuth.authenticateToken ,getController.postNewBlog);
 
     router.route('/user-comments/:id1')
     .get(getController.displayTopComments)
-    .delete(getController.deleteUserComment);
+    .delete(isAuth.authenticateToken ,getController.deleteUserComment);
     
     router.route('/user-comments/:id1')
-    .get(getController.loadAllCommentsForPost);
+    .get(isAuth.authenticateToken ,getController.loadAllCommentsForPost);
 
     router.route('/user-comments-post/:id1/:id2/:id3')
-    .post(getController.postNewComment);
+    .post(isAuth.authenticateToken ,getController.postNewComment);
 
     router.route('/liked-posts/:id1')
-    .get(getController.getLikedPosts);
+    .get(isAuth.authenticateToken ,getController.getLikedPosts);
 
     router.route('/user-details/:id1')
-    .get(getController.fetchUserInfo);
+    .get(isAuth.authenticateToken ,getController.fetchUserInfo);
 
     // id1 = data url; id2 = img type;
     router.route('/blog-images/:id1/:id2')
-    .put(getController.uploadBlogImg);
+    .put(isAuth.authenticateToken ,getController.uploadBlogImg);
 
 //  id1 = img name to save under in aws; id2 = img type;
     router.route('/user-images/:id1/:id2')
-    .put(getController.uploadUserImg);
+    .put(isAuth.authenticateToken ,getController.uploadUserImg);
 
 module.exports = router;
