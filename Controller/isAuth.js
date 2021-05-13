@@ -11,7 +11,7 @@ const getTokenFromHeader = (req) => {
   }
 }
 
-export default jwt({
+module.exports = jwt({
   secret: 'MySuP3R_z3kr3t', // Has to be the same that we used to sign the JWT
 
   userProperty: 'token', // this is where the next middleware can find the encoded data generated in services/auth:generateToken -> 'req.token'
