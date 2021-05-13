@@ -6,6 +6,7 @@ const { JWT_SIGNATURE } = process.env;
   // console.log(req.headers, "HEADERSSSSSSSSSSSSS");
   // console.log(req.rawHeaders, "RAWWWWHEADDEERRSSSS")
   const authHeader = req.header('Authorization');
+  console.log(authHeader, "OLD AUTH HEADER")
   // if (authHeader == null) return res.sendStatus(401);
   if(authHeader == null){
     let newAuthHeader = req.header('authorization');
