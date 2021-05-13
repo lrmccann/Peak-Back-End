@@ -49,7 +49,7 @@ const getUserBookmarks = async (userId, myCallback) => {
     (error, results) => {
       var postsToFetch = results[0].bookmarked_posts;
       if (postsToFetch === null) {
-        res.status(202).send("Bookmarks empty!!!");
+        return res.status(202).send("Bookmarks empty!!!");
       }
          else {
           var newBookmarkArr = postsToFetch.split(",").map(Number);
