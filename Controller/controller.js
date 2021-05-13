@@ -47,6 +47,7 @@ const getUserBookmarks = async (userId, myCallback) => {
   await connection.query(
     `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
     (error, results) => {
+      console.log(results, "results from og func LOGAN")
       var postsToFetch = results[0].bookmarked_posts;
       if (postsToFetch === null) {
         return res.status(202).send("Bookmarks empty!!!");
@@ -580,7 +581,7 @@ const getUserBookmarks = async (userId, myCallback) => {
           WHERE user_posts.id = ${index} AND account_info.id = user_posts.user_id`,
           async (error, results) => {
             if (error) {
-              return res.status(400).send("Error getting data").t;
+              return res.status(400).send("Error getting data");
             } else {
               blogObjArray.push(...results);
             }
@@ -589,10 +590,10 @@ const getUserBookmarks = async (userId, myCallback) => {
       });
       if (blogObjArray.length !== arrLength) {
         setTimeout(async () => {
-          return await res.status(200).send(blogObjArray);
+          return res.status(200).send(blogObjArray);
         }, 2 * 10);
       } else {
-        return await res.status(200).send(blogObjArray);
+        return res.status(200).send(blogObjArray);
       }
     }
     getUserBookmarks(userId, whatever);
