@@ -47,18 +47,15 @@ const getUserBookmarks = async (userId, myCallback) => {
   await connection.query(
     `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
     (error, results) => {
-      if (error) {
-        res.status(400).send("Problem with getting user bookmarks");
-      } else {
-        var postsToFetch = results[0].bookmarked_posts;
-        if (postsToFetch === null) {
-          return;
-        } else {
+      var postsToFetch = results[0].bookmarked_posts;
+      if (postsToFetch === null) {
+        res.status(202).send("Bookmarks empty!!!");
+      }
+         else {
           var newBookmarkArr = postsToFetch.split(",").map(Number);
           myCallback(newBookmarkArr);
         }
       }
-    }
   );
 };
 // uploading images to aws
