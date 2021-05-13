@@ -238,7 +238,6 @@ const getUserLikes = async (userId, myCallback) => {
         }
       );
     };
-
     const verifyPassword = async () => {
       await connection.query(
         `SELECT email , password FROM account_info WHERE username = '${username}'`,
