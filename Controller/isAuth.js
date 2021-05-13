@@ -9,6 +9,7 @@ const { JWT_SIGNATURE } = process.env;
   const authHeader = req.header('Authorization');
   console.log(authHeader, "LOGAN HERE HERE")
   const token = authHeader && authHeader.split(' ')[1]
+  console.log(token, "ALSO HERE LOGAN HERE")
 
   if (token == null) return res.sendStatus(401)
 
