@@ -11,7 +11,7 @@ const { JWT_SIGNATURE } = process.env;
   // const token = authHeader && authHeader.split(' ')[1]
   // console.log(token, "ALSO HERE LOGAN HERE")
 
-  if (token == null) return res.sendStatus(401)
+  if (authHeader == null) return res.sendStatus(401)
 
   jwt.verify(authHeader, JWT_SIGNATURE ,
      (err, pass) => {
