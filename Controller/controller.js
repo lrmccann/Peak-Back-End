@@ -105,7 +105,7 @@ const getUserLikes = async (userId, myCallback) => {
   console.log(req.body, "check here for blog img data")
   const title = req.params.id1;
   const imgType = req.params.id2;
-  const base64data = new Buffer.from(req.body.data.fileURL, "base64");
+  const base64data = new Buffer.from(req.body.dataFile.fileURL, "base64");
 
   aws.config.update({
     credentials: {
