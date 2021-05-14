@@ -349,7 +349,7 @@ const getUserLikes = async (userId, myCallback) => {
           await connection.query(
             `INSERT INTO account_info
             SET liked_posts = ${postId}
-            WHERE account_info.id = ${userId}`,
+            WHERE account_info.id = "${userId}"`,
             (error, response) => {
               if (error) {
                 console.log(error, "Error on initial insertion of like ");
