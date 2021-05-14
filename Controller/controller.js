@@ -730,6 +730,7 @@ const getUserLikes = async (userId, myCallback) => {
           WHERE user_posts.id = ${index} AND account_info.id = user_posts.user_id`,
           async (error, results) => {
             if (error) {
+              console.log(error , "probably error from sql!!!!")
               return res.status(400).send("Error getting data").t;
             } else {
               blogObjArray.push(...results);
