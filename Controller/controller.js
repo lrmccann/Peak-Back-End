@@ -308,9 +308,11 @@ const getUserLikes = async (userId, myCallback) => {
       async (error, results) => {
         if (error) {
           return console.log(error);
-        } else if (results.length === 0) {
-          res.status(404).send(error);
-        } else {
+        } 
+        // else if (results.length === 0) {
+        //   res.status(404).send(error);
+        // } 
+        else {
           res.status(200).send(results);
         }
 
