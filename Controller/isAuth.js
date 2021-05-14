@@ -48,6 +48,7 @@ const { JWT_SIGNATURE } = process.env;
   console.log(methodParams, "params for method!")
   const difAuthHeader = req.header('x-auth-token');
   console.log(difAuthHeader, "DIF AUUUUTHHHH HEADDERRR!!!!")
+  if(methodParams === null){
   const authHeader = req.header('Authorization');
   if (authHeader == null) return res.sendStatus(401);
   jwt.verify(authHeader, JWT_SIGNATURE ,
@@ -59,4 +60,16 @@ const { JWT_SIGNATURE } = process.env;
       }
     next();
   });
+}else if(methodParams == 'PUT' ){
+  if (difAuthHeader == null) return res.sendStatus(401);
+  jwt.verify(difAuthHeader, JWT_SIGNATURE ,
+    (err, pass) => {
+     if(err){
+       console.log(err, "error authenticating jwt 2ND TIME");
+     }else{
+       console.log("Success!!! JWT authenticated 2ND TIME" , pass);
+     }
+   next();
+ });
+}
 })
