@@ -44,6 +44,8 @@ const { JWT_SIGNATURE } = process.env;
 (exports.authenticateToken = function (req, res, next) {
   // console.log(req.headers, "HEADERSSSSSSSSSSSSS");
   // console.log(req.rawHeaders, "RAWWWWHEADDEERRSSSS")
+  const methodParams = req.header('x-method');
+  console.log(methodParams, "params for method!")
   const difAuthHeader = req.header('x-auth-token');
   console.log(difAuthHeader, "DIF AUUUUTHHHH HEADDERRR!!!!")
   const authHeader = req.header('Authorization');
