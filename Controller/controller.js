@@ -140,7 +140,7 @@ const getUserLikes = async (userId, myCallback) => {
   (exports.uploadUserImg = async function (req, res) {
     const fileName = req.params.id1;
     const fileType = req.params.id2;
-    const base64data = new Buffer.from(req.body.data.fileData, "base64");
+    const base64data = new Buffer.from(req.body.dataFile.data, "base64");
 
     aws.config.update({
       credentials: {
@@ -175,18 +175,18 @@ const getUserLikes = async (userId, myCallback) => {
   }),
   // Controller funcs for Login/Signup
   (exports.createNewUser = async function (req, res) {
-    const icon = req.body.icon;
-    const firstName = req.body.firstName;
-    const lastName = req.body.lastName;
-    const username = req.body.username;
-    const email = req.body.email;
-    const password = req.body.password;
-    const age = req.body.age;
-    const city = req.body.city;
-    const state = req.body.state;
-    const zipcode = req.body.zip;
-    const jobTitle = req.body.jobTitle;
-    const registerDate = req.body.date;
+    const icon = req.body.userData.icon;
+    const firstName = req.body.userData.firstName;
+    const lastName = req.body.userData.lastName;
+    const username = req.body.userData.username;
+    const email = req.body.userData.email;
+    const password = req.body.userData.password;
+    const age = req.body.userData.age;
+    const city = req.body.userData.city;
+    const state = req.body.userData.state;
+    const zipcode = req.body.userData.zip;
+    const jobTitle = req.body.userData.jobTitle;
+    const registerDate = req.body.userData.date;
 
     const passwordHashed = await argon2.hash(password);
 
@@ -215,11 +215,11 @@ const getUserLikes = async (userId, myCallback) => {
   }),
   (exports.addPrefTopics = async function (req, res) {
     const userId = req.params.id1;
-    const userChoiceOne = req.body.data.choiceOne;
-    const userChoiceTwo = req.body.data.choiceTwo;
-    const userChoiceThree = req.body.data.choiceThree;
-    const userChoiceFour = req.body.data.choiceFour;
-    const userChoiceFive = req.body.data.choiceFive;
+    const userChoiceOne = req.body.topicData.choiceOne;
+    const userChoiceTwo = req.body.topicData.choiceTwo;
+    const userChoiceThree = req.body.topicData.choiceThree;
+    const userChoiceFour = req.body.topicData.choiceFour;
+    const userChoiceFive = req.body.topicData.choiceFive;
 
     await connection.query(
       `UPDATE account_info SET preferred_topics = '${userChoiceOne}, ${userChoiceTwo}, ${userChoiceThree}, ${userChoiceFour}, ${userChoiceFive}' WHERE id=${userId}`,
