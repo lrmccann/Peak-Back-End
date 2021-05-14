@@ -57,11 +57,13 @@ const getUserBookmarks = async (userId, myCallback) => {
     (error, results) => {
       if (error) {
         res.status(400).send("Problem with getting user bookmarks");
-      } else {
+      } 
+      else {
         var postsToFetch = results[0].bookmarked_posts;
         if (postsToFetch === null) {
-          return;
-        } else {
+          console.log("was null or whatever!!!!!!!!!!!!!!")
+        } 
+        else {
           var newBookmarkArr = postsToFetch.split(",").map(Number);
           myCallback(newBookmarkArr);
         }
