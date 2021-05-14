@@ -102,11 +102,11 @@ const getUserLikes = async (userId, myCallback) => {
 };
 // uploading images to aws
 (exports.uploadBlogImg = async function (req, res) {
+  console.log(req.body, "check here for blog img data")
   const title = req.params.id1;
   const imgType = req.params.id2;
   const base64data = new Buffer.from(req.body.data.fileURL, "base64");
 
-  console.log(req.body, "check here for blog img data")
   aws.config.update({
     credentials: {
       accessKeyId: `${AWS_ACCESS_KEY}`,
