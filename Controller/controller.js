@@ -214,11 +214,11 @@ const getUserLikes = async (userId, myCallback) => {
   }),
   (exports.addPrefTopics = async function (req, res) {
     const userId = req.params.id1;
-    const userChoiceOne = req.body.choiceOne;
-    const userChoiceTwo = req.body.choiceTwo;
-    const userChoiceThree = req.body.choiceThree;
-    const userChoiceFour = req.body.choiceFour;
-    const userChoiceFive = req.body.choiceFive;
+    const userChoiceOne = req.body.data.choiceOne;
+    const userChoiceTwo = req.body.data.choiceTwo;
+    const userChoiceThree = req.body.data.choiceThree;
+    const userChoiceFour = req.body.data.choiceFour;
+    const userChoiceFive = req.body.data.choiceFive;
 
     await connection.query(
       `UPDATE account_info SET preferred_topics = '${userChoiceOne}, ${userChoiceTwo}, ${userChoiceThree}, ${userChoiceFour}, ${userChoiceFive}' WHERE id=${userId}`,
@@ -625,7 +625,7 @@ const getUserLikes = async (userId, myCallback) => {
   (exports.postNewComment = async function (req, res) {
     const userId = req.params.id1;
     const postId = req.params.id2;
-    const commentBody = req.params.id3;
+    const commentBody = req.body.data.commentBody;
     await connection.query(
       `INSERT INTO user_comments(user_id , post_id , comment_body  )
     VALUES( ${userId} , ${postId} , "${commentBody}")`,
@@ -694,10 +694,10 @@ const getUserLikes = async (userId, myCallback) => {
   //
   // Controller funcs for Navbar
   (exports.postNewBlog = async function (req, res) {
-    const imgHeader = req.body.headerImg;
-    const blogTitle = req.body.blogTitle;
-    const blogBody = req.body.blogBody;
-    const userIdToSend = req.body.userId;
+    const imgHeader = req.body.data.headerImg;
+    const blogTitle = req.body.data.blogTitle;
+    const blogBody = req.body.data.blogBody;
+    const userIdToSend = req.body.data.userId;
 
     await connection.query(
       `INSERT INTO user_posts(user_id , post_title, post_body, blog_img, blog_likes) 

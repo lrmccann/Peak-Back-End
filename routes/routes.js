@@ -43,7 +43,7 @@ const router = require('express').Router();
     router.route('/user-comments/:id1')
     .delete(isAuth.authenticateToken , getController.deleteUserComment);
 
-    router.route('/user-comments-post/:id1/:id2/:id3')
+    router.route('/user-comments-post/:id1/:id2')
     .post(isAuth.authenticateToken , getController.postNewComment);
 
     router.route('/liked-posts/:id1')

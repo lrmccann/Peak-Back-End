@@ -60,7 +60,7 @@ const { JWT_SIGNATURE } = process.env;
       }
     // next();
   });
-}else if(methodParams == 'PUT' ){
+}else if(methodParams == 'PUT' || methodParams == 'POST' ){
   if (difAuthHeader == null) return res.sendStatus(401);
   jwt.verify(difAuthHeader, JWT_SIGNATURE ,
     (err, pass) => {
