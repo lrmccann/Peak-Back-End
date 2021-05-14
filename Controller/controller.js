@@ -279,6 +279,7 @@ const getUserLikes = async (userId, myCallback) => {
       }
     );
   }),
+  //////////////////////
   (exports.getAllPosts = async function (req, res) {
     await connection.query(
       `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.post_body , user_posts.blog_img , user_posts.post_views , user_posts.blog_likes , user_posts.publish_date , account_info.username , account_info.icon
@@ -435,9 +436,9 @@ const getUserLikes = async (userId, myCallback) => {
     const userId = req.params.id1;
     const sendToSite = (arr) => {
       if (arr.length === 0) {
-        res.status(205).send("No bookmarks in arr");
+        return res.status(205).send("No bookmarks in arr");
       } else {
-        res.status(200).send(arr);
+        return res.status(200).send(arr);
       }
     };
     getUserBookmarks(userId, sendToSite);
@@ -674,7 +675,7 @@ const getUserLikes = async (userId, myCallback) => {
       if (arr.length === 0) {
         res.status(210).send("array is empty");
       } else {
-        let arrLength = arr.length;
+        // let arrLength = arr.length;
         await arr.map(async (index) => {
           await connection.query(
             `SELECT user_posts.id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username 
@@ -685,17 +686,22 @@ const getUserLikes = async (userId, myCallback) => {
                 return res.status(400).send("Error getting data");
               } else {
                 blogObjArray.push(...results);
+                setTimeout(() => {
+                  console.log(blogObjArray, "BLOG OBJ")
+                  return res.status(200).send(blogObjArray);
+                }, 2 * 800);
               }
             }
           );
         });
-        if (blogObjArray.length !== arrLength) {
-          setTimeout(async () => {
-            return res.status(200).send(blogObjArray);
-          }, 2 * 10);
-        } else {
-          return res.status(200).send(blogObjArray);
-        }
+        // if (blogObjArray.length !== arrLength) {
+        //   setTimeout(async () => {
+        //     return res.status(200).send(blogObjArray);
+        //   }, 2 * 10);
+        // } 
+        // else {
+          // return res.status(200).send(blogObjArray);
+        // }
       }
     }
     getUserBookmarks(userId, whatever);
