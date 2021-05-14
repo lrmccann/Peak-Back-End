@@ -413,7 +413,7 @@ const getUserLikes = async (userId, myCallback) => {
         if (arr.length === 0) {
           res.send(450).send("No posts to remove from arr!");
         } else {
-          if (strToMatch.indexOf(postId) === -1) {
+          if (strToMatch.indexOf(postId) !== -1) {
             finalArr = `${arr},${postId}`;
             await connection.query(
               `UPDATE account_info
