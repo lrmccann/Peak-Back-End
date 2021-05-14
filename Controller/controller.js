@@ -175,7 +175,9 @@ const getUserLikes = async (userId, myCallback) => {
       `INSERT INTO account_info(icon , first_name , last_name , username , email , password , age , city , state ,  zipcode , job_title , register_date) 
   VALUES( "${icon}" , "${firstName}" , "${lastName}" , "${username}" , "${email}" , "${passwordHashed}" , ${age} , "${city}" , "${state}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`,
       (error, results) => {
-        if (error || results.length === 0) {
+        if (error 
+          // || results.length === 0
+          ) {
           res.status(404).send(error);
         } else if (results.length !== 0) {
           let userObj = {
@@ -242,7 +244,9 @@ const getUserLikes = async (userId, myCallback) => {
       await connection.query(
         `SELECT email , password FROM account_info WHERE username = '${username}'`,
         async (error, results) => {
-          if (error || results.length === 0) {
+          if (error 
+            // || results.length === 0
+            ) {
             res.status(404).send(error);
           } else if (results.length !== 0) {
             if (await argon2.verify(results[0].password, password)) {
@@ -287,7 +291,9 @@ const getUserLikes = async (userId, myCallback) => {
     WHERE user_posts.user_id = account_info.id`,
       async (error, results) => {
         console.log(results);
-        if (error || results.length === 0) {
+        if (error 
+          // || results.length === 0
+          ) {
           res.status(404).send(error);
         } else {
           res.status(200).send(results);
@@ -351,7 +357,9 @@ const getUserLikes = async (userId, myCallback) => {
           `UPDATE user_posts SET blog_likes = blog_likes + 1 WHERE id=${postId}`,
           (error, results) => {
             console.log(results, "results to add like");
-            if (error || results.changedRows === 0) {
+            if (error
+              //  || results.changedRows === 0
+               ) {
               res.status(400).send(error);
             } else {
               getUserLikes(userId, addLikeArr);
@@ -398,7 +406,9 @@ const getUserLikes = async (userId, myCallback) => {
           `UPDATE user_posts SET blog_likes = blog_likes - 1 WHERE id=${postId}`,
           (error, results) => {
             console.log(results, "results to remove like");
-            if (error || results.length === 0) {
+            if (error 
+              // || results.length === 0
+              ) {
               res.status(400).send(error);
             } else {
               getUserLikes(userId, removeLikeArr);
