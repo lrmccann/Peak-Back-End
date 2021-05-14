@@ -347,7 +347,7 @@ const getUserLikes = async (userId, myCallback) => {
         let finalArr = [];
         if (arr.length === 0) {
           await connection.query(
-            `INSERT INTO account_info
+            `UPDATE account_info
             SET liked_posts = "${postId}"
             WHERE id = ${userId}`,
             (error, response) => {
