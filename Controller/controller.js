@@ -444,14 +444,17 @@ const getUserLikes = async (userId, myCallback) => {
       (error, results) => {
         if (error) {
           res.status(400).send("error loading posts");
-        } else if (results.length === 0) {
-          res.status(404).send(error);
-        } else {
+        } 
+        // else if (results.length === 0) {
+        //   res.status(404).send(error);
+        // } 
+        else {
           let likedPosts = results[0].liked_posts;
           if (likedPosts === null) {
+            console.log("No liked posts to load!")
             res
-              .status(400)
-              .send("Error loading your likes array, please refresh");
+              .status(200)
+              .send("No liked posts to load!");
           } else {
             let likesArr = likedPosts.split(",").map(Number);
             res.status(200).send(likesArr);
