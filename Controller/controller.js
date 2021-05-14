@@ -285,9 +285,8 @@ const getUserLikes = async (userId, myCallback) => {
     FROM user_posts, account_info
     WHERE user_posts.user_id = account_info.id`,
       async (error, results) => {
-        if (error) {
-          return console.log(error);
-        } else if (results.length === 0) {
+        console.log(results);
+        if (error || results.length === 0) {
           res.status(404).send(error);
         } else {
           res.status(200).send(results);
