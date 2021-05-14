@@ -737,13 +737,13 @@ const getUserLikes = async (userId, myCallback) => {
           }
         );
       });
-      if (blogObjArray.length !== arrLength) {
+      // if (blogObjArray.length !== arrLength) {
         setTimeout(async () => {
           return await res.status(200).send(blogObjArray);
-        }, 2 * 10);
-      } else {
-        return await res.status(200).send(blogObjArray);
-      }
+        }, 2 * 250);
+      // } else {
+        // return await res.status(200).send(blogObjArray);
+      // }
     }
     getUserBookmarks(userId, whatever);
 
