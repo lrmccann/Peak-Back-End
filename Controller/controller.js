@@ -568,7 +568,7 @@ const getUserLikes = async (userId, myCallback) => {
           WHERE posts.id=${requestId}`,
         (error, results) => {
           if (error) {
-            res.status(404).send("Error getting data").t;
+            return res.status(404).send("Error getting data").t;
           } else {
             let resultsToStringify = JSON.stringify(results);
             let resultsToParse = JSON.parse(resultsToStringify);
