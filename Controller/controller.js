@@ -305,7 +305,7 @@ const getUserLikes = async (userId, myCallback) => {
   //////////////////////
   (exports.getAllPosts = async function (req, res) {
     await connection.query(
-      `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.post_body , user_posts.blog_img , user_posts.post_views , user_posts.blog_likes , user_posts.publish_date , account_info.username , account_info.icon
+      `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.post_body , user_posts.blog_img , user_posts.post_views , user_posts.blog_likes , user_posts.publish_date , account_info.id account_info.username , account_info.icon
     FROM user_posts, account_info
     WHERE user_posts.user_id = account_info.id`,
       async (error, results) => {
