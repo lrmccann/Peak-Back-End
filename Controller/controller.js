@@ -309,17 +309,31 @@ const getUserLikes = async (userId, myCallback) => {
     WHERE user_posts.user_id = account_info.id`,
       async (error, results) => {
         if (error) {
-          return console.log(error);
-        } 
-        // else if (results.length === 0) {
-        //   res.status(404).send(error);
-        // } 
-        else {
+          console.log(error);
+        } else if (results.length === 0) {
+          res.status(404).send(error);
+        } else {
           res.status(200).send(results);
         }
-
       }
     );
+    // await connection.query(
+    //   `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.post_body , user_posts.blog_img , user_posts.post_views , user_posts.blog_likes , user_posts.publish_date , account_info.username , account_info.icon
+    // FROM user_posts, account_info
+    // WHERE user_posts.user_id = account_info.id`,
+    //   async (error, results) => {
+    //     if (error) {
+    //       return console.log(error);
+    //     } 
+    //     // else if (results.length === 0) {
+    //     //   res.status(404).send(error);
+    //     // } 
+    //     else {
+    //       res.status(200).send(results);
+    //     }
+
+    //   }
+    // );
   }),
   //
   // Controller Funcs for Homepage/BlogOps Component
