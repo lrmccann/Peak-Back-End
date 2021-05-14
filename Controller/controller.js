@@ -55,15 +55,31 @@ const getUserBookmarks = async (userId, myCallback) => {
   await connection.query(
     `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
     (error, results) => {
-      var postsToFetch = results[0].bookmarked_posts;
-      if (postsToFetch === "NULL") {
-        myCallback([]);
+      if (error) {
+        res.status(400).send("Problem with getting user bookmarks");
       } else {
-        var newBookmarkArr = postsToFetch.split(",").map(Number);
-        myCallback(newBookmarkArr);
+        var postsToFetch = results[0].bookmarked_posts;
+        if (postsToFetch === null) {
+          return;
+        } else {
+          var newBookmarkArr = postsToFetch.split(",").map(Number);
+          myCallback(newBookmarkArr);
+        }
       }
     }
   );
+  // await connection.query(
+  //   `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
+  //   (error, results) => {
+  //     var postsToFetch = results[0].bookmarked_posts;
+  //     if (postsToFetch === "NULL") {
+  //       myCallback([]);
+  //     } else {
+  //       var newBookmarkArr = postsToFetch.split(",").map(Number);
+  //       myCallback(newBookmarkArr);
+  //     }
+  //   }
+  // );
 };
 
 const getUserLikes = async (userId, myCallback) => {
@@ -297,7 +313,7 @@ const getUserLikes = async (userId, myCallback) => {
         } else {
           res.status(200).send(results);
         }
-        
+
       }
     );
   }),
