@@ -58,7 +58,7 @@ const { JWT_SIGNATURE } = process.env;
       }else{
         console.log("Success!!! JWT authenticated" , pass);
       }
-    next();
+    // next();
   });
 }else if(methodParams == 'PUT' ){
   if (difAuthHeader == null) return res.sendStatus(401);
@@ -69,7 +69,8 @@ const { JWT_SIGNATURE } = process.env;
      }else{
        console.log("Success!!! JWT authenticated 2ND TIME" , pass);
      }
-   next();
+  //  next();
  });
 }
+next()
 })
