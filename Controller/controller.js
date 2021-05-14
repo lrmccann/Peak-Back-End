@@ -363,6 +363,7 @@ const getUserLikes = async (userId, myCallback) => {
             }
           );
         } else {
+          let strToMatch = arr.toString();
           if (strToMatch.indexOf(postId) === -1) {
             finalArr = `${arr},${postId}`;
             await connection.query(
