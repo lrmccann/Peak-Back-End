@@ -93,8 +93,6 @@ const getUserLikes = async (userId, myCallback) => {
         myCallback([]);
       } else {
         var likesArr = likedPosts.split(",").map(Number);
-        console.log(likesArr , "likes arr in top func, before sending to other modules 123456789");
-        console.log(results, "results of arr in top func before sending to other modules");
         myCallback(likesArr);
       }
     }
@@ -410,6 +408,7 @@ const getUserLikes = async (userId, myCallback) => {
       const removeLikeArr = async (arr) => {
         console.log(arr, "ARRAY IN REMOVE LIKE FROM TOP FUNC")
         let strToMatch = arr.toString();
+        console.log(strToMatch, "HELLO HELLO")
         let finalArr = [];
         if (arr.length === 0) {
           res.send(450).send("No posts to remove from arr!");
