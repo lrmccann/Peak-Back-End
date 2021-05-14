@@ -700,28 +700,60 @@ const getUserLikes = async (userId, myCallback) => {
     const userId = req.params.id1;
     const blogObjArray = [];
     async function whatever(arr) {
-      if (arr.length === 0) {
-        res.status(210).send("array is empty");
-      } else {
-        // let arrLength = arr.length;
-        await arr.map(async (index) => {
-          await connection.query(
-            `SELECT user_posts.id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username 
+      let arrLength = arr.length;
+      await arr.map(async (index) => {
+        await connection.query(
+          `SELECT user_posts.id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username 
           FROM user_posts, account_info
           WHERE user_posts.id = ${index} AND account_info.id = user_posts.user_id`,
-            async (error, results) => {
-              if (error) {
-                res.status(400).send("Error getting data");
-              } else {
-                blogObjArray.push(...results);
-                setTimeout(() => {
-                  console.log(blogObjArray, "BLOG OBJ")
-                  res.status(200).send(blogObjArray);
-                }, 2 * 800);
-              }
+          async (error, results) => {
+            if (error) {
+              return res.status(400).send("Error getting data").t;
+            } else {
+              blogObjArray.push(...results);
             }
-          );
-        });
+          }
+        );
+      });
+      if (blogObjArray.length !== arrLength) {
+        setTimeout(async () => {
+          return await res.status(200).send(blogObjArray);
+        }, 2 * 10);
+      } else {
+        return await res.status(200).send(blogObjArray);
+      }
+    }
+    getUserBookmarks(userId, whatever);
+
+
+    // const userId = req.params.id1;
+    // const blogObjArray = [];
+    // async function whatever(arr) {
+    //   if (arr.length === 0) {
+    //     res.status(210).send("array is empty");
+    //   } else {
+    //     // let arrLength = arr.length;
+    //     await arr.map(async (index) => {
+    //       await connection.query(
+    //         `SELECT user_posts.id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username 
+    //       FROM user_posts, account_info
+    //       WHERE user_posts.id = ${index} AND account_info.id = user_posts.user_id`,
+    //         async (error, results) => {
+    //           if (error) {
+    //             res.status(400).send("Error getting data");
+    //           } else {
+    //             blogObjArray.push(...results);
+    //             setTimeout(() => {
+    //               console.log(blogObjArray, "BLOG OBJ")
+    //               res.status(200).send(blogObjArray);
+    //             }, 2 * 800);
+    //           }
+    //         }
+    //       );
+    //     });
+
+
+        
         // if (blogObjArray.length !== arrLength) {
         //   setTimeout(async () => {
         //     return res.status(200).send(blogObjArray);
@@ -730,9 +762,9 @@ const getUserLikes = async (userId, myCallback) => {
         // else {
           // return res.status(200).send(blogObjArray);
         // }
-      }
-    }
-    getUserBookmarks(userId, whatever);
+      // }
+    // }
+    // getUserBookmarks(userId, whatever);
   }),
   //
 
