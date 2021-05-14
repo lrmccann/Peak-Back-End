@@ -604,7 +604,7 @@ const getUserLikes = async (userId, myCallback) => {
     // Function to select author's name by inner joining tables where posts id = 1, pushes auth name to array, also begins callback
     const getAuthData = async () => {
       await connection.query(
-        `SELECT username from account_info accInfo
+        `SELECT username, icon from account_info accInfo
         INNER JOIN user_posts posts ON posts.user_id = accInfo.id
         WHERE posts.id=${requestId} `,
         (error, results) => {
