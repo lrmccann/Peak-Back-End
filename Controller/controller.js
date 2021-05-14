@@ -722,7 +722,11 @@ const getUserLikes = async (userId, myCallback) => {
     const userId = req.params.id1;
     const blogObjArray = [];
     async function whatever(arr) {
-      let arrLength = arr.length;
+      console.log(arr, 'ARRAY THAT MIGHT BE EMPTY')
+      if(arr.length === 0){
+        return res.status(200).send("Array is empty!");
+      }else if(arr.length !== 0){
+      // let arrLength = arr.length;
       await arr.map(async (index) => {
         await connection.query(
           `SELECT user_posts.id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username 
@@ -746,6 +750,7 @@ const getUserLikes = async (userId, myCallback) => {
         // return await res.status(200).send(blogObjArray);
       // }
     }
+  }
     getUserBookmarks(userId, whatever);
 
 
