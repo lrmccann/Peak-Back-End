@@ -312,13 +312,13 @@ const getUserLikes = async (userId, myCallback) => {
             (error, response) => {
               if (error) {
                 console.log(error, "Error on initial insertion of like ");
-                return res.status(404).send(error);
+                res.status(404).send(error);
               } else {
                 console.log(
                   response,
                   "Successfully added post id to likes on initial insertion"
                 );
-                return res.status(202).send(response);
+                res.status(202).send(response);
               }
             }
           );
@@ -334,13 +334,13 @@ const getUserLikes = async (userId, myCallback) => {
                     error,
                     "Error ADDING like by post id from arr"
                   );
-                  return res.status(404).send(error);
+                  res.status(404).send(error);
                 } else {
                   console.log(
                     response,
                     "response for ADDING like by post id from arr"
                   );
-                  return res.status(202).send(response);
+                  res.status(202).send(response);
                 }
               }
             );
@@ -352,7 +352,7 @@ const getUserLikes = async (userId, myCallback) => {
           (error, results) => {
             console.log(results, "results to add like");
             if (error || results.changedRows === 0) {
-              return res.status(400).send(error);
+              res.status(400).send(error);
             } else {
               getUserLikes(userId, addLikeArr);
             }
