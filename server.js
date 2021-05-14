@@ -11,7 +11,7 @@ app.use(express.static('public'));
 app.use(cors());
 
 app.use((req, res, next) => {
-    // res.setHeader("Access-Control-Allow-Headers" , 'Authorization');
+    res.setHeader("Access-Control-Allow-Headers" , 'Authorization');
     // console.log(req.rawHeaders.keys(), "RAW HEADERS HERE")
     res.setHeader("Access-Control-Allow-Origin",  "*");
     res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
