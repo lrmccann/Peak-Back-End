@@ -391,11 +391,11 @@ const getUserLikes = async (userId, myCallback) => {
           `UPDATE user_posts SET blog_likes = blog_likes + 1 WHERE id=${postId}`,
           (error, results) => {
             console.log(results, "results to add like");
-            if (error)
+            if (error){
               console.log("Error updating like num")
               //  || results.changedRows === 0
               //  )
-                {
+                // {
               res.status(400).send(error);
             } else {
               console.log("Updated like num")
