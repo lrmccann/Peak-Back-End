@@ -57,10 +57,10 @@ const getUserBookmarks = async (userId, myCallback) => {
     (error, results) => {
       var postsToFetch = results[0].bookmarked_posts;
       if (postsToFetch === "NULL") {
-        return myCallback([]);
+        myCallback([]);
       } else {
         var newBookmarkArr = postsToFetch.split(",").map(Number);
-        return myCallback(newBookmarkArr);
+        myCallback(newBookmarkArr);
       }
     }
   );
@@ -72,12 +72,12 @@ const getUserLikes = async (userId, myCallback) => {
     (error, results) => {
       var likedPosts = results[0].liked_posts;
       if (likedPosts === "NULL") {
-        return myCallback([]);
+        myCallback([]);
       } else {
         var likesArr = likedPosts.split(",").map(Number);
         console.log(likesArr , "likes arr in top func, before sending to other modules 123456789");
         console.log(results, "results of arr in top func before sending to other modules");
-        return myCallback(likesArr);
+        myCallback(likesArr);
       }
     }
   );
@@ -456,13 +456,13 @@ const getUserLikes = async (userId, myCallback) => {
           WHERE id = ${userId}`,
           (error) => {
             if (error) {
-              return res
+              res
                 .status(400)
                 .send(
                   "Error bookmarking post for user : " + userId + " " + error
                 );
             } else {
-              return res
+              res
                 .status(202)
                 .send(
                   `Successfully bookmarked post number ${bookmarkedPostId} for at user id ${userId}`
@@ -488,16 +488,16 @@ const getUserLikes = async (userId, myCallback) => {
                         WHERE id = ${userId}`,
           async (error) => {
             if (error) {
-              return res.status(300).send("Failed to remove bookmarked post");
+              res.status(300).send("Failed to remove bookmarked post");
             } else {
-              return res
+              res
                 .status(200)
                 .send("Successfully removed bookmarked blog");
             }
           }
         );
       } else {
-        return console.log("Failed because blog was not bookmarked");
+        console.log("Failed because blog was not bookmarked");
       }
     };
     getUserBookmarks(userId, deleteBookmark);
@@ -518,7 +518,7 @@ const getUserLikes = async (userId, myCallback) => {
           WHERE posts.id=${requestId}`,
         (error, results) => {
           if (error) {
-            return res.status(404).send("Error getting data").t;
+            res.status(404).send("Error getting data").t;
           } else {
             let resultsToStringify = JSON.stringify(results);
             let resultsToParse = JSON.parse(resultsToStringify);
@@ -542,7 +542,7 @@ const getUserLikes = async (userId, myCallback) => {
         `SELECT * FROM user_posts WHERE user_posts.id=${requestId}`,
         (fail, pass) => {
           if (fail) {
-            return res.status(404).send(fail);
+            res.status(404).send(fail);
           } else {
             allInfoArr.push(pass[0]);
             getCommentData();
@@ -558,7 +558,7 @@ const getUserLikes = async (userId, myCallback) => {
         WHERE posts.id=${requestId} `,
         (error, results) => {
           if (error) {
-            return res
+            res
               .status(404)
               .send("Error retrieving blog author information");
           } else {
@@ -683,12 +683,12 @@ const getUserLikes = async (userId, myCallback) => {
           WHERE user_posts.id = ${index} AND account_info.id = user_posts.user_id`,
             async (error, results) => {
               if (error) {
-                return res.status(400).send("Error getting data");
+                res.status(400).send("Error getting data");
               } else {
                 blogObjArray.push(...results);
                 setTimeout(() => {
                   console.log(blogObjArray, "BLOG OBJ")
-                  return res.status(200).send(blogObjArray);
+                  res.status(200).send(blogObjArray);
                 }, 2 * 800);
               }
             }
