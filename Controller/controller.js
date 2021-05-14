@@ -106,6 +106,7 @@ const getUserLikes = async (userId, myCallback) => {
   const imgType = req.params.id2;
   const base64data = new Buffer.from(req.body.data.fileURL, "base64");
 
+  console.log(req.body, "check here for blog img data")
   aws.config.update({
     credentials: {
       accessKeyId: `${AWS_ACCESS_KEY}`,
@@ -725,6 +726,8 @@ const getUserLikes = async (userId, myCallback) => {
       console.log(arr, 'ARRAY THAT MIGHT BE EMPTY')
       if(arr.length === 0){
         return res.status(200).send("Array is empty!");
+      }else if (arr.indexOf('NaN') !== -1){
+        return res.status(404).send("NaN is in bookmarks arr")
       }else if(arr.length !== 0){
       // let arrLength = arr.length;
       await arr.map(async (index) => {
