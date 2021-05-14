@@ -348,7 +348,8 @@ const getUserLikes = async (userId, myCallback) => {
         if (arr.length === 0) {
           await connection.query(
             `INSERT INTO account_info (liked_posts)
-            VALUE("${postId}")`,
+            VALUE("${postId}")
+            WHERE id = ${userId}`,
             (error, response) => {
               if (error) {
                 console.log(error, "Error on initial insertion of like ");
@@ -367,7 +368,8 @@ const getUserLikes = async (userId, myCallback) => {
             finalArr = `${arr},${postId}`;
             await connection.query(
               `UPDATE account_info
-            SET liked_posts = "${finalArr}"`,
+            SET liked_posts = "${finalArr}"
+            WHERE id=${userId}`,
               (error, response) => {
                 if (error) {
                   console.log(
@@ -415,7 +417,8 @@ const getUserLikes = async (userId, myCallback) => {
             finalArr = `${arr},${postId}`;
             await connection.query(
               `UPDATE account_info
-            SET liked_posts = "${finalArr}"`,
+            SET liked_posts = "${finalArr}"
+            WHERE id = ${userId}`,
               (error, response) => {
                 if (error) {
                   console.log(
