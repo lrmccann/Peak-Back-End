@@ -436,9 +436,9 @@ const getUserLikes = async (userId, myCallback) => {
     const userId = req.params.id1;
     const sendToSite = (arr) => {
       if (arr.length === 0) {
-        return res.status(205).send("No bookmarks in arr");
+        res.status(205).send("No bookmarks in arr");
       } else {
-        return res.status(200).send(arr);
+        res.status(200).send(arr);
       }
     };
     getUserBookmarks(userId, sendToSite);
