@@ -1,8 +1,9 @@
-// const bcrypt = require("bcrypt");
 const argon2 = require("argon2");
 const mysql = require("mysql");
 const aws = require("aws-sdk");
 const jwt = require("jsonwebtoken");
+const mysqlConfigObj = require("../sqlConfig");
+const mysqlConfig = mysqlConfigObj.sqlConfig;
 
 var connection = "";
 
@@ -11,19 +12,15 @@ const {
   AWS_SECRET_KEY,
   AWS_REGION,
   AWS_BUCKET,
-  SQL_HOST,
-  SQL_DB,
-  SQL_USERNAME,
-  SQL_PASSWORD,
   JWT_SIGNATURE,
 } = process.env;
 
 var connectionInfo = mysql.createConnection({
-  host: SQL_HOST,
-  database: SQL_DB,
-  user: SQL_USERNAME,
-  password: SQL_PASSWORD,
-  insecureAuth: true,
+  host: mysqlConfig.host,
+  port: mysqlConfig.port,
+  database: mysqlConfig.database,
+  user: mysqlConfig.user,
+  password: mysqlConfig.password,
   multipleStatements: true,
 });
 
@@ -192,9 +189,7 @@ const getUserLikes = async (userId, myCallback) => {
       `INSERT INTO account_info(icon , first_name , last_name , username , email , password , age , city , state ,  zipcode , job_title , register_date) 
   VALUES( "${icon}" , "${firstName}" , "${lastName}" , "${username}" , "${email}" , "${passwordHashed}" , ${age} , "${city}" , "${state}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`,
       (error, results) => {
-        if (error 
-          // || results.length === 0
-          ) {
+        if (error ) {
           res.status(404).send(error);
         } else if (results.length !== 0) {
           let userObj = {
@@ -226,13 +221,13 @@ const getUserLikes = async (userId, myCallback) => {
           console.log(error);
           res.status(400).send(error);
         } else {
-          // console.log(response, "response to add topics");
           res.status(202).send(response);
         }
       }
     );
   }),
   (exports.authenticateUser = async function (req, res) {
+    console.log(req.params.id1, req.params.id2);
     const username = req.params.id1;
     const password = req.params.id2;
 
@@ -243,7 +238,7 @@ const getUserLikes = async (userId, myCallback) => {
         WHERE email = '${userEmail}'`,
         (error, results) => {
           if (error) {
-            console.log("or fail right here?", error);
+            console.log("Error getting data for auth!", error);
             res.status(404).send("error retrieving account information");
           } else {
             let tokenToSend = generateJsonWebToken(results[0]);
@@ -262,7 +257,6 @@ const getUserLikes = async (userId, myCallback) => {
         `SELECT email , password FROM account_info WHERE username = '${username}'`,
         async (error, results) => {
           if (error 
-            // || results.length === 0
             ) {
             res.status(404).send(error);
           } else if (results.length !== 0) {
