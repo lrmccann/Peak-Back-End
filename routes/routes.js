@@ -21,9 +21,9 @@ const router = require('express').Router();
     .put(isAuth.authenticateToken , getController.addPostView)
     .delete(isAuth.authenticateToken , getController.deleteUserPost);
 
-    router.route('/user-bookmarks/:id1/:id2')
-    .put(isAuth.authenticateToken , getController.bookmarkNewPost)
-    .delete(isAuth.authenticateToken , getController.removeBookmarkedPost);
+    router.route('/user-bookmarks/:id1/:id2/:id3')
+    .put(isAuth.authenticateToken , getController.bookmarkNewPost);
+    // .delete(isAuth.authenticateToken , getController.removeBookmarkedPost);
     // id1 = user Id
     router.route('/user-all-bookmarks/:id1')
     .get(isAuth.authenticateToken , getController.getBookmarkedPosts);

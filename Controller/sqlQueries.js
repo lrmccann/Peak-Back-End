@@ -135,23 +135,18 @@ if (process.env.JAWSDB_URL) {
   (exports.addSqlLike = async function (cond, postId, userId, cb) {
     const addLike = async (likesArr) => {
       let postIndex = likesArr.indexOf(postId);
-      const arrLength = likesArr.length + 1;
       if(postIndex === -1){
         likesArr.push(`${postId}`);
-        if(arrLength === likesArr.length ){
           await connection.query(
               `UPDATE account_info SET liked_posts = '${likesArr}' WHERE id = ${userId}`,
               (err, results) => {
                 if (err || results.changedRows === 0) {
                   throw err;
                 } else {
-                  return cb(likesArr)
+                  return 'Success';
                 }
               }
             );
-        } else {
-          throw 'ERROR ADDING LIKE';
-        }
       } else {
         throw 'USER ALREADY LIKED POST';
       }
@@ -168,7 +163,7 @@ if (process.env.JAWSDB_URL) {
           if(err || results.changedRows === 0){
             throw err;
           } else {
-            return cb(likesArr);
+            return 'Success';
           }
         })
       }
@@ -189,10 +184,91 @@ if (process.env.JAWSDB_URL) {
               addLike(likesArr);
             } else if (cond === "remove") {
               removeLike(likesArr);
+            } else {
+              let likesArrMap = results[0].liked_posts.split(",").map(Number);
+              cb(likesArrMap);
             }
           }
         }
       );
     };
     getLikesArr();
-  });
+  }),
+  (exports.getUserBookmarks = async (userId, myCallback) => {
+    await connection.query(
+      `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
+      (error, results) => {
+        if (error) {
+          throw error;
+        } 
+        else {
+          var postsToFetch = results[0].bookmarked_posts;
+          if (postsToFetch === null) {
+            throw 'WAS NUUUUL';
+          } 
+          else {
+            var newBookmarkArr = postsToFetch.split(",").map(Number);
+            myCallback(newBookmarkArr);
+          }
+        }
+      }
+    );
+  }),
+  (exports.toggleBookmark = async function (userId, postId, cond, bookmarkArr) {
+    let postIndex = bookmarkArr.indexOf(postId);
+    console.log(cond, "conditional")
+    if(`${cond}` === 'add'){
+      if(postIndex === -1){
+        bookmarkArr.push( `${postId}`);
+          await connection.query(
+              `UPDATE account_info SET bookmarked_posts = '${bookmarkArr}' WHERE id = ${userId}`,
+              (err, results) => {
+                if (err) {
+                  throw `ERROR TOGGLING BOOKMARK`;
+                } else {
+                  return 'Success';
+                }
+              }
+            );
+      } else {
+        throw 'USER ALREADY BOOKMARKED POST';
+      }
+    } else if(`${cond}` === 'remove'){
+      if(postIndex === -1){
+        throw 'ID OF POST TO REMOVE WAS NOT FOUND - BOOKMARK';
+      } else {
+        bookmarkArr.splice(postIndex, 1);
+        await connection.query(`UPDATE account_info SET bookmarked_posts = '${bookmarkArr}' WHERE id = ${userId}`, 
+        (err , results) => {
+          if(err){
+            throw err;
+          } else {
+            return 'Success';
+          }
+        })
+      }
+    }
+  }),
+  (exports.getBMarkData = async function (arr, cb) {
+  const blogObjArray = [];
+    if(arr.length === 0){
+      throw 'ARR WAS EMPTY - GET BMARK POST DATA';
+    } else {
+      arr.map( async (index) => {
+      await connection.query(
+        `SELECT user_posts.id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username 
+        FROM user_posts, account_info
+        WHERE user_posts.id = ${index} AND account_info.id = user_posts.user_id`,
+        async (error, results) => {
+          if (error) {
+            throw error;
+          } else {
+            blogObjArray.push(...results);
+            cb(blogObjArray)
+          }
+        }
+      );
+    })
+    }
+
+  })
