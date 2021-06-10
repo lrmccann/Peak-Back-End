@@ -4,6 +4,7 @@ const aws = require("aws-sdk");
 const jwt = require("jsonwebtoken");
 const mysqlConfigObj = require("../sqlConfig");
 const mysqlConfig = mysqlConfigObj.sqlConfig;
+const mysqlQueries = require("./sqlQueries");
 
 var connection = "";
 
@@ -67,18 +68,6 @@ const getUserBookmarks = async (userId, myCallback) => {
       }
     }
   );
-  // await connection.query(
-  //   `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
-  //   (error, results) => {
-  //     var postsToFetch = results[0].bookmarked_posts;
-  //     if (postsToFetch === "NULL") {
-  //       myCallback([]);
-  //     } else {
-  //       var newBookmarkArr = postsToFetch.split(",").map(Number);
-  //       myCallback(newBookmarkArr);
-  //     }
-  //   }
-  // );
 };
 
 const getUserLikes = async (userId, myCallback) => {
@@ -97,7 +86,6 @@ const getUserLikes = async (userId, myCallback) => {
 };
 // uploading images to aws
 (exports.uploadBlogImg = async function (req, res) {
-  console.log(req.body, "check here for blog img data");
   const title = req.params.id1;
   const imgType = req.params.id2;
   const base64data = new Buffer.from(req.body.dataFile.data, "base64");
@@ -182,29 +170,25 @@ const getUserLikes = async (userId, myCallback) => {
     const zipcode = req.body.userData.zip;
     const jobTitle = req.body.userData.jobTitle;
     const registerDate = req.body.userData.date;
-
     const passwordHashed = await argon2.hash(password);
 
-    await connection.query(
-      `INSERT INTO account_info(icon , first_name , last_name , username , email , password , age , city , state ,  zipcode , job_title , register_date) 
-  VALUES( "${icon}" , "${firstName}" , "${lastName}" , "${username}" , "${email}" , "${passwordHashed}" , ${age} , "${city}" , "${state}" , ${zipcode} , "${jobTitle}" , "${registerDate}" )`,
-      (error, results) => {
-        if (error ) {
-          res.status(404).send(error);
-        } else if (results.length !== 0) {
-          let userObj = {
-            id: results.insertId,
-            lastName: lastName,
-            email: email,
-          };
-          let tokenToSend = generateJsonWebToken(userObj);
-          res.status(202).json({
-            userData: results,
-            sessToken: tokenToSend,
-          });
-        }
-      }
-    );
+    const newUserObj = async (stuffObj) => {
+        const newObj = await stuffObj;
+        const tokenToSend = generateJsonWebToken(newObj);
+        console.log(newObj, tokenToSend, "this stuff")
+          res.status(200).json({
+          userData : newObj,
+          sessToken : tokenToSend
+        });
+    }
+
+    try {
+        await mysqlQueries.createUser(icon, firstName, lastName, username, email, passwordHashed, age, city, state, zipcode, jobTitle, registerDate, newUserObj);
+    }
+    catch(error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
   }),
   (exports.addPrefTopics = async function (req, res) {
     const userId = req.params.id1;
@@ -214,64 +198,35 @@ const getUserLikes = async (userId, myCallback) => {
     const userChoiceFour = req.body.topicData.choiceFour;
     const userChoiceFive = req.body.topicData.choiceFive;
 
-    await connection.query(
-      `UPDATE account_info SET preferred_topics = '${userChoiceOne}, ${userChoiceTwo}, ${userChoiceThree}, ${userChoiceFour}, ${userChoiceFive}' WHERE id=${userId}`,
-      (error, response) => {
-        if (error) {
-          console.log(error);
-          res.status(400).send(error);
-        } else {
-          res.status(202).send(response);
-        }
-      }
-    );
+    try {
+      await mysqlQueries.addPrefTopics(userId, userChoiceOne, userChoiceTwo, userChoiceThree, userChoiceFour, userChoiceFive);
+      res.sendStatus(200);
+    }catch(error){
+      console.log(error);
+      res.status(400).send(error);
+    }
   }),
-  (exports.authenticateUser = async function (req, res) {
-    console.log(req.params.id1, req.params.id2);
+  (exports.authenticateUser = async function (req, res, next) {
     const username = req.params.id1;
     const password = req.params.id2;
+    let userObj = null;
 
-    const getAllUserData = async (userEmail) => {
-      await connection.query(
-        `SELECT id , icon , first_name , last_name , username , email , age , city , state ,  zipcode , job_title , register_date , preferred_topics
-        FROM account_info
-        WHERE email = '${userEmail}'`,
-        (error, results) => {
-          if (error) {
-            console.log("Error getting data for auth!", error);
-            res.status(404).send("error retrieving account information");
-          } else {
-            let tokenToSend = generateJsonWebToken(results[0]);
-            results.map((index) => {
-              res.status(200).json({
-                userData: index,
-                sessToken: tokenToSend,
-              });
-            });
-          }
-        }
-      );
-    };
-    const verifyPassword = async () => {
-      await connection.query(
-        `SELECT email , password FROM account_info WHERE username = '${username}'`,
-        async (error, results) => {
-          if (error 
-            ) {
-            res.status(404).send(error);
-          } else if (results.length !== 0) {
-            if (await argon2.verify(results[0].password, password)) {
-              getAllUserData(results[0].email);
-            } else {
-              res
-                .status(404)
-                .send("User does not exist, check password and try again!");
-            }
-          }
-        }
-      );
-    };
-    verifyPassword();
+      const getUserObj = async (sqlUserData) => {
+          userObj = await sqlUserData;
+        const tokenToSend = generateJsonWebToken(userObj);
+          res.status(200).json({
+          userData : userObj,
+          sessToken : tokenToSend
+        });
+      }
+
+      try {
+       await mysqlQueries.authUser(username, password, getUserObj);
+        // next();
+      } catch(err) {
+        console.log(err)
+        res.status(404).send(err);
+      }
   }),
   (exports.deleteAccount = async function (req, res) {
     console.log("requuuuueeeest", req);
@@ -281,52 +236,28 @@ const getUserLikes = async (userId, myCallback) => {
   // Controller funcs for Home page
   (exports.addPostView = async function (req, res) {
     const postId = req.params.id1;
-    await connection.query(
-      `UPDATE user_posts 
-    SET post_views = post_views + 1 
-    WHERE id=${postId}`,
-      (error) => {
-        if (error) {
-          res.status(400).send("Failed to update post views");
-        } else {
-          res.status(200).send("Successfully updated post views");
-        }
-      }
-    );
+    try{
+    await mysqlQueries.addPostView(postId);
+    res.sendStatus(200);
+    }catch(err){
+      res.status(400).send('Bad Request, Error Adding View');
+    }
   }),
   //////////////////////
   (exports.getAllPosts = async function (req, res) {
-    await connection.query(
-      `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.post_body , user_posts.blog_img , user_posts.post_views , user_posts.blog_likes , user_posts.publish_date , account_info.username , account_info.icon
-    FROM user_posts, account_info
-    WHERE user_posts.user_id = account_info.id`,
-      async (error, results) => {
-        if (error) {
-          console.log(error);
-        } else if (results.length === 0) {
-          res.status(404).send(error);
-        } else {
-          res.status(200).send(results);
-        }
+    const sendBlogs = async (blogObj) => {
+      if(blogObj.length === 0){
+        res.sndStatus(405);
+      } else {
+      res.status(200).send(blogObj);
       }
-    );
-    // await connection.query(
-    //   `SELECT user_posts.id , user_posts.user_id , user_posts.post_title , user_posts.post_body , user_posts.blog_img , user_posts.post_views , user_posts.blog_likes , user_posts.publish_date , account_info.username , account_info.icon
-    // FROM user_posts, account_info
-    // WHERE user_posts.user_id = account_info.id`,
-    //   async (error, results) => {
-    //     if (error) {
-    //       return console.log(error);
-    //     } 
-    //     // else if (results.length === 0) {
-    //     //   res.status(404).send(error);
-    //     // } 
-    //     else {
-    //       res.status(200).send(results);
-    //     }
-
-    //   }
-    // );
+    }
+    try {
+      await mysqlQueries.getPostData(sendBlogs);
+    } catch(err) {
+      console.log(err, "what error is dis");
+        res.sendStatus(404);
+    }
   }),
   //
   // Controller Funcs for Homepage/BlogOps Component
@@ -334,124 +265,17 @@ const getUserLikes = async (userId, myCallback) => {
     const addOrRemoveLikes = req.params.id1;
     const postId = req.params.id2;
     const userId = req.params.id3;
-    if (addOrRemoveLikes === "add") {
-      const addLikeArr = async (arr) => {
-        console.log(arr, "ARRAY IN ADD LIKE FROM TOP FUNC")
-        let finalArr = [];
-        if (arr.length === 0) {
-          await connection.query(
-            `UPDATE account_info
-            SET liked_posts = "${postId}"
-            WHERE id = ${userId}`,
-            (error, response) => {
-              if (error) {
-                console.log(error, "Error on initial insertion of like ");
-                res.status(404).send(error);
-              } else {
-                console.log(
-                  response,
-                  "Successfully added post id to likes on initial insertion"
-                );
-                res.status(202).send(response);
-              }
-            }
-          );
-        } else {
-          let strToMatch = arr.toString();
-          if (strToMatch.indexOf(postId) === -1) {
-            finalArr = `${arr},${postId}`;
-            await connection.query(
-              `UPDATE account_info
-            SET liked_posts = "${finalArr}"
-            WHERE id=${userId}`,
-              (error, response) => {
-                if (error) {
-                  console.log(
-                    error,
-                    "Error ADDING like by post id from arr"
-                  );
-                  res.status(404).send(error);
-                } else {
-                  console.log(
-                    response,
-                    "response for ADDING like by post id from arr"
-                  );
-                  res.status(202).send(response);
-                }
-              }
-            );
-          } else{
-            res.status(202).send("Post already liked")
-          }
-        }
-      };
-      const addLikeCount = async () => {
-        await connection.query(
-          `UPDATE user_posts SET blog_likes = blog_likes + 1 WHERE id=${postId}`,
-          (error, results) => {
-            console.log(results, "results to add like");
-            if(error) {
-              console.log("Error updating like num");
-              res.status(400).send(error);
-            } else if(!error) {
-              console.log("Updated like num")
-              getUserLikes(userId, addLikeArr);
-            }
-          }
-        );
-      };
-      addLikeCount();
-  } 
-    else if (addOrRemoveLikes === "remove") {
-      const removeLikeArr = async (arr) => {
-        console.log(arr, "ARRAY IN REMOVE LIKE FROM TOP FUNC")
-        let strToMatch = arr.toString();
-        console.log(strToMatch, "HELLO HELLO")
-        let finalArr = [];
-        if (arr.length === 0) {
-          res.send(450).send("No posts to remove from arr!");
-        } else {
-          if (strToMatch.indexOf(postId) !== -1) {
-            finalArr = `${arr},${postId}`;
-            await connection.query(
-              `UPDATE account_info
-            SET liked_posts = "${finalArr}"
-            WHERE id = ${userId}`,
-              (error, response) => {
-                if (error) {
-                  console.log(
-                    error,
-                    "Error for removing like by post id from arr"
-                  );
-                  res.status(404).send(error);
-                } else {
-                  console.log(
-                    response,
-                    "response for removing like by post id from arr"
-                  );
-                  res.status(202).send(response);
-                }
-              }
-            );
-          }
-        }
-      };
-      const removeLikeCount = async () => {
-        await connection.query(
-          `UPDATE user_posts SET blog_likes = blog_likes - 1 WHERE id=${postId}`,
-          (error, results) => {
-            console.log(results, "results to remove like");
-            if (error 
-              // || results.length === 0
-              ) {
-              res.status(400).send(error);
-            } else {
-              getUserLikes(userId, removeLikeArr);
-            }
-          }
-        );
-      };
-      removeLikeCount();
+
+    const sendArr = async (arr) => {
+      console.log(arr, 'ARR FOR CALLBACK DEALING WITH LIKES')
+      res.status(200).send(arr);
+    }
+
+    try {
+      mysqlQueries.addSqlLike(addOrRemoveLikes, postId, userId, sendArr);
+    } catch (e) {
+      console.log(e, "ERROR RIGHT HERE")
+      res.sendStatus(404);
     }
   }),
   (exports.getLikedPosts = async function (req, res) {
@@ -462,9 +286,6 @@ const getUserLikes = async (userId, myCallback) => {
         if (error) {
           res.status(400).send("error loading posts");
         } 
-        // else if (results.length === 0) {
-        //   res.status(404).send(error);
-        // } 
         else {
           let likedPosts = results[0].liked_posts;
           if (likedPosts === null) {
@@ -673,8 +494,8 @@ const getUserLikes = async (userId, myCallback) => {
     );
   }),
   (exports.fetchUserInfo = async function (req, res) {
-    const userId = await req.params.id1;
-    connection.query(
+    const userId = req.params.id1;
+    await connection.query(
       `SELECT * FROM account_info WHERE id = ${userId}`,
       (error, results) => {
         if (error) {
@@ -684,7 +505,8 @@ const getUserLikes = async (userId, myCallback) => {
           results.map((index) => {
             toSend = index;
           });
-          res.status(202).send(toSend);
+          console.log(toSend, "TO SEEEND")
+          res.status(200).send(toSend);
         }
       }
     );
@@ -752,47 +574,6 @@ const getUserLikes = async (userId, myCallback) => {
     }
   }
     getUserBookmarks(userId, whatever);
-
-
-    // const userId = req.params.id1;
-    // const blogObjArray = [];
-    // async function whatever(arr) {
-    //   if (arr.length === 0) {
-    //     res.status(210).send("array is empty");
-    //   } else {
-    //     // let arrLength = arr.length;
-    //     await arr.map(async (index) => {
-    //       await connection.query(
-    //         `SELECT user_posts.id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username 
-    //       FROM user_posts, account_info
-    //       WHERE user_posts.id = ${index} AND account_info.id = user_posts.user_id`,
-    //         async (error, results) => {
-    //           if (error) {
-    //             res.status(400).send("Error getting data");
-    //           } else {
-    //             blogObjArray.push(...results);
-    //             setTimeout(() => {
-    //               console.log(blogObjArray, "BLOG OBJ")
-    //               res.status(200).send(blogObjArray);
-    //             }, 2 * 800);
-    //           }
-    //         }
-    //       );
-    //     });
-
-
-        
-        // if (blogObjArray.length !== arrLength) {
-        //   setTimeout(async () => {
-        //     return res.status(200).send(blogObjArray);
-        //   }, 2 * 10);
-        // } 
-        // else {
-          // return res.status(200).send(blogObjArray);
-        // }
-      // }
-    // }
-    // getUserBookmarks(userId, whatever);
   }),
   //
 

@@ -72,5 +72,5 @@ const { JWT_SIGNATURE } = process.env;
   //  next();
  });
 }
-next()
+next();
 })
