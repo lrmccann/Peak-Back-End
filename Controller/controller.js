@@ -134,7 +134,7 @@ const generateJsonWebToken = (user) => {
     const newUserObj = async (stuffObj) => {
         const newObj = await stuffObj;
         const tokenToSend = generateJsonWebToken(newObj);
-        console.log(newObj, tokenToSend, "this stuff")
+        console.log(newObj, tokenToSend, "this stuff");
           res.status(200).json({
           userData : newObj,
           sessToken : tokenToSend

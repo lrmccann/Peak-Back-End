@@ -212,7 +212,7 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
         } else {
           var postsToFetch = results[0].bookmarked_posts;
           if (postsToFetch === null) {
-            throw "WAS NUUUUL";
+            console.log('was NUUUUUULLL');
           } else {
             var newBookmarkArr = postsToFetch.split(",").map(Number);
             myCallback(newBookmarkArr);
