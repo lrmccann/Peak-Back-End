@@ -16,7 +16,14 @@ if (process.env.JAWSDB_URL) {
   connection = mysql.createConnection(process.env.JAWSDB_URL);
 } else {
   connection = connectionInfo;
-}
+};
+
+function createObjForComments(username, commentBody, commentRank, joinDate) {
+  this.username = username;
+  this.commentBody = commentBody;
+  this.commentRank = commentRank;
+  this.joinDate = joinDate;
+};
 
 (exports.createUser = async function (
   icon,
@@ -108,14 +115,14 @@ if (process.env.JAWSDB_URL) {
     await connection.query(
       `UPDATE user_posts 
     SET post_views = post_views + 1 
-    WHERE id=${postId}`
-      // (error) => {
-      //   if (error) {
-      //     res.status(400).send("Failed to update post views");
-      //   } else {
-      //     res.status(200).send("Successfully updated post views");
-      //   }
-      // }
+    WHERE id=${postId}`,
+    (err, data) => {
+      if(err){
+        throw err;
+      } else{
+        return data;
+      }
+    }
     );
   }),
   (exports.getPostData = async function (cb) {
@@ -226,7 +233,7 @@ if (process.env.JAWSDB_URL) {
                 if (err) {
                   throw `ERROR TOGGLING BOOKMARK`;
                 } else {
-                  return 'Success';
+                  return results;
                 }
               }
             );
@@ -270,5 +277,78 @@ if (process.env.JAWSDB_URL) {
       );
     })
     }
-
-  })
+  }),
+  (exports.getPostDetails = async function (requestId, cb) {
+    let allInfoArr = [];
+    const getCommentData = async () => {
+      await connection.query(
+        `SELECT * FROM user_posts posts
+          INNER JOIN user_comments comments ON posts.id = comments.post_id
+          INNER JOIN account_info accInfo ON comments.user_id = accInfo.id
+          WHERE posts.id=${requestId}`,
+        (error, results) => {
+          if (error) {
+            throw error;
+          } else {
+            results.map((index) => {
+              var commentObj = new createObjForComments(
+                `${index.username}`,
+                `${index.comment_body}`,
+                `${index.comment_rank}`,
+                `${index.register_date}`
+              );
+              allInfoArr.push(commentObj);
+            });
+            cb(allInfoArr)
+          }
+        }
+      );
+    };
+    // Gets Blog body, # of likes, etc. Sends response to web page
+    const getBlogDetails = async () => {
+      await connection.query(
+        `SELECT post_title, post_body, blog_img, post_views, blog_likes, publish_date FROM user_posts WHERE user_posts.id=${requestId}`,
+        (err, results) => {
+          if (err) {
+            throw err;
+          } else {
+            allInfoArr.push(results[0]);
+            getCommentData();
+          }
+        }
+      );
+    };
+    // Function to select author's name by inner joining tables where posts id = 1, pushes auth name to array, also begins callback
+    const getAuthData = async () => {
+      await connection.query(
+        `SELECT username, icon from account_info accInfo
+        INNER JOIN user_posts posts ON posts.user_id = accInfo.id
+        WHERE posts.id=${requestId} `,
+        (e, results) => {
+          if (e) {
+            throw e;
+          } else {
+            results.map((index) => {
+              allInfoArr.push(index);
+            });
+            getBlogDetails();
+          }
+        }
+      );
+    };
+    getAuthData();
+  }),
+  ((exports.postNewComment = async function (userId, postId, commentBody) {
+    await connection.query(
+      `INSERT INTO user_comments(user_id , post_id , comment_body  )
+    VALUES( ${userId} , ${postId} , "${commentBody}")`,
+      (error) => {
+        if (error) {
+          res.sendStatus(404);
+          throw error;
+        } else {
+          return 'Success';
+        }
+      }
+    );
+  }))
