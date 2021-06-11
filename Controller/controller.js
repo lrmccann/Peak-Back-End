@@ -72,7 +72,7 @@ const generateJsonWebToken = (user) => {
       throw (err, 'ERROR PUTTING BLOG IMG OBJ IN S3');
     } else {
       res
-        .status(202)
+        .status(200)
         .send(
           `https://peak-blogspace-photobucket.s3.us-east-2.amazonaws.com/blog-images/${title}.${imgType}`
         );
@@ -108,7 +108,7 @@ const generateJsonWebToken = (user) => {
         throw (err, 'ERROR PUTTING PROF OBJ IN S3');
       } else {
         res
-          .status(202)
+          .status(200)
           .send(
             `https://peak-blogspace-photobucket.s3.us-east-2.amazonaws.com/profile-pics/${fileName}.${fileType}`
           );
