@@ -69,6 +69,7 @@ const generateJsonWebToken = (user) => {
   s3.putObject(someParams, function (err) {
     if (err) {
       res.status(400).send(err);
+      throw (err, 'ERROR PUTTING BLOG IMG OBJ IN S3');
     } else {
       res
         .status(202)
@@ -103,8 +104,8 @@ const generateJsonWebToken = (user) => {
 
     s3.putObject(someParams, function (err) {
       if (err) {
-        console.error(err, "find error here");
         res.status(400).send(err);
+        throw (err, 'ERROR PUTTING PROF OBJ IN S3');
       } else {
         res
           .status(202)
@@ -144,7 +145,7 @@ const generateJsonWebToken = (user) => {
         await mysqlQueries.createUser(icon, firstName, lastName, username, email, passwordHashed, age, city, state, zipcode, jobTitle, registerDate, newUserObj);
     }
     catch(error) {
-      console.log(error);
+      console.log(error, 'ERROR CREATING USER IN SQL');
       res.status(400).send(error);
     }
   }),
@@ -160,7 +161,7 @@ const generateJsonWebToken = (user) => {
       await mysqlQueries.addPrefTopics(userId, userChoiceOne, userChoiceTwo, userChoiceThree, userChoiceFour, userChoiceFive);
       res.sendStatus(200);
     }catch(error){
-      console.log(error);
+      console.log(error, 'ERROR ADDING PREF TOPICS TO SQL');
       res.status(400).send(error);
     }
   }),
@@ -180,9 +181,8 @@ const generateJsonWebToken = (user) => {
 
       try {
        await mysqlQueries.authUser(username, password, getUserObj);
-        // next();
       } catch(err) {
-        console.log(err)
+        console.log(err, 'ERROR AUTH USER')
         res.status(404).send(err);
       }
   }),
@@ -190,7 +190,6 @@ const generateJsonWebToken = (user) => {
     console.log("requuuuueeeest", req);
     console.log("respoooonnnssseee", res);
   }),
-  //
   // Controller funcs for Home page
   (exports.addPostView = async function (req, res) {
     const postId = req.params.id1;
@@ -201,7 +200,6 @@ const generateJsonWebToken = (user) => {
       res.status(400).send('Bad Request, Error Adding View');
     }
   }),
-  //////////////////////
   (exports.getAllPosts = async function (req, res) {
     const sendBlogs = async (blogObj) => {
       if(blogObj.length === 0){
@@ -217,7 +215,6 @@ const generateJsonWebToken = (user) => {
         res.sendStatus(404);
     }
   }),
-  //
   // Controller Funcs for Homepage/BlogOps Component
   (exports.addLike = async function (req, res) {
     const addOrRemoveLikes = req.params.id1;
@@ -306,80 +303,42 @@ const generateJsonWebToken = (user) => {
   // Controller Funcs for account page
   (exports.displayTopPosts = async function (req, res) {
     const userId = await req.params.id1;
-    connection.query(
-      `SELECT * FROM user_posts WHERE user_id=${userId} ORDER BY blog_likes DESC`,
-      (error, results) => {
-        if (error) {
-          res
-            .status(404)
-            .send(
-              "We're having some trouble loading this right now, please try again later"
-            );
-        } else {
-          res.status(202).send(results);
-        }
+      const sendUserPosts = (postData) => {
+        res.status(200).send(postData);
       }
-    );
-  }),
-  (exports.displayTopComments = async function (req, res) {
-    const userId = await req.params.id1;
-    connection.query(
-      `SELECT * FROM user_comments WHERE user_id=${userId}`,
-      (error, results) => {
-        if (error) {
-          res
-            .status(404)
-            .send(
-              "We're having some trouble loading this right now, please try again later"
-            );
-        } else {
-          res.status(202).send(results);
-        }
+
+      try {
+        mysqlQueries.displayTopPosts(userId, sendUserPosts);
+      } catch (e) {
+        console.log(e, 'ERROR DISPLAYING TOP POSTS');
+        res.sendStatus(404);
       }
-    );
   }),
   (exports.fetchUserInfo = async function (req, res) {
     const userId = req.params.id1;
-    await connection.query(
-      `SELECT * FROM account_info WHERE id = ${userId}`,
-      (error, results) => {
-        if (error) {
-          res.status(404).send(error);
-        } else {
-          let toSend = null;
-          results.map((index) => {
-            toSend = index;
-          });
-          console.log(toSend, "TO SEEEND")
-          res.status(200).send(toSend);
-        }
-      }
-    );
+    const sendUserData = (accountInfo) => {
+      res.status(200).send(accountInfo);
+    }
+    try {
+      mysqlQueries.fetchUserInfo(userId, sendUserData);
+    } catch (e) {
+      console.log(e, 'ERROR FETCHING USER DATA')
+    }
   }),
-  //
   // Controller funcs for Navbar
   (exports.postNewBlog = async function (req, res) {
     const imgHeader = req.body.data.headerImg;
     const blogTitle = req.body.data.blogTitle;
     const blogBody = req.body.data.blogBody;
-    const userIdToSend = req.body.data.userId;
+    const userId = req.body.data.userId;
 
-    await connection.query(
-      `INSERT INTO user_posts(user_id , post_title, post_body, blog_img, blog_likes) 
-    VALUES( ${userIdToSend}, "${blogTitle}", "${blogBody}", "${imgHeader}", 0);`,
-      (error, results) => {
-        if (error) {
-          console.log(error, "find me find me find me");
-          res
-            .status(404)
-            .send(
-              "There was an error posting your blog, please try again later."
-            );
-        } else {
-          res.status(202).send(results);
-        }
-      }
-    );
+ try {
+   mysqlQueries.postNewBlog(imgHeader, blogTitle, blogBody, userId);
+   res.sendStatus(200);
+ } catch(e) {
+   console.log(e, 'ERROR POSTING NEW BLOG');
+   res.sendStatus(200);
+ }
   }),
   //
   // Controller funcs for Bookmarks Page
@@ -387,12 +346,13 @@ const generateJsonWebToken = (user) => {
     const userId = req.params.id1;
 
     const sendPostData = (arrOfData) => {
-      res.status(200).send(arrOfData);
+        res.status(200).send(arrOfData);
     }
 
-    const getBMarkPostData = (arrOfId) => {
+    const getBMarkPostData = async (arrOfId) => {
+      console.log(arrOfId.length, 'b mark')
       try {
-        mysqlQueries.getBMarkData(arrOfId, sendPostData);
+        await mysqlQueries.getBMarkData(arrOfId, sendPostData);
       } catch(e) {
         console.log(e, 'ERROR GETTING BOOKMARKED POST DATA');
        res.sendStatus(404); 

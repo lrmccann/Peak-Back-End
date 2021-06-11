@@ -16,14 +16,14 @@ if (process.env.JAWSDB_URL) {
   connection = mysql.createConnection(process.env.JAWSDB_URL);
 } else {
   connection = connectionInfo;
-};
+}
 
 function createObjForComments(username, commentBody, commentRank, joinDate) {
   this.username = username;
   this.commentBody = commentBody;
   this.commentRank = commentRank;
   this.joinDate = joinDate;
-};
+}
 
 (exports.createUser = async function (
   icon,
@@ -116,13 +116,13 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
       `UPDATE user_posts 
     SET post_views = post_views + 1 
     WHERE id=${postId}`,
-    (err, data) => {
-      if(err){
-        throw err;
-      } else{
-        return data;
+      (err, data) => {
+        if (err) {
+          throw err;
+        } else {
+          return data;
+        }
       }
-    }
     );
   }),
   (exports.getPostData = async function (cb) {
@@ -142,37 +142,39 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
   (exports.addSqlLike = async function (cond, postId, userId, cb) {
     const addLike = async (likesArr) => {
       let postIndex = likesArr.indexOf(postId);
-      if(postIndex === -1){
+      if (postIndex === -1) {
         likesArr.push(`${postId}`);
-          await connection.query(
-              `UPDATE account_info SET liked_posts = '${likesArr}' WHERE id = ${userId}`,
-              (err, results) => {
-                if (err || results.changedRows === 0) {
-                  throw err;
-                } else {
-                  return 'Success';
-                }
-              }
-            );
+        await connection.query(
+          `UPDATE account_info SET liked_posts = '${likesArr}' WHERE id = ${userId}`,
+          (err, results) => {
+            if (err || results.changedRows === 0) {
+              throw err;
+            } else {
+              return "Success";
+            }
+          }
+        );
       } else {
-        throw 'USER ALREADY LIKED POST';
+        throw "USER ALREADY LIKED POST";
       }
     };
 
     const removeLike = async (likesArr) => {
       let postIndex = likesArr.indexOf(postId);
-      if(postIndex === -1){
-        throw 'ID OF POST TO REMOVE WAS NOT FOUND'
+      if (postIndex === -1) {
+        throw "ID OF POST TO REMOVE WAS NOT FOUND";
       } else {
         likesArr.splice(postIndex, 1);
-        await connection.query(`UPDATE account_info SET liked_posts = '${likesArr}' WHERE id = ${userId}`, 
-        (err , results) => {
-          if(err || results.changedRows === 0){
-            throw err;
-          } else {
-            return 'Success';
+        await connection.query(
+          `UPDATE account_info SET liked_posts = '${likesArr}' WHERE id = ${userId}`,
+          (err, results) => {
+            if (err || results.changedRows === 0) {
+              throw err;
+            } else {
+              return "Success";
+            }
           }
-        })
+        );
       }
     };
 
@@ -207,13 +209,11 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
       (error, results) => {
         if (error) {
           throw error;
-        } 
-        else {
+        } else {
           var postsToFetch = results[0].bookmarked_posts;
           if (postsToFetch === null) {
-            throw 'WAS NUUUUL';
-          } 
-          else {
+            throw "WAS NUUUUL";
+          } else {
             var newBookmarkArr = postsToFetch.split(",").map(Number);
             myCallback(newBookmarkArr);
           }
@@ -223,59 +223,63 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
   }),
   (exports.toggleBookmark = async function (userId, postId, cond, bookmarkArr) {
     let postIndex = bookmarkArr.indexOf(postId);
-    console.log(cond, "conditional")
-    if(`${cond}` === 'add'){
-      if(postIndex === -1){
-        bookmarkArr.push( `${postId}`);
-          await connection.query(
-              `UPDATE account_info SET bookmarked_posts = '${bookmarkArr}' WHERE id = ${userId}`,
-              (err, results) => {
-                if (err) {
-                  throw `ERROR TOGGLING BOOKMARK`;
-                } else {
-                  return results;
-                }
-              }
-            );
+    console.log(cond, "conditional");
+    if (`${cond}` === "add") {
+      if (postIndex === -1) {
+        bookmarkArr.push(`${postId}`);
+        await connection.query(
+          `UPDATE account_info SET bookmarked_posts = '${bookmarkArr}' WHERE id = ${userId}`,
+          (err, results) => {
+            if (err) {
+              throw `ERROR TOGGLING BOOKMARK`;
+            } else {
+              return results;
+            }
+          }
+        );
       } else {
-        throw 'USER ALREADY BOOKMARKED POST';
+        throw "USER ALREADY BOOKMARKED POST";
       }
-    } else if(`${cond}` === 'remove'){
-      if(postIndex === -1){
-        throw 'ID OF POST TO REMOVE WAS NOT FOUND - BOOKMARK';
+    } else if (`${cond}` === "remove") {
+      if (postIndex === -1) {
+        throw "ID OF POST TO REMOVE WAS NOT FOUND - BOOKMARK";
       } else {
         bookmarkArr.splice(postIndex, 1);
-        await connection.query(`UPDATE account_info SET bookmarked_posts = '${bookmarkArr}' WHERE id = ${userId}`, 
-        (err , results) => {
-          if(err){
-            throw err;
-          } else {
-            return 'Success';
+        await connection.query(
+          `UPDATE account_info SET bookmarked_posts = '${bookmarkArr}' WHERE id = ${userId}`,
+          (err, results) => {
+            if (err) {
+              throw err;
+            } else {
+              return "Success";
+            }
           }
-        })
+        );
       }
     }
   }),
   (exports.getBMarkData = async function (arr, cb) {
-  const blogObjArray = [];
-    if(arr.length === 0){
-      throw 'ARR WAS EMPTY - GET BMARK POST DATA';
+    const blogObjArray = [];
+    if (arr.length === 0) {
+      throw "ARR WAS EMPTY - GET BMARK POST DATA";
     } else {
-      arr.map( async (index) => {
-      await connection.query(
-        `SELECT user_posts.id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username 
+      await arr.map(async (index) => {
+        await connection.query(
+          `SELECT user_posts.id , user_posts.post_title , user_posts.blog_img , user_posts.publish_date , account_info.username 
         FROM user_posts, account_info
         WHERE user_posts.id = ${index} AND account_info.id = user_posts.user_id`,
-        async (error, results) => {
-          if (error) {
-            throw error;
-          } else {
-            blogObjArray.push(...results);
-            cb(blogObjArray)
+          (error, results) => {
+            if (error) {
+              throw error;
+            } else {
+              blogObjArray.push(...results);
+              if (Object.keys(blogObjArray).length === arr.length) {
+                cb(blogObjArray);
+              }
+            }
           }
-        }
-      );
-    })
+        );
+      });
     }
   }),
   (exports.getPostDetails = async function (requestId, cb) {
@@ -299,7 +303,7 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
               );
               allInfoArr.push(commentObj);
             });
-            cb(allInfoArr)
+            cb(allInfoArr);
           }
         }
       );
@@ -338,17 +342,58 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
     };
     getAuthData();
   }),
-  ((exports.postNewComment = async function (userId, postId, commentBody) {
+  (exports.postNewComment = async function (userId, postId, commentBody) {
     await connection.query(
-      `INSERT INTO user_comments(user_id , post_id , comment_body  )
+      `INSERT INTO user_comments(user_id , post_id , comment_body)
     VALUES( ${userId} , ${postId} , "${commentBody}")`,
-      (error) => {
+      (error, res) => {
         if (error) {
           res.sendStatus(404);
           throw error;
         } else {
-          return 'Success';
+          return res;
         }
       }
     );
-  }))
+  }),
+  (exports.displayTopPosts = async function (userId, cb) {
+    await connection.query(
+      `SELECT * FROM user_posts WHERE user_id=${userId} ORDER BY blog_likes DESC`,
+      (error, results) => {
+        if (error) {
+          throw error;
+        } else {
+          cb(results);
+        }
+      }
+    );
+  }),
+  (exports.fetchUserInfo = async function (userId, cb) {
+    await connection.query(
+      `SELECT * FROM account_info WHERE id = ${userId}`,
+      (error, results) => {
+        if (error) {
+          res.status(404).send(error);
+        } else {
+          let userData = null;
+          results.map((index) => {
+            userData = index;
+          });
+          cb(userData);
+        }
+      }
+    );
+  }),
+  (exports.postNewBlog = async function (imgHeader, blogTitle, blogBody, userId) {
+    await connection.query(
+      `INSERT INTO user_posts(user_id , post_title, post_body, blog_img, blog_likes) 
+    VALUES( ${userId}, "${blogTitle}", "${blogBody}", "${imgHeader}", 0);`,
+      (error, results) => {
+        if (error) {
+          throw error;
+        } else {
+          return results;
+        }
+      }
+    );
+  })
