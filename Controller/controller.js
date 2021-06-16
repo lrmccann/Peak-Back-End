@@ -264,16 +264,19 @@ const generateJsonWebToken = (user) => {
     const cond = req.params.id3;
 
     const sendBookmarkArr = async (bookmarkArr) => {
+      let bookmarkArrTwo = await bookmarkArr;
       try {
-        await mysqlQueries.toggleBookmark(userId, postId, cond, bookmarkArr);
+        await mysqlQueries.toggleBookmark(userId, postId, cond, bookmarkArrTwo);
         res.sendStatus(200);
       } catch(e) {
+        console.log(e, 'ERROR FOR ADDING/REMOVING BOOKMARK FROM SQL');
         res.sendStatus(404);
       }
     }
-
+const getBookmarkArr = async () => {
     await mysqlQueries.getUserBookmarks(userId, sendBookmarkArr);
-
+}
+getBookmarkArr();
   }),
   // Controller Funcs for IndepthBlogPage
   (exports.getAllInfoOnPost = async function (req, res) {
@@ -302,17 +305,25 @@ const generateJsonWebToken = (user) => {
   }),
   // Controller Funcs for account page
   (exports.displayTopPosts = async function (req, res) {
-    const userId = await req.params.id1;
+    const userId = req.params.id1;
+
+    let cond = '';
+
+    if(req.params.id2 === 'undefined'){
+          cond = 'forAcc';
+    } else {
+      cond = 'forHome'
+    }
       const sendUserPosts = (postData) => {
         res.status(200).send(postData);
-      }
+      };
 
       try {
-        mysqlQueries.displayTopPosts(userId, sendUserPosts);
+        mysqlQueries.displayTopPosts(userId, cond, sendUserPosts);
       } catch (e) {
         console.log(e, 'ERROR DISPLAYING TOP POSTS');
         res.sendStatus(404);
-      }
+      };
   }),
   (exports.fetchUserInfo = async function (req, res) {
     const userId = req.params.id1;
@@ -350,7 +361,6 @@ const generateJsonWebToken = (user) => {
     }
 
     const getBMarkPostData = async (arrOfId) => {
-      console.log(arrOfId.length, 'b mark')
       try {
         await mysqlQueries.getBMarkData(arrOfId, sendPostData);
       } catch(e) {

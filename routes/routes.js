@@ -33,7 +33,7 @@ const router = require('express').Router();
     router.route("/numOfLikesForPost/:id1/:id2/:id3")
     .put(isAuth.authenticateToken , getController.addLike);
     // id1 = user Id
-    router.route('/getUserPost/:id1')
+    router.route('/getUserPost/:id1/:id2')
     .get(isAuth.authenticateToken , getController.displayTopPosts);
     // data is contained in body
     router.route('/create-new-post')

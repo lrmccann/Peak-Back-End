@@ -25,6 +25,13 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
   this.joinDate = joinDate;
 }
 
+function createObjForHome(postTitle, commentRank, joinDate) {
+  this.username = username;
+  this.commentBody = commentBody;
+  this.commentRank = commentRank;
+  this.joinDate = joinDate;
+}
+
 (exports.createUser = async function (
   icon,
   firstName,
@@ -206,25 +213,29 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
   (exports.getUserBookmarks = async (userId, myCallback) => {
     await connection.query(
       `SELECT bookmarked_posts FROM account_info WHERE id=${userId}`,
-      (error, results) => {
+      async (error, results) => {
         if (error) {
           throw error;
         } else {
-          var postsToFetch = results[0].bookmarked_posts;
-          if (postsToFetch === null) {
-            console.log('was NUUUUUULLL');
-          } else {
-            var newBookmarkArr = postsToFetch.split(",").map(Number);
+          console.log(results, 'RESULTS FOR GET USER BOOKMARKS');
+          // var postsToFetch = results[0].bookmarked_posts;
+          // if (postsToFetch === null) {
+          //   console.log('was NUUUUUULLL');
+          // } else {
+            var newBookmarkArr = await results[0].bookmarked_posts.split(",").map(Number);
+            console.log(newBookmarkArr, 'NEW BOOOOOOKMARK ARRR');
             myCallback(newBookmarkArr);
           }
         }
-      }
+      // }
     );
   }),
   (exports.toggleBookmark = async function (userId, postId, cond, bookmarkArr) {
-    let postIndex = bookmarkArr.indexOf(postId);
-    console.log(cond, "conditional");
+    // console.log(bookmarkArr, 'BOOOOKMARK ARRRRAY')
+    // console.log(postId, 'PSOT ID')
     if (`${cond}` === "add") {
+    const addBoomark = async () => {
+      let postIndex = bookmarkArr.indexOf(postId);
       if (postIndex === -1) {
         bookmarkArr.push(`${postId}`);
         await connection.query(
@@ -240,23 +251,43 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
       } else {
         throw "USER ALREADY BOOKMARKED POST";
       }
-    } else if (`${cond}` === "remove") {
-      if (postIndex === -1) {
-        throw "ID OF POST TO REMOVE WAS NOT FOUND - BOOKMARK";
+    }
+    addBoomark();
+  }
+    else if (`${cond}` === "remove") {
+    const removeBookmark = async () => {
+      console.log(bookmarkArr, 'MMMMHHHHMMM');
+      console.log(postId, 'POST ID AGAIN')
+      let postIndex = bookmarkArr.indexOf(postId);
+      // if (postIndex === -1) {
+        console.log(postIndex, 'POST INDEXXXXX')
+      if (postIndex !== -1) {
+        return 'whatever';
       } else {
         bookmarkArr.splice(postIndex, 1);
+        console.log(bookmarkArr.splice(postIndex, 1), 'THIS LOGAN');
+        console.log(bookmarkArr, 'AGAIN')
+        console.log(bookmarkArr, 'AFTEER SPLICE')
         await connection.query(
           `UPDATE account_info SET bookmarked_posts = '${bookmarkArr}' WHERE id = ${userId}`,
           (err, results) => {
             if (err) {
               throw err;
             } else {
-              return "Success";
+              return results;
             }
           }
         );
       }
     }
+    removeBookmark();
+    }
+    // console.log(cond, "conditional");
+    // if (`${cond}` === "add") {
+    //   addBoomark();
+    // } else if (`${cond}` === "remove") {
+    //   removeBookmark();
+    // }
   }),
   (exports.getBMarkData = async function (arr, cb) {
     const blogObjArray = [];
@@ -356,7 +387,8 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
       }
     );
   }),
-  (exports.displayTopPosts = async function (userId, cb) {
+  (exports.displayTopPosts = async function (userId, cond, cb) {
+    if(cond === 'forAcc'){
     await connection.query(
       `SELECT * FROM user_posts WHERE user_id=${userId} ORDER BY blog_likes DESC`,
       (error, results) => {
@@ -367,6 +399,18 @@ function createObjForComments(username, commentBody, commentRank, joinDate) {
         }
       }
     );
+    } else if(cond === 'forHome'){
+      await connection.query(
+        `SELECT id, user_id, blog_img, post_title, post_views, publish_date FROM user_posts ORDER BY post_views DESC LIMIT 5`,
+        (error, results) => {
+          if (error) {
+            throw error;
+          } else {
+            cb(results);
+          }
+        }
+      );
+    }
   }),
   (exports.fetchUserInfo = async function (userId, cb) {
     await connection.query(
