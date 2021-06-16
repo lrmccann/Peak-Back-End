@@ -3,11 +3,8 @@ const mysql = require("mysql");
 const aws = require("aws-sdk");
 const jwt = require("jsonwebtoken");
 const mysqlQueries = require("./sqlQueries");
-
-if(process.env !== 'production'){
-const mysqlConfigObj = require("../sqlConfig");
-const mysqlConfig = mysqlConfigObj.sqlConfig;
-}
+// const mysqlConfigObj = require("../sqlConfig");
+// const mysqlConfig = mysqlConfigObj.sqlConfig;
 
 var connection = "";
 
@@ -19,19 +16,19 @@ const {
   JWT_SIGNATURE,
 } = process.env;
 
-var connectionInfo = mysql.createConnection({
-  host: mysqlConfig.host,
-  port: mysqlConfig.port,
-  database: mysqlConfig.database,
-  user: mysqlConfig.user,
-  password: mysqlConfig.password,
-  multipleStatements: true,
-});
+// var connectionInfo = mysql.createConnection({
+//   host: mysqlConfig.host,
+//   port: mysqlConfig.port,
+//   database: mysqlConfig.database,
+//   user: mysqlConfig.user,
+//   password: mysqlConfig.password,
+//   multipleStatements: true,
+// });
 
 if (process.env.JAWSDB_URL) {
   connection = mysql.createConnection(process.env.JAWSDB_URL);
 } else {
-  connection = connectionInfo;
+  // connection = connectionInfo;
 }
 
 const generateJsonWebToken = (user) => {
