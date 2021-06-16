@@ -2,9 +2,12 @@ const argon2 = require("argon2");
 const mysql = require("mysql");
 const aws = require("aws-sdk");
 const jwt = require("jsonwebtoken");
+const mysqlQueries = require("./sqlQueries");
+
+if(!process.env.JAWSDB_URL){
 const mysqlConfigObj = require("../sqlConfig");
 const mysqlConfig = mysqlConfigObj.sqlConfig;
-const mysqlQueries = require("./sqlQueries");
+}
 
 var connection = "";
 
