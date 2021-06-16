@@ -4,7 +4,7 @@ const aws = require("aws-sdk");
 const jwt = require("jsonwebtoken");
 const mysqlQueries = require("./sqlQueries");
 
-if(!process.env.JAWSDB_URL){
+if(process.env !== 'production'){
 const mysqlConfigObj = require("../sqlConfig");
 const mysqlConfig = mysqlConfigObj.sqlConfig;
 }
