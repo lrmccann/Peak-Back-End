@@ -316,7 +316,7 @@ getBookmarkArr();
     if(req.params.id2 === 'undefined'){
           cond = 'forAcc';
     } else {
-      cond = 'forHome'
+      cond = 'forHome';
     }
       const sendUserPosts = (postData) => {
         res.status(200).send(postData);

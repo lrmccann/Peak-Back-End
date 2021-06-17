@@ -406,11 +406,12 @@ function createObjForHome(postTitle, commentRank, joinDate) {
     );
     } else if(cond === 'forHome'){
       await connection.query(
-        `SELECT id, user_id, blog_img, post_title, post_views, publish_date FROM user_posts ORDER BY post_views DESC LIMIT 5`,
+        `SELECT id, user_id, blog_img, post_title, post_views, publish_date FROM user_posts ORDER BY post_views DESC LIMIT 9`,
         (error, results) => {
           if (error) {
             throw error;
           } else {
+            console.log(results, 'YOU WANT DIS')
             cb(results);
           }
         }
