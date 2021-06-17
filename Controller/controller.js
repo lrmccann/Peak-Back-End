@@ -170,7 +170,10 @@ const generateJsonWebToken = (user) => {
     const password = req.params.id2;
     let userObj = null;
 
-      const getUserObj = async (sqlUserData) => {
+      const getUserObj = async (statusCode, sqlUserData) => {
+        if(statusCode === 400){
+          res.status(400).send('Incorrect username or password');
+        } else {
           userObj = await sqlUserData;
         const tokenToSend = generateJsonWebToken(userObj);
           res.status(200).json({
@@ -178,11 +181,12 @@ const generateJsonWebToken = (user) => {
           sessToken : tokenToSend
         });
       }
+      }
 
       try {
        await mysqlQueries.authUser(username, password, getUserObj);
       } catch(err) {
-        console.log(err, 'ERROR AUTH USER')
+        console.log(err, 'ERROR AUTH USER');
         res.status(404).send(err);
       }
   }),

@@ -84,35 +84,40 @@ function createObjForHome(postTitle, commentRank, joinDate) {
     );
   }),
   (exports.authUser = async function (username, password, cb) {
-    const getAllUserData = async (userEmail) => {
+    const getAllUserData = async (userEmail) => 
       await connection.query(
         `SELECT id , icon , first_name , last_name , username , email , age , city , state ,  zipcode , job_title , register_date , preferred_topics
           FROM account_info
           WHERE email = '${userEmail}'`,
         (error, results) => {
+          console.log(results, 'HEREHEREHEREHERE');
           if (error) {
             throw error;
           } else {
             results.map(async (index) => {
-              return await cb(index);
+              return await cb(200, index);
             });
           }
         }
       );
-    };
+    
     const verifyPassword = async () => {
       await connection.query(
         `SELECT email , password FROM account_info WHERE username = '${username}'`,
         async (error, results) => {
           if (error) {
             throw error;
-          } else if (results.length !== 0) {
+          } else {
+            if(results.length === 0){
+              return await cb(400, 'broken');
+            } else {
             if (await argon2.verify(results[0].password, password)) {
               getAllUserData(results[0].email);
             } else {
-              throw "Username and Password do not match";
+              return await cb(400, 'broken');
             }
           }
+        }
         }
       );
     };
