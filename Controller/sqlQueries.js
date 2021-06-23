@@ -406,13 +406,16 @@ function createObjForHome(postTitle, commentRank, joinDate) {
     );
     } else if(cond === 'forHome'){
       await connection.query(
-        `SELECT id, user_id, blog_img, post_title, post_views, publish_date FROM user_posts ORDER BY post_views DESC LIMIT 9`,
-        (error, results) => {
+        `SELECT user_posts.id, user_posts.user_id, user_posts.blog_img, user_posts.post_title
+        , user_posts.post_views, user_posts.publish_date, account_info.username, account_info.icon FROM user_posts
+        INNER JOIN account_info ON account_info.id = user_posts.user_id
+        ORDER BY post_views DESC LIMIT 9`,
+        async (error, results) => {
           if (error) {
             throw error;
           } else {
-            console.log(results, 'YOU WANT DIS')
-            cb(results);
+            // console.log(results, 'YOU WANT DIS')
+            await cb(results);
           }
         }
       );
