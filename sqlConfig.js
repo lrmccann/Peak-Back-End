@@ -1,7 +1,7 @@
 (exports.sqlConfig = {
     host :  'localhost',
     port : 3306,
-    database : 'peak-connection',
+    database : 'peak_db',
     user : 'root',
     password : 'Newlin11!'
 });
