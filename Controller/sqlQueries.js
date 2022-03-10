@@ -231,22 +231,14 @@ const arrIsEqual = (a, b) => {
         if (error) {
           throw error;
         } else {
-          console.log(results, 'RESULTS FOR GET USER BOOKMARKS');
-          // var postsToFetch = results[0].bookmarked_posts;
-          // if (postsToFetch === null) {
-          //   console.log('was NUUUUUULLL');
-          // } else {
             var newBookmarkArr = await results[0].bookmarked_posts.split(",").map(Number);
             console.log(newBookmarkArr, 'NEW BOOOOOOKMARK ARRR');
             myCallback(newBookmarkArr);
           }
         }
-      // }
     );
   }),
   (exports.toggleBookmark = async function (userId, postId, cond, bookmarkArr) {
-    // console.log(bookmarkArr, 'BOOOOKMARK ARRRRAY')
-    // console.log(postId, 'PSOT ID')
     if (`${cond}` === "add") {
     const addBoomark = async () => {
       let postIndex = bookmarkArr.indexOf(postId);
@@ -270,18 +262,12 @@ const arrIsEqual = (a, b) => {
   }
     else if (`${cond}` === "remove") {
     const removeBookmark = async () => {
-      console.log(bookmarkArr, 'MMMMHHHHMMM');
-      console.log(postId, 'POST ID AGAIN')
-      let postIndex = bookmarkArr.indexOf(postId);
-      // if (postIndex === -1) {
-        console.log(postIndex, 'POST INDEXXXXX')
-      if (postIndex !== -1) {
+      let postIdInt = parseInt(postId);
+      let postIndex = bookmarkArr.indexOf(postIdInt);
+      if (postIndex === -1) {
         return 'whatever';
-      } else {
+      } else if(postIndex !== -1) {
         bookmarkArr.splice(postIndex, 1);
-        console.log(bookmarkArr.splice(postIndex, 1), 'THIS LOGAN');
-        console.log(bookmarkArr, 'AGAIN')
-        console.log(bookmarkArr, 'AFTEER SPLICE')
         await connection.query(
           `UPDATE account_info SET bookmarked_posts = '${bookmarkArr}' WHERE id = ${userId}`,
           (err, results) => {
@@ -296,12 +282,6 @@ const arrIsEqual = (a, b) => {
     }
     removeBookmark();
     }
-    // console.log(cond, "conditional");
-    // if (`${cond}` === "add") {
-    //   addBoomark();
-    // } else if (`${cond}` === "remove") {
-    //   removeBookmark();
-    // }
   }),
   (exports.getBMarkData = async function (arr, cb) {
     const blogObjArray = [];
@@ -317,20 +297,10 @@ const arrIsEqual = (a, b) => {
             if (error) {
               throw error;
             } else {
-              // console.log(...results, 'results of getting bookmarkdeposts')
               blogObjArray.push(...results);
-              // arrIsEqual(blogObjArray, arr);
-              console.log(arrIsEqual(blogObjArray, arr), 'if array is equal')
               if(arrIsEqual(blogObjArray, arr)){
                 cb(blogObjArray);
               }
-              // if (blogObjArray.length === arr.length) {
-                // console.log(blogObjArray, 'blog object array after cond met')
-
-                // setTimeout(() => {
-
-                // }, 2 * 500)
-              // }
             }
           }
         );
