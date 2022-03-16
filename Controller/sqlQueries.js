@@ -33,13 +33,10 @@ function createObjForHome(postTitle, commentRank, joinDate) {
 }
 
 const arrIsEqual = (a, b) => {
-  console.log(a.length, 'array one');
-  console.log(b.length, 'array two');
-  return Array.isArray(a) &&
-    Array.isArray(b) &&
-    a.length + 1 === b.length
-}
-
+  console.log(a.length, "array one");
+  console.log(b.length, "array two");
+  return Array.isArray(a) && Array.isArray(b) && a.length + 1 === b.length;
+};
 
 (exports.createUser = async function (
   icon,
@@ -93,13 +90,13 @@ const arrIsEqual = (a, b) => {
     );
   }),
   (exports.authUser = async function (username, password, cb) {
-    const getAllUserData = async (userEmail) => 
+    const getAllUserData = async (userEmail) =>
       await connection.query(
         `SELECT id , icon , first_name , last_name , username , email , age , city , state ,  zipcode , job_title , register_date , preferred_topics
           FROM account_info
           WHERE email = '${userEmail}'`,
         (error, results) => {
-          console.log(results, 'HEREHEREHEREHERE');
+          console.log(results, "HEREHEREHEREHERE");
           if (error) {
             throw error;
           } else {
@@ -109,7 +106,7 @@ const arrIsEqual = (a, b) => {
           }
         }
       );
-    
+
     const verifyPassword = async () => {
       await connection.query(
         `SELECT email , password FROM account_info WHERE username = '${username}'`,
@@ -117,16 +114,16 @@ const arrIsEqual = (a, b) => {
           if (error) {
             throw error;
           } else {
-            if(results.length === 0){
-              return await cb(400, 'broken');
+            if (results.length === 0) {
+              return await cb(400, "broken");
             } else {
-            if (await argon2.verify(results[0].password, password)) {
-              getAllUserData(results[0].email);
-            } else {
-              return await cb(400, 'broken');
+              if (await argon2.verify(results[0].password, password)) {
+                getAllUserData(results[0].email);
+              } else {
+                return await cb(400, "broken");
+              }
             }
           }
-        }
         }
       );
     };
@@ -231,56 +228,57 @@ const arrIsEqual = (a, b) => {
         if (error) {
           throw error;
         } else {
-            var newBookmarkArr = await results[0].bookmarked_posts.split(",").map(Number);
-            console.log(newBookmarkArr, 'NEW BOOOOOOKMARK ARRR');
-            myCallback(newBookmarkArr);
-          }
+          var newBookmarkArr = await results[0].bookmarked_posts
+            .split(",")
+            .map(Number);
+          console.log(newBookmarkArr, "NEW BOOOOOOKMARK ARRR");
+          myCallback(newBookmarkArr);
         }
+      }
     );
   }),
   (exports.toggleBookmark = async function (userId, postId, cond, bookmarkArr) {
     if (`${cond}` === "add") {
-    const addBoomark = async () => {
-      let postIndex = bookmarkArr.indexOf(postId);
-      if (postIndex === -1) {
-        bookmarkArr.push(`${postId}`);
-        await connection.query(
-          `UPDATE account_info SET bookmarked_posts = '${bookmarkArr}' WHERE id = ${userId}`,
-          (err, results) => {
-            if (err) {
-              throw `ERROR TOGGLING BOOKMARK`;
-            } else {
-              return results;
+      const addBoomark = async () => {
+        let postIndex = bookmarkArr.indexOf(postId);
+        if (postIndex === 1) {
+          bookmarkArr.push(`${postId}`);
+          await connection.query(
+            `UPDATE account_info SET bookmarked_posts = '${bookmarkArr}' WHERE id = ${userId}`,
+            (err, results) => {
+              if (err) {
+                throw `ERROR TOGGLING BOOKMARK`;
+              } else {
+                return results;
+              }
             }
-          }
-        );
-      } else {
-        throw "USER ALREADY BOOKMARKED POST";
-      }
-    }
-    addBoomark();
-  }
-    else if (`${cond}` === "remove") {
-    const removeBookmark = async () => {
-      let postIdInt = parseInt(postId);
-      let postIndex = bookmarkArr.indexOf(postIdInt);
-      if (postIndex === -1) {
-        return 'whatever';
-      } else if(postIndex !== -1) {
-        bookmarkArr.splice(postIndex, 1);
-        await connection.query(
-          `UPDATE account_info SET bookmarked_posts = '${bookmarkArr}' WHERE id = ${userId}`,
-          (err, results) => {
-            if (err) {
-              throw err;
-            } else {
-              return results;
+          );
+        } else {
+          throw "USER ALREADY BOOKMARKED POST";
+        }
+      };
+      addBoomark();
+    } else if (`${cond}` === "remove") {
+      const removeBookmark = async () => {
+        let postIdInt = parseInt(postId);
+        let postIndex = bookmarkArr.indexOf(postIdInt);
+        if (postIndex === -1) {
+          return "whatever";
+        } else if (postIndex !== -1) {
+          bookmarkArr.splice(postIndex, 1);
+          await connection.query(
+            `UPDATE account_info SET bookmarked_posts = '${bookmarkArr}' WHERE id = ${userId}`,
+            (err, results) => {
+              if (err) {
+                throw err;
+              } else {
+                return results;
+              }
             }
-          }
-        );
-      }
-    }
-    removeBookmark();
+          );
+        }
+      };
+      removeBookmark();
     }
   }),
   (exports.getBMarkData = async function (arr, cb) {
@@ -298,7 +296,7 @@ const arrIsEqual = (a, b) => {
               throw error;
             } else {
               blogObjArray.push(...results);
-              if(arrIsEqual(blogObjArray, arr)){
+              if (arrIsEqual(blogObjArray, arr)) {
                 cb(blogObjArray);
               }
             }
@@ -382,18 +380,18 @@ const arrIsEqual = (a, b) => {
     );
   }),
   (exports.displayTopPosts = async function (userId, cond, cb) {
-    if(cond === 'forAcc'){
-    await connection.query(
-      `SELECT * FROM user_posts WHERE user_id=${userId} ORDER BY blog_likes DESC`,
-      (error, results) => {
-        if (error) {
-          throw error;
-        } else {
-          cb(results);
+    if (cond === "forAcc") {
+      await connection.query(
+        `SELECT * FROM user_posts WHERE user_id=${userId} ORDER BY blog_likes DESC`,
+        (error, results) => {
+          if (error) {
+            throw error;
+          } else {
+            cb(results);
+          }
         }
-      }
-    );
-    } else if(cond === 'forHome'){
+      );
+    } else if (cond === "forHome") {
       await connection.query(
         `SELECT user_posts.id, user_posts.user_id, user_posts.blog_img, user_posts.post_title
         , user_posts.post_views, user_posts.publish_date, account_info.username, account_info.icon FROM user_posts
@@ -426,7 +424,12 @@ const arrIsEqual = (a, b) => {
       }
     );
   }),
-  (exports.postNewBlog = async function (imgHeader, blogTitle, blogBody, userId) {
+  (exports.postNewBlog = async function (
+    imgHeader,
+    blogTitle,
+    blogBody,
+    userId
+  ) {
     await connection.query(
       `INSERT INTO user_posts(user_id , post_title, post_body, blog_img, blog_likes) 
     VALUES( ${userId}, "${blogTitle}", "${blogBody}", "${imgHeader}", 0);`,
@@ -438,4 +441,114 @@ const arrIsEqual = (a, b) => {
         }
       }
     );
-  })
+  }),
+  (exports.userAction = async function (userId, followingId, cond, cb) {
+    const followRequest = async () => {
+      await connection.query(` `);
+    };
+
+    const userFollowed = async () => {
+      console.log("hello");
+    };
+
+    if ((cond = "follow")) {
+      followRequest();
+    } else if ((cond = "followed")) {
+      userFollowed();
+    }
+  }),
+  (exports.newFollowAction = async function (
+    userId,
+    followingId,
+    cond,
+    arr,
+    cb
+  ) {
+    
+    const finalArr = [];
+    let action = "follow";
+
+    const setUpdatedFollowerArr = async (arr) => {
+      const splitArr = arr.followers.split(",");
+      let newI = splitArr.indexOf(userId);
+      if (newI !== -1 && action === "unfollow") {
+        splitArr.splice(newI, 1);
+        await connection.query(
+          `UPDATE account_info SET followers = '${splitArr}' WHERE account_info.id = ${followingId}`,
+          (e, r) => {
+            if (e) {
+              throw e;
+            } else {
+              console.log(r, "results of removing user from sql");
+            }
+          }
+        );
+
+      } else if (newI === -1 && action === "follow") {
+        splitArr.push(userId);
+        await connection.query(
+          `UPDATE account_info SET followers = '${splitArr}' WHERE account_info.id = ${followingId}`,
+          (e, r) => {
+            if (e) {
+              throw e;
+            } else {
+              console.log(r, "results of removing user from sql");
+            }
+          }
+        );
+      }
+    };
+
+    const updateFollowers = async () => {
+      await connection.query(
+        `SELECT followers FROM account_info WHERE id = ${followingId}`,
+        (e, r) => {
+          if (e) {
+            throw e;
+          } else {
+            console.log(r, "result of arr");
+            r.map((a, i) => {
+              setUpdatedFollowerArr(a);
+            });
+          }
+        }
+      );
+    };
+
+    const setNewArr = async () => {
+      if (finalArr.length > 0) {
+        if (action === "follow") {
+          finalArr.push(followingId);
+        }
+        await connection.query(
+          `UPDATE account_info SET following = '${finalArr}' WHERE id = ${userId}`,
+          (error, results) => {
+            if (error) {
+              throw error;
+            } else {
+              cb(finalArr, action);
+            }
+          }
+        );
+      }
+    };
+
+    const checkArr = () => {
+      if (arr.length > 0) {
+        arr.map((id, index) => {
+          const parsedId = parseInt(id);
+          if (parseInt(followingId) === parsedId) {
+            console.log("id not in arr : " + parsedId);
+            return (action = "unfollow");
+          } else {
+            return finalArr.push(id);
+          }
+        });
+      }
+    };
+    if (cond === "following") {
+      checkArr();
+      setNewArr();
+      updateFollowers();
+    }
+  });

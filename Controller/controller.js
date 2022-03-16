@@ -42,6 +42,27 @@ const generateJsonWebToken = (user) => {
   return jwt.sign({ data }, signature, { expiresIn: expiration });
 };
 
+// global to get sql array of followers or following
+
+const getFollowingArr = async (userId, cond, cb) => {
+  await connection.query(`SELECT ${cond} FROM account_info WHERE id = ${parseInt(userId)}`,
+  (error, results) => {
+    if(error){
+      throw error;
+    } else if(results){
+      results.map((r, i) => {
+        let arrSplit = r.following.split(",");
+        cb(arrSplit);
+        // console.log(arrSplit, 'split array here')
+      })
+      // console.log(results, 'results to pass')
+      // return results;
+    }
+  }
+  )
+}
+
+
 // uploading images to aws
 (exports.uploadBlogImg = async function (req, res) {
   const title = req.params.id1;
@@ -374,6 +395,48 @@ getBookmarkArr();
     }
 
     await mysqlQueries.getUserBookmarks(userId, getBMarkPostData);
+  }),
+  (exports.getFollowingBlogs = async function (req, res) {
+    console.log(req.params.id1, 'user id to get followers blogs');
+    const userId = req.params.id1;
+
+    const sendFollowingBlogs = (followingBlogArr) => {
+      res.status(200).send(followingBlogArr);
+    };
+
+    // const getFollowingArr = async () => {
+    //   try {
+    //     await mysqlQueries.sendFollowingBlogs(userId, sendFollowingBlogs);
+    //   } catch (e){
+    //     console.error(e, 'console error, failed to get following arr');
+    //     res.sendStatus(404);
+    //   }
+    // }
+
+
+  }),
+  (exports.followNewUser = async function (req, res) {
+      const userId = req.params.id1;
+      const followingId = req.params.id2;
+      const cond = req.params.id3;
+
+
+      const sendRes = (newArr, action) => {
+        res.status(200).send({
+          newArr : newArr,
+          action : action
+        });
+      }
+
+      const userAction = async (arr) => {
+        try{
+          await mysqlQueries.newFollowAction(userId, followingId, cond, arr, sendRes);
+        } catch(e){
+          console.error(e, 'console error, failed to follow or be followed');
+          res.sendStatus(404);
+        }
+      }
+      const followingArr = await getFollowingArr(userId, cond, userAction);
   }),
   //
 

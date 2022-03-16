@@ -56,4 +56,10 @@ const router = require('express').Router();
     router.route('/user-images/:id1/:id2')
     .put(isAuth.authenticateToken , getController.uploadUserImg);
 
+    router.route('/user-following/:id1')
+    .get(isAuth.authenticateToken, getController.getFollowingBlogs);
+    router.route('/followers/:id1/:id2/:id3')
+    .get(isAuth.authenticateToken, getController.followNewUser);
+
+
 module.exports = router;
